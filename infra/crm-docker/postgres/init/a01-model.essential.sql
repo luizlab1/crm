@@ -11,7 +11,8 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE TABLE IF NOT EXISTS public."user" (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  code uuid NOT NULL DEFAULT gen_random_uuid(),
   email text NOT NULL,
   password_hash text NOT NULL,
   full_name text,
@@ -19,6 +20,9 @@ CREATE TABLE IF NOT EXISTS public."user" (
   created_at timestamptz NOT NULL DEFAULT now(),
   updated_at timestamptz NOT NULL DEFAULT now()
 );
+
+CREATE UNIQUE INDEX IF NOT EXISTS ux_user_code
+  ON public."user"(code);
 
 CREATE UNIQUE INDEX IF NOT EXISTS ux_user_email
   ON public."user"(lower(email));
@@ -76,7 +80,7 @@ END $$;
 
 CREATE TABLE IF NOT EXISTS public.user_role (
   id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  user_id uuid NOT NULL,
+  user_id bigint NOT NULL,
   role_id bigint NOT NULL,
   created_at timestamptz NOT NULL DEFAULT now(),
   CONSTRAINT fk_user_role_user
@@ -91,7 +95,7 @@ CREATE INDEX IF NOT EXISTS ix_user_role_role_id
 
 CREATE TABLE IF NOT EXISTS public.user_permission (
   id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  user_id uuid NOT NULL,
+  user_id bigint NOT NULL,
   permission_id bigint NOT NULL,
   created_at timestamptz NOT NULL DEFAULT now(),
   CONSTRAINT fk_user_permission_user
