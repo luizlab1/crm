@@ -24,8 +24,12 @@ docker compose version
 
 ## Subir a infraestrutura
 
-A partir da **raiz do projeto**:
+Entre no diretório `/infra`:
 
+``` bash
+cd infra
+```
+Execute o docuer-compose.yml
 ``` bash
 docker compose -f crm-docker/docker-compose.yml up -d
 ```

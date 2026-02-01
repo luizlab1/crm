@@ -25,9 +25,7 @@ CREATE UNIQUE INDEX IF NOT EXISTS ux_user_email
 
 DO $$
 BEGIN
-  IF NOT EXISTS (
-    SELECT 1 FROM pg_trigger WHERE tgname = 'trg_user_updated_at'
-  ) THEN
+  IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'trg_user_updated_at') THEN
     CREATE TRIGGER trg_user_updated_at
     BEFORE UPDATE ON public."user"
     FOR EACH ROW EXECUTE FUNCTION set_updated_at();
@@ -35,7 +33,7 @@ BEGIN
 END $$;
 
 CREATE TABLE IF NOT EXISTS public."role" (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   name text NOT NULL,
   description text,
   is_active boolean NOT NULL DEFAULT true,
@@ -48,17 +46,15 @@ CREATE UNIQUE INDEX IF NOT EXISTS ux_role_name
 
 DO $$
 BEGIN
-  IF NOT EXISTS (
-    SELECT 1 FROM pg_trigger WHERE tgname = 'trg_role_updated_at'
-  ) THEN
+  IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'trg_role_updated_at') THEN
     CREATE TRIGGER trg_role_updated_at
     BEFORE UPDATE ON public."role"
     FOR EACH ROW EXECUTE FUNCTION set_updated_at();
   END IF;
 END $$;
 
-CREATE TABLE IF NOT EXISTS public.grantt (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+CREATE TABLE IF NOT EXISTS public.permission (
+  id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   code text NOT NULL,
   description text,
   is_active boolean NOT NULL DEFAULT true,
@@ -66,46 +62,46 @@ CREATE TABLE IF NOT EXISTS public.grantt (
   updated_at timestamptz NOT NULL DEFAULT now()
 );
 
-CREATE UNIQUE INDEX IF NOT EXISTS ux_grantt_code
-  ON public.grantt(lower(code));
+CREATE UNIQUE INDEX IF NOT EXISTS ux_permission_code
+  ON public.permission(lower(code));
 
 DO $$
 BEGIN
-  IF NOT EXISTS (
-    SELECT 1 FROM pg_trigger WHERE tgname = 'trg_grantt_updated_at'
-  ) THEN
-    CREATE TRIGGER trg_grantt_updated_at
-    BEFORE UPDATE ON public.grantt
+  IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'trg_permission_updated_at') THEN
+    CREATE TRIGGER trg_permission_updated_at
+    BEFORE UPDATE ON public.permission
     FOR EACH ROW EXECUTE FUNCTION set_updated_at();
   END IF;
 END $$;
 
 CREATE TABLE IF NOT EXISTS public.user_role (
+  id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   user_id uuid NOT NULL,
-  role_id uuid NOT NULL,
+  role_id bigint NOT NULL,
   created_at timestamptz NOT NULL DEFAULT now(),
-  PRIMARY KEY (user_id, role_id),
   CONSTRAINT fk_user_role_user
     FOREIGN KEY (user_id) REFERENCES public."user"(id) ON DELETE CASCADE,
   CONSTRAINT fk_user_role_role
-    FOREIGN KEY (role_id) REFERENCES public."role"(id) ON DELETE CASCADE
+    FOREIGN KEY (role_id) REFERENCES public."role"(id) ON DELETE CASCADE,
+  CONSTRAINT uq_user_role UNIQUE (user_id, role_id)
 );
 
 CREATE INDEX IF NOT EXISTS ix_user_role_role_id
   ON public.user_role(role_id);
 
-CREATE TABLE IF NOT EXISTS public.user_grant (
+CREATE TABLE IF NOT EXISTS public.user_permission (
+  id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   user_id uuid NOT NULL,
-  grantt_id uuid NOT NULL,
+  permission_id bigint NOT NULL,
   created_at timestamptz NOT NULL DEFAULT now(),
-  PRIMARY KEY (user_id, grantt_id),
-  CONSTRAINT fk_user_grant_user
+  CONSTRAINT fk_user_permission_user
     FOREIGN KEY (user_id) REFERENCES public."user"(id) ON DELETE CASCADE,
-  CONSTRAINT fk_user_grant_grantt
-    FOREIGN KEY (grantt_id) REFERENCES public.grantt(id) ON DELETE CASCADE
+  CONSTRAINT fk_user_permission_permission
+    FOREIGN KEY (permission_id) REFERENCES public.permission(id) ON DELETE CASCADE,
+  CONSTRAINT uq_user_permission UNIQUE (user_id, permission_id)
 );
 
-CREATE INDEX IF NOT EXISTS ix_user_grant_grantt_id
-  ON public.user_grant(grantt_id);
+CREATE INDEX IF NOT EXISTS ix_user_permission_permission_id
+  ON public.user_permission(permission_id);
 
 COMMIT;
