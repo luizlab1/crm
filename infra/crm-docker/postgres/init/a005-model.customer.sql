@@ -4,10 +4,10 @@ CREATE TABLE IF NOT EXISTS public.customer (
   id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   code uuid NOT NULL DEFAULT gen_random_uuid(),
   tenant_id bigint NOT NULL,
-  full_name text NOT NULL,
-  email text,
-  phone text,
-  document text,
+  full_name varchar(150) NOT NULL,
+  email varchar(255),
+  phone varchar(30),
+  document varchar(30),
   is_active boolean NOT NULL DEFAULT true,
   created_at timestamptz NOT NULL DEFAULT now(),
   updated_at timestamptz NOT NULL DEFAULT now(),
@@ -15,10 +15,19 @@ CREATE TABLE IF NOT EXISTS public.customer (
     FOREIGN KEY (tenant_id) REFERENCES public.tenant(id) ON DELETE CASCADE
 );
 
-CREATE UNIQUE INDEX IF NOT EXISTS ux_customer_code ON public.customer(code);
-CREATE INDEX IF NOT EXISTS ix_customer_tenant_id ON public.customer(tenant_id);
+CREATE UNIQUE INDEX IF NOT EXISTS ux_customer_code
+  ON public.customer(code);
+
+CREATE INDEX IF NOT EXISTS ix_customer_tenant_id
+  ON public.customer(tenant_id);
+
 CREATE UNIQUE INDEX IF NOT EXISTS ux_customer_tenant_email
-  ON public.customer(tenant_id, lower(email)) WHERE email IS NOT NULL;
+  ON public.customer(tenant_id, lower(email))
+  WHERE email IS NOT NULL;
+
+CREATE UNIQUE INDEX IF NOT EXISTS ux_customer_tenant_document
+  ON public.customer(tenant_id, document)
+  WHERE document IS NOT NULL;
 
 DO $$
 BEGIN
