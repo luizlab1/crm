@@ -25,14 +25,14 @@ BEGIN
     AND pl.corporate_name = 'SAAS COMPANY'
   LIMIT 1;
 
-    UPDATE public.tenant t
-    SET person_id = v_person_id
-    WHERE t.person_id IS NULL;
-
   IF v_person_id IS NULL THEN
     INSERT INTO public.person (tenant_id)
     VALUES (v_tenant_id)
     RETURNING id INTO v_person_id;
+
+    UPDATE public.tenant t
+    SET person_id = v_person_id
+    WHERE t.id = v_tenant_id;
 
     INSERT INTO public.person_legal (person_id, corporate_name, trade_name, cnpj)
     VALUES (
