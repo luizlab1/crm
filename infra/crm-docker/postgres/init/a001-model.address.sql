@@ -15,9 +15,7 @@ CREATE TABLE IF NOT EXISTS public.country (
   iso2        char(2)  NOT NULL,
   iso3        char(3)  NOT NULL,
   country        text     NOT NULL,
-  created_at  timestamptz NOT NULL DEFAULT now(),
-  updated_at  timestamptz NOT NULL DEFAULT now(),
-  CONSTRAINT ux_country_iso2 UNIQUE (iso2),
+CONSTRAINT ux_country_iso2 UNIQUE (iso2),
   CONSTRAINT ux_country_iso3 UNIQUE (iso3),
   CONSTRAINT ux_country_country UNIQUE (country)
 );
@@ -28,9 +26,7 @@ CREATE TABLE IF NOT EXISTS public.state (
   acronym     char(2)  NOT NULL,
   state        text     NOT NULL,
   ibge_code   integer  NULL,
-  created_at  timestamptz NOT NULL DEFAULT now(),
-  updated_at  timestamptz NOT NULL DEFAULT now(),
-  CONSTRAINT fk_state_country FOREIGN KEY (country_id) REFERENCES public.country(id) ON DELETE CASCADE,
+CONSTRAINT fk_state_country FOREIGN KEY (country_id) REFERENCES public.country(id) ON DELETE CASCADE,
   CONSTRAINT ux_state_country_acronym UNIQUE (country_id, acronym),
   CONSTRAINT ux_state_country_state UNIQUE (country_id, state)
 );
@@ -40,8 +36,6 @@ CREATE TABLE IF NOT EXISTS public.city (
   state_id    bigint   NOT NULL,
   city        text     NOT NULL,
   ibge_code   integer  NULL,
-  created_at  timestamptz NOT NULL DEFAULT now(),
-  updated_at  timestamptz NOT NULL DEFAULT now(),
   CONSTRAINT fk_city_state FOREIGN KEY (state_id) REFERENCES public.state(id) ON DELETE CASCADE,
   CONSTRAINT ux_city_state_city UNIQUE (state_id, city),
   CONSTRAINT ux_city_ibge UNIQUE (ibge_code)
@@ -60,11 +54,6 @@ BEGIN
 
     IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'trg_state_updated_at') THEN
       CREATE TRIGGER trg_state_updated_at BEFORE UPDATE ON public.state
-      FOR EACH ROW EXECUTE FUNCTION set_updated_at();
-    END IF;
-
-    IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'trg_city_updated_at') THEN
-      CREATE TRIGGER trg_city_updated_at BEFORE UPDATE ON public.city
       FOR EACH ROW EXECUTE FUNCTION set_updated_at();
     END IF;
   END IF;
@@ -122,9 +111,7 @@ CREATE TABLE IF NOT EXISTS public.address (
   latitude numeric(10,7),
   longitude numeric(10,7),
   is_active boolean NOT NULL DEFAULT true,
-  created_at timestamptz NOT NULL DEFAULT now(),
-  updated_at timestamptz NOT NULL DEFAULT now(),
-  CONSTRAINT fk_address_id_city
+CONSTRAINT fk_address_id_city
     FOREIGN KEY (id_city) REFERENCES public.city(id) ON DELETE RESTRICT
 );
 
