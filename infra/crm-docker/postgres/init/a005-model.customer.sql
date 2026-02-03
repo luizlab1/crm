@@ -4,6 +4,7 @@ CREATE TABLE IF NOT EXISTS public.customer (
   id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   code uuid NOT NULL DEFAULT gen_random_uuid(),
   tenant_id bigint NOT NULL,
+  person_id bigint,
   full_name varchar(150) NOT NULL,
   email varchar(255),
   phone varchar(30),
@@ -12,7 +13,9 @@ CREATE TABLE IF NOT EXISTS public.customer (
   created_at timestamptz NOT NULL DEFAULT now(),
   updated_at timestamptz NOT NULL DEFAULT now(),
   CONSTRAINT fk_customer_tenant
-    FOREIGN KEY (tenant_id) REFERENCES public.tenant(id) ON DELETE CASCADE
+    FOREIGN KEY (tenant_id) REFERENCES public.tenant(id) ON DELETE CASCADE,
+  CONSTRAINT fk_customer_person
+    FOREIGN KEY (person_id) REFERENCES public.person(id) ON DELETE SET NULL
 );
 
 CREATE UNIQUE INDEX IF NOT EXISTS ux_customer_code
@@ -20,6 +23,9 @@ CREATE UNIQUE INDEX IF NOT EXISTS ux_customer_code
 
 CREATE INDEX IF NOT EXISTS ix_customer_tenant_id
   ON public.customer(tenant_id);
+
+CREATE INDEX IF NOT EXISTS ix_customer_person_id
+  ON public.customer(person_id);
 
 CREATE UNIQUE INDEX IF NOT EXISTS ux_customer_tenant_email
   ON public.customer(tenant_id, lower(email))

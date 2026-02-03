@@ -6,16 +6,11 @@ CREATE TABLE IF NOT EXISTS public.person (
   code uuid NOT NULL DEFAULT gen_random_uuid(),
   is_active boolean NOT NULL DEFAULT true,
   created_at timestamptz NOT NULL DEFAULT now(),
-  updated_at timestamptz NOT NULL DEFAULT now(),
-  CONSTRAINT fk_person_tenant
-    FOREIGN KEY (tenant_id) REFERENCES public.tenant(id) ON DELETE CASCADE
+  updated_at timestamptz NOT NULL DEFAULT now()
 );
 
 CREATE UNIQUE INDEX IF NOT EXISTS ux_person_code
   ON public.person(code);
-
-CREATE INDEX IF NOT EXISTS ix_person_tenant_id
-  ON public.person(tenant_id);
 
 DO $$
 BEGIN

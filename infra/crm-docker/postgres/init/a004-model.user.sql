@@ -3,15 +3,17 @@ BEGIN;
 CREATE TABLE IF NOT EXISTS public."user" (
   id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   tenant_id bigint NOT NULL,
+  person_id bigint,
   code uuid NOT NULL DEFAULT gen_random_uuid(),
   email varchar(255) NOT NULL,
   password_hash varchar(255) NOT NULL,
-  full_name varchar(150),
   is_active boolean NOT NULL DEFAULT true,
   created_at timestamptz NOT NULL DEFAULT now(),
   updated_at timestamptz NOT NULL DEFAULT now(),
   CONSTRAINT fk_user_tenant
-    FOREIGN KEY (tenant_id) REFERENCES public.tenant(id) ON DELETE CASCADE
+    FOREIGN KEY (tenant_id) REFERENCES public.tenant(id) ON DELETE CASCADE,
+  CONSTRAINT fk_user_person
+    FOREIGN KEY (person_id) REFERENCES public.person(id) ON DELETE SET NULL
 );
 
 CREATE UNIQUE INDEX IF NOT EXISTS ux_user_code
@@ -22,6 +24,9 @@ CREATE UNIQUE INDEX IF NOT EXISTS ux_user_email_tenant
 
 CREATE INDEX IF NOT EXISTS ix_user_tenant_id
   ON public."user"(tenant_id);
+
+CREATE INDEX IF NOT EXISTS ix_user_person_id
+  ON public."user"(person_id);
 
 DO $$
 BEGIN
