@@ -1,12 +1,10 @@
 BEGIN;
 
--- 1) TENANT ÚNICO + PERSON EMPRESA (sempre garante antes do seed "pesado")
 DO $$
 DECLARE
   v_tenant_id bigint;
   v_person_id bigint;
 BEGIN
-  -- garante tenant único (seed não cria outros)
   INSERT INTO public.tenant (name, category)
   SELECT 'SAAS COMPANY', 'SAAS'
   WHERE NOT EXISTS (
@@ -17,7 +15,6 @@ BEGIN
   FROM public.tenant
   WHERE name = 'SAAS COMPANY';
 
-  -- garante person legal "SAAS COMPANY" para este tenant (1 por tenant)
   SELECT pl.person_id INTO v_person_id
   FROM public.person_legal pl
   JOIN public.person p ON p.id = pl.person_id
@@ -30,21 +27,23 @@ BEGIN
     VALUES (v_tenant_id)
     RETURNING id INTO v_person_id;
 
-    UPDATE public.tenant t
-    SET person_id = v_person_id
-    WHERE t.id = v_tenant_id;
-
     INSERT INTO public.person_legal (person_id, corporate_name, trade_name, cnpj)
     VALUES (
       v_person_id,
       'SAAS COMPANY',
       'SAAS COMPANY',
-      lpad(v_person_id::text, 14, '0') -- placeholder único (somente dígitos)
+      lpad(v_person_id::text, 14, '0')
     );
   END IF;
+
+  INSERT INTO public.tenant_owner (tenant_id, user_id)
+  SELECT v_tenant_id, u.id
+  FROM public."user" u
+  WHERE u.tenant_id = v_tenant_id
+    AND lower(u.email) = 'owner@saas.com'
+  ON CONFLICT DO NOTHING;
 END $$;
 
--- 2) GUARDA: se já tem role, não roda seed de roles/permissions/users (mas tenant+empresa acima já foi garantido)
 DO $$
 BEGIN
   IF EXISTS (SELECT 1 FROM public."role" LIMIT 1) THEN
@@ -52,7 +51,6 @@ BEGIN
   END IF;
 END $$;
 
--- 3) ROLES
 INSERT INTO public."role" (name, description) VALUES
 ('SAAS_ADM','Administrador global da plataforma SaaS com acesso total.'),
 ('SAAS_SUPORT','Suporte técnico da plataforma SaaS.'),
@@ -62,7 +60,6 @@ INSERT INTO public."role" (name, description) VALUES
 ('TENANT_SELLER','Vendedor do tenant responsável por negociações e pedidos.'),
 ('TENANT_WORKER','Operador do tenant com acesso operacional básico.');
 
--- 4) PERMISSIONS
 INSERT INTO public.permission (code, description) VALUES
 ('TENANT_VIEW','Permite visualizar dados do tenant.'),
 ('TENANT_MANAGE','Permite gerenciar configurações do tenant.'),
@@ -73,7 +70,6 @@ INSERT INTO public.permission (code, description) VALUES
 ('SALES_DELETE','Permite remover registros comerciais.'),
 ('REPORT_VIEW','Permite acesso a relatórios do sistema.');
 
--- 5) helper user seed
 CREATE OR REPLACE FUNCTION public._seed_create_user(
   p_tenant_id bigint,
   p_email text,
@@ -111,17 +107,13 @@ BEGIN
 END;
 $$;
 
--- 5.1) USERS (todos no tenant único)
 DO $$
 DECLARE
   saas_id bigint := (SELECT id FROM public.tenant WHERE name = 'SAAS COMPANY');
 BEGIN
-  -- perfis SaaS
   PERFORM public._seed_create_user(saas_id, 'admin@saas.com',   'Admin Saas',   'SAAS_ADM');
   PERFORM public._seed_create_user(saas_id, 'suporte@saas.com', 'Suporte Saas', 'SAAS_SUPORT');
   PERFORM public._seed_create_user(saas_id, 'owner@saas.com',   'Saas Owner',   'SAAS_ADM');
-
-  -- perfis “tenant” (ainda úteis p/ testar permissões, mas no mesmo tenant único)
   PERFORM public._seed_create_user(saas_id, 'owner@tenant.com',   'Owner Tenant',   'TENANT_OWNER');
   PERFORM public._seed_create_user(saas_id, 'admin@tenant.com',   'Admin Tenant',   'TENANT_ADMIN');
   PERFORM public._seed_create_user(saas_id, 'suporte@tenant.com', 'Suporte Tenant', 'TENANT_SUPORT');
@@ -131,7 +123,6 @@ END $$;
 
 DROP FUNCTION public._seed_create_user(bigint, text, text, text);
 
--- 6) ROLE_PERMISSIONS
 INSERT INTO public.role_permission (role_id, permission_id)
 SELECT r.id, p.id
 FROM public."role" r

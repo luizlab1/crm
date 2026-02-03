@@ -2,22 +2,21 @@ BEGIN;
 
 CREATE TABLE IF NOT EXISTS public.tenant (
   id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  parent_tenant_id bigint NULL,
   code uuid NOT NULL DEFAULT gen_random_uuid(),
   name varchar(120) NOT NULL,
   category varchar(60) NOT NULL,
-  person_id bigint NULL,
   is_active boolean NOT NULL DEFAULT true,
   created_at timestamptz NOT NULL DEFAULT now(),
   updated_at timestamptz NOT NULL DEFAULT now(),
-  CONSTRAINT fk_tenant_person
-    FOREIGN KEY (person_id) REFERENCES public.person(id)
-    ON DELETE RESTRICT
-    DEFERRABLE INITIALLY DEFERRED
+  CONSTRAINT fk_tenant_parent
+    FOREIGN KEY (parent_tenant_id) REFERENCES public.tenant(id) ON DELETE SET NULL
 );
 
 CREATE UNIQUE INDEX IF NOT EXISTS ux_tenant_code ON public.tenant(code);
 CREATE INDEX IF NOT EXISTS ix_tenant_category ON public.tenant(category);
-CREATE INDEX IF NOT EXISTS ix_tenant_person_id ON public.tenant(person_id);
+CREATE INDEX IF NOT EXISTS ix_tenant_parent_tenant_id ON public.tenant(parent_tenant_id);
+
 CREATE INDEX IF NOT EXISTS ix_person_tenant_id ON public.person(tenant_id);
 
 ALTER TABLE public.person

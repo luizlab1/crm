@@ -119,4 +119,34 @@ CREATE INDEX IF NOT EXISTS ix_order_item_tenant_id
 CREATE INDEX IF NOT EXISTS ix_order_item_item_id
   ON public.order_item(item_id);
 
+CREATE TABLE IF NOT EXISTS public.order_item_option (
+  id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  order_item_id bigint NOT NULL,
+  option_name text NOT NULL,
+  option_value text,
+  price_cents bigint NOT NULL DEFAULT 0,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  CONSTRAINT fk_order_item_option_order_item
+    FOREIGN KEY (order_item_id) REFERENCES public.order_item(id) ON DELETE CASCADE,
+  CONSTRAINT ck_order_item_option_price_nonnegative CHECK (price_cents >= 0)
+);
+
+CREATE INDEX IF NOT EXISTS ix_order_item_option_order_item_id
+  ON public.order_item_option(order_item_id);
+
+CREATE TABLE IF NOT EXISTS public.order_item_additional (
+  id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  order_item_id bigint NOT NULL,
+  name text NOT NULL,
+  description text,
+  price_cents bigint NOT NULL DEFAULT 0,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  CONSTRAINT fk_order_item_additional_order_item
+    FOREIGN KEY (order_item_id) REFERENCES public.order_item(id) ON DELETE CASCADE,
+  CONSTRAINT ck_order_item_additional_price_nonnegative CHECK (price_cents >= 0)
+);
+
+CREATE INDEX IF NOT EXISTS ix_order_item_additional_order_item_id
+  ON public.order_item_additional(order_item_id);
+
 COMMIT;
