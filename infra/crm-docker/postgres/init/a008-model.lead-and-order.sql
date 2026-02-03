@@ -4,6 +4,7 @@ CREATE TABLE IF NOT EXISTS public.lead (
   id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   code uuid NOT NULL DEFAULT gen_random_uuid(),
   tenant_id bigint NOT NULL,
+  flow_id bigint NOT NULL,
   customer_id bigint,
   status text NOT NULL DEFAULT 'NEW',
   source text,
@@ -13,6 +14,8 @@ CREATE TABLE IF NOT EXISTS public.lead (
   updated_at timestamptz NOT NULL DEFAULT now(),
   CONSTRAINT fk_lead_tenant
     FOREIGN KEY (tenant_id) REFERENCES public.tenant(id) ON DELETE CASCADE,
+  CONSTRAINT fk_lead_flow
+    FOREIGN KEY (flow_id) REFERENCES public.pipeline_flow(id) ON DELETE RESTRICT,
   CONSTRAINT fk_lead_customer
     FOREIGN KEY (customer_id) REFERENCES public.customer(id) ON DELETE SET NULL,
   CONSTRAINT ck_lead_estimated_value_nonnegative
@@ -24,6 +27,9 @@ CREATE UNIQUE INDEX IF NOT EXISTS ux_lead_code
 
 CREATE INDEX IF NOT EXISTS ix_lead_tenant_id
   ON public.lead(tenant_id);
+
+CREATE INDEX IF NOT EXISTS ix_lead_flow_id
+  ON public.lead(flow_id);
 
 CREATE INDEX IF NOT EXISTS ix_lead_status
   ON public.lead(tenant_id, status);
@@ -39,6 +45,22 @@ BEGIN
     FOR EACH ROW EXECUTE FUNCTION set_updated_at();
   END IF;
 END $$;
+
+CREATE TABLE IF NOT EXISTS public.lead_message (
+  id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  lead_id bigint NOT NULL,
+  message text NOT NULL,
+  channel text,
+  created_by_user_id bigint,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  CONSTRAINT fk_lead_message_lead
+    FOREIGN KEY (lead_id) REFERENCES public.lead(id) ON DELETE CASCADE,
+  CONSTRAINT fk_lead_message_user
+    FOREIGN KEY (created_by_user_id) REFERENCES public."user"(id) ON DELETE SET NULL
+);
+
+CREATE INDEX IF NOT EXISTS ix_lead_message_lead_id
+  ON public.lead_message(lead_id);
 
 CREATE TABLE IF NOT EXISTS public."order" (
   id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
