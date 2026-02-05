@@ -7,7 +7,7 @@
 - **CRM:** Sistema de gerenciamento de relacionamento com o cliente, utilizado para armazenar e gerenciar dados dos clientes e interações.
 
 ### Fluxo Principal
-![Fluxo Principal](https://img.plantuml.biz/plantuml/svg/pLTTJnix47rVQV_3A7q90jJUUr-gAeaA95j5AfH2fVOXKkNT38brD_RMzXRuzntR-xt9GX_wmGl1S-mvS-QCJTvgmvJ9Toc4GHZ4yW56Ax5uCAW4Is6E6OerYeIZNeaHl5Yudp00O8cH2YvIZi80qv2uJpQIqO4yuHcZmEZpbXbzbcKZYxctVx0iww4-tVEKIuSnxcCOK5uWEWrMIn7Bd5O_OxoLydyOQousAO96zPqdUEG9lex-YQ9UWXlK1iwkbvw6F-0iunQtPeR5J2ECBgNOoFbv4pEFBUHRZZd5Im8hSObQimqw9FUh7nrcCj6P8bgpsRuApgM1XTXmWINNQF5wc6iipI1FYZ-38w6MXsXMMp_aPjzUMIm_fy2BcqjNMHH5_orU3LUMg5slickfpKQXlltuliJOwXg9fbCeo9N24ncOJiF06n1EPvNDu0tiF3OCgZMAUujHz4wgUwRMOL2isBsLDoXU_67pDjPhr3mcK8PASst6atXMC2e8Jbx6CpBbc2RCv7fwlRYQBw_UdK2cP488uZszOwd6eyxfixQbA4CUfrnl3sHexswMz-z3ALda2mM5HZs2JhQupbDKJhTKoWpmErBW2yrI8iLQswuShlWEJR8bbL6HZulgehFb-yKS67MgMzzAs5MN-YipawcGz_PybvSw0CZeD7lFs4uwc0rt2FH4KVYKB01qfZDFnpX5sqlZDF9CJhjfA8D1yIpfsoBb6TaQ1ro1fgcKKJcUG6cLcmyNYzjRSijHttl-HgZTUv1R6B3Kb2ZGUM9pmPXSuSGfpl4dFiF9hJsptfNoj4thxTqvSqOTSjmQKnmKK-OgGP1tG3gQBN0DT1N1_Dp9W6H2cnjGAVBRM4XnsbMXIwd03DFwoHwxQQYQx2VcP2MgqR2JSKobiiSJOCRWBZFw-BWkmV0TqcqCBycanGFjAlexIDPpvfyukAuETMDMA4qZrhVE4rFMighlJy4OrdB7kA3BPCCJcrvcnhLUafcPuLBejjVzgqC790f95Y0_U87SAsIn1S9ZctC1oPQ93UggL3jUjN9rB_gJLVU0hgtqyLTrm9gaGQWO-IU7lSUfC-hj_m1QWxvdQ-s36nlygJUdJ_CtlJK3rROUchrI7NXc7DPUNTmLsfw1RfPw0lQag6MftdPD-GwWlJ4jeBPa-GzESuGQLzoVScpXMSUruTPzR7jCgqaUb8A-g90OX6sMMm_v0Jt-d2Ba9gk89Jn8jXViNLS7xRglkFg1tLlSmFFQjlzR-arV9iFW1m00)
+![Fluxo Principal](https://img.plantuml.biz/plantuml/svg/rLPDRziu4BqRy7yOU2yEag0VUoaAssWIMuM1fdMJ0js3WGKbJsoYCgabgJhvznsIaYNhomvGjDtu45kQuRnvV6_8TzemPT9j3FrUlwU_SP4mnRPmBHyNRBNYOWslNvPVB2YSHpnXmfG3x2UKZp1OYjcZGILO35DCKAnGH1prKWpWhvdxw_S0M6IaWfkOep30D4JkctsJ5El3uEk66NsL90CRixC_M9BKehxiUCobYp7kQxz7TO7Wb53DHIXJUleLmusKts2e2NgCe55zvn6UUO1lWbT1K2jmXzh0rMBkOVW5hX9kurRCi91fXC6j56ivlIx7J4CRyb-AARtF0Ip5P_l0nN7_p3s0qKWdYa1D9atuhwM1cLXpWJdIOFQc6saeJITAUdyK8SNCsq3k4p-bffufiuUdD7TpT-kw2eBWxzdBxguYjQrrjP3Qh1Ng-yyVyXZRMQdGU0otg3LROqwwLUvutEzvwS7bP2ymU0ixnGqEH-4a2yvoHo_2oLc_jm-a9AyuIdcGQiVKgZKf2xHrzWgobVoFrZIgLeGNoTEGSXDKcclJahiKGpAtIVLuCViudNzyVm69aX55KElZ1nPhFAkiFZbK95L8mvZhJJiJfUmo6QyVgwndzEIibn97bzMgLDAWEAde8I5fGffespVB1veo1qQbU04vINUVRcRtzyHJ0-lUIbJ1gAVWo4RtUomsUR-WqyYMWo5HScPLcotb5prX6mzo9ZL37j-Z8hsgFRTB0EryhZ36JZvbgY84-K2yf6O3N0DP6QRNZWOaXTdQW4hHj1yAAIwhB5GXPJ7Ti9wvpKxg-tqEhkOVPjEBfG25j9l_CZCMSdTEhRAd2s36u3On-loyQC7mBT8qWnUaq-neSntz6I1fo6LMo-TtRhbCg7u9qD46LscColalbZ81_8xquXyw0oCfLhgxdmSqqOPc92ewWGvW0gEYrLQMmZxDqOyiVBk-gqlU06IqchqVs8dWmkph2e3QF59uNEsEa7PM2g2EY4o8D8JgpZeoXmwSxENh5pyXmvzYb14f99a0CU85uqurEfNyUnzPdX8GRPXOezkiHWXXocCtd8Yh-Aa3SNNsTCLFAiVvmTHfIFGpi4JrtZ1r28LHQWlzJ9jO9vS0PNFvw4HkQEvW7Z-FbtPPBWfep_5h7VilycddaNJCfj3WKt-9B0YXJUIktrR3LgalxDef_VqbXNgvf_gD2P1hMDjBv5wz-IMkRBZIaVMxn9t9ss4j2Ri9ROQqT1ijRhqPvQsoBzzxislpMzZweEDUAMQUnVb5tgXj6_LE7wqZy8HIEVt51QQH_exhomd2_B_vjEgN0vSs4bgsw3lwdsxZVky7)
 
 <details>
   <summary>Código do diagrama</summary>
@@ -16,6 +16,10 @@ Você poderá editar o código abaixo no site [https://editor.plantuml.com](http
 
 ```plantuml
 @startuml 
+
+skinparam BoxPadding 20
+skinparam ParticipantPadding 20
+
 
 box "\nExternal Dependencies\n" #EEEEEE
   actor Client as client
@@ -26,14 +30,14 @@ end box
 box "\nInbound Webhook (single service)\n" #E8F1FF
   participant "Rest API" as webhookApi
   database "MongoDB" as webhookDb
-  queue "Inbound \nMessage" as inboundQueue <<spring>>
+  queue "Inbound \nQueue" as inboundQueue <<spring>>
 end box
 
 box "\nBot Engine\n" #E8FFE8
   participant "Rest API" as botApi
   database "MongoDB" as botDb
-  queue "Inbound \nMessage" as botInboundQueue <<spring>>
-  queue "Outbound \nMessage" as outboundQueue <<spring>>
+  queue "Inbound \nQueue" as botInboundQueue <<spring>>
+  queue "Outbound \nQueue" as outboundQueue <<spring>>
 end box
 
 box "\nCRM\n" #FFF3E0
@@ -42,27 +46,19 @@ box "\nCRM\n" #FFF3E0
 end box
 
 == Message inbounding ==
-client -> whatsapp : message
-whatsapp -> twilio : forward
-twilio -> webhookApi : webhook
+client -> whatsapp : write(<b>inboundMessage</b>)
+whatsapp -> twilio : forward(<b>inboundMessage</b>)
+twilio -> webhookApi : webhook(<b>inboundMessage</b>)
 
 webhookApi -> webhookDb : persist(<b>inboundMessage</b>)\n(status=PENDING, processing=false)
 webhookApi ->> inboundQueue : publish(<b>inboundMessage</b>)
 webhookApi --> twilio : 2xx
 
-== Forward retry scheduler ==
-loop every X seconds
-  webhookApi -> webhookDb : fetch where\nstatus=FAILED and processing=false\nand retry_at<=now
-  loop for each pending retry
-    webhookApi ->> inboundQueue : republish(<b>inboundMessage</b>)
-  end
-end
-
 == Message forwarding ==
 webhookApi <- inboundQueue : listen(<b>inboundMessage</b>)
 webhookApi -> webhookDb : update(<b>inboundMessage</b>)\n(set processing=true, status=PROCESSING)
 
-webhookApi -> botApi : forward(<b>inboundMessage</b>)
+webhookApi -> botApi : tryForward(<b>inboundMessage</b>)
 
 alt forward success (2xx)
   botApi -> botDb : persist(<b>inboundMessage</b>)
@@ -78,14 +74,23 @@ else timeout / internal error
   webhookApi -> webhookDb : update(<b>inboundMessage</b>)\n(set processing=false, status=FAILED,\n retry_at=now+delay, attempts++)
 end
 
-== Engine Processing ==
-botApi <- botInboundQueue : listen(<b>inboundMessage</b>)
-botApi -> botApi : process domain logic
-
-opt CRM operations
-  botApi -> crmApi : create or update data
-  crmApi -> crmDb : persist changes
+== Inbound Message Forward retry scheduler ==
+loop every X seconds
+  webhookApi -> webhookDb : fetch where\nstatus=FAILED and processing=false\nand retry_at<=now
+  loop for each pending retry
+    webhookApi ->> inboundQueue : republish(<b>inboundMessage</b>)
+  end
 end
+
+== Inbound Message processing ==
+botApi <- botInboundQueue : listen(<b>inboundMessage</b>)
+botApi -> botApi : proces(<b>inboundMessage</b>)
+botApi -> crmApi : create or update data
+crmApi -> crmDb : persist changes
+  
+botApi -> botApi : build(<b>replyMessage</b>)
+botApi -> botDb : persist(<b>replyMessage</b>)
+botApi ->> outboundQueue : publish(<b>replyMessage</b>)
 
 alt processing error
   botApi -> botDb : update(<b>replyMessage</b>)\n(set processing=false, status=FAILED,\n retry_at=now+delay, attempts++)
@@ -94,17 +99,17 @@ else processing success
   botApi ->> outboundQueue : publish(<b>replyMessage</b>)
 end
 
-== Reply retry scheduler ==
+== Inbound Message Processing retry scheduler ==
 loop every X seconds
   botApi -> botDb : fetch where\nstatus=FAILED and processing=false\nand retry_at<=now
   loop for each pending retry
-    botApi ->> outboundQueue : republish(<b>replyMessage</b>)
+    botApi ->> botInboundQueue : republish(<b>inboundMessage</b>) 
   end
 end
 
-== Message reply delivery ==
+== Outboud Message delivery processing ==
 botApi <- outboundQueue : listen(<b>replyMessage</b>)
-botApi -> twilio : send(<b>replyMessage</b>)
+botApi -> twilio : trySend(<b>replyMessage</b>) 
 
 alt send error
   twilio --> botApi : non-2xx
@@ -112,15 +117,19 @@ alt send error
 
 else send success
   twilio --> botApi : 2xx
-  botApi -> crmApi : send(<b>replyMessage</b>)
+  twilio -> whatsapp : deliver(<b>replyMessage</b>)
+  whatsapp -> client : message(<b>replyMessage</b>)
+  botApi -> crmApi : sendToCrm(<b>replyMessage</b>) 
+ 
+  crmApi -> crmDb : persist(<b>replyMessage</b>)
+  botApi -> botDb : delete(<b>replyMessage</b>)\n(source of truth is CRM DB)
+end
 
-  alt crm non-2xx
-    crmApi --> botApi : non-2xx
-    botApi -> botDb : update(<b>replyMessage</b>)\n(set processing=false, status=FAILED,\n retry_at=now+delay, attempts++)
-  else crm 2xx
-    crmApi --> botApi : 2xx
-    crmApi -> crmDb : persist(<b>replyMessage</b>)
-    botApi -> botDb : delete(<b>replyMessage</b>)\n(source of truth is CRM DB)
+== Outboud Message delivery retry scheduler ==
+loop every X seconds
+  botApi -> botDb : fetch where\nstatus=FAILED and processing=false\nand retry_at<=now
+  loop for each pending retry
+    botApi ->> outboundQueue : republish(<b>replyMessage</b>)
   end
 end
 
