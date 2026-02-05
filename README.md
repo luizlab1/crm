@@ -46,93 +46,108 @@ box "\nCRM\n" #FFF3E0
 end box
 
 == Message inbounding ==
-client -> whatsapp : write(<b>inboundMessage</b>)
-whatsapp -> twilio : forward(<b>inboundMessage</b>)
-twilio -> webhookApi : webhook(<b>inboundMessage</b>)
+client -> whatsapp : write(<b>inMsg</b>)
+whatsapp -> twilio : forward(<b>inMsg</b>)
+twilio -> webhookApi : webhook(<b>inMsg</b>)
 
-webhookApi -> webhookDb : persist(<b>inboundMessage</b>)\n(status=PENDING, processing=false)
-webhookApi ->> inboundQueue : publish(<b>inboundMessage</b>)
+webhookApi -> webhookDb : persist(<b>inMsg</b>)\n(status=PENDING, processing=false)
+webhookApi ->> inboundQueue : publish(<b>inMsg</b>)
 webhookApi --> twilio : 2xx
 
 == Message forwarding ==
-webhookApi <- inboundQueue : listen(<b>inboundMessage</b>)
-webhookApi -> webhookDb : update(<b>inboundMessage</b>)\n(set processing=true, status=PROCESSING)
+webhookApi <- inboundQueue : listen(<b>inMsg</b>)
+webhookApi -> webhookDb : update(<b>inMsg</b>)\n(set processing=true, status=PROCESSING)
 
-webhookApi -> botApi : tryForward(<b>inboundMessage</b>)
+webhookApi -> botApi : tryForward(<b>inMsg</b>)
 
 alt forward success (2xx)
-  botApi -> botDb : persist(<b>inboundMessage</b>)
-  botApi ->> botInboundQueue : publish(<b>inboundMessage</b>)
+  botApi -> botDb : persist(<b>inMsg</b>)
+  botApi ->> botInboundQueue : publish(<b>inMsg</b>)
   botApi --> webhookApi : 2xx
-  webhookApi -> webhookDb : delete(<b>inboundMessage</b>)\n(source of truth is CRM DB)
+  webhookApi -> webhookDb : delete(<b>inMsg</b>)\n(source of truth is CRM DB)
 
 else bot error (non-2xx)
   botApi --> webhookApi : non-2xx
-  webhookApi -> webhookDb : update(<b>inboundMessage</b>)\n(set processing=false, status=FAILED,\n retry_at=now+delay, attempts++)
+  webhookApi -> webhookDb : update(<b>inMsg</b>)\n(set processing=false, status=FAILED,\n retry_at=now+delay, attempts++)
 
 else timeout / internal error
-  webhookApi -> webhookDb : update(<b>inboundMessage</b>)\n(set processing=false, status=FAILED,\n retry_at=now+delay, attempts++)
+  webhookApi -> webhookDb : update(<b>inMsg</b>)\n(set processing=false, status=FAILED,\n retry_at=now+delay, attempts++)
 end
 
 == Inbound Message Forward retry scheduler ==
 loop every X seconds
   webhookApi -> webhookDb : fetch where\nstatus=FAILED and processing=false\nand retry_at<=now
   loop for each pending retry
-    webhookApi ->> inboundQueue : republish(<b>inboundMessage</b>)
+    webhookApi ->> inboundQueue : republish(<b>inMsg</b>)
   end
 end
 
 == Inbound Message processing ==
-botApi <- botInboundQueue : listen(<b>inboundMessage</b>)
-botApi -> botApi : proces(<b>inboundMessage</b>)
+botApi <- botInboundQueue : listen(<b>inMsg</b>)
+botApi -> botApi : proces(<b>inMsg</b>)
 botApi -> crmApi : create or update data
 crmApi -> crmDb : persist changes
   
-botApi -> botApi : build(<b>replyMessage</b>)
-botApi -> botDb : persist(<b>replyMessage</b>)
-botApi ->> outboundQueue : publish(<b>replyMessage</b>)
+botApi -> botApi : build(<b>outMsg</b>)
+botApi -> botDb : persist(<b>outMsg</b>)
+botApi ->> outboundQueue : publish(<b>outMsg</b>)
 
 alt processing error
-  botApi -> botDb : update(<b>replyMessage</b>)\n(set processing=false, status=FAILED,\n retry_at=now+delay, attempts++)
+  botApi -> botDb : update(<b>outMsg</b>)\n(set processing=false, status=FAILED,\n retry_at=now+delay, attempts++)
 else processing success
-  botApi -> botDb : persist(<b>replyMessage</b>)
-  botApi ->> outboundQueue : publish(<b>replyMessage</b>)
+  botApi -> botDb : persist(<b>outMsg</b>)
+  botApi ->> outboundQueue : publish(<b>outMsg</b>)
 end
 
 == Inbound Message Processing retry scheduler ==
 loop every X seconds
   botApi -> botDb : fetch where\nstatus=FAILED and processing=false\nand retry_at<=now
   loop for each pending retry
-    botApi ->> botInboundQueue : republish(<b>inboundMessage</b>) 
+    botApi ->> botInboundQueue : republish(<b>inMsg</b>) 
   end
 end
 
 == Outboud Message delivery processing ==
-botApi <- outboundQueue : listen(<b>replyMessage</b>)
-botApi -> twilio : trySend(<b>replyMessage</b>) 
+botApi <- outboundQueue : listen(<b>outMsg</b>)
+botApi -> twilio : trySend(<b>outMsg</b>) 
 
 alt send error
   twilio --> botApi : non-2xx
-  botApi -> botDb : update(<b>replyMessage</b>)\n(set processing=false, status=FAILED,\n retry_at=now+delay, attempts++)
+  botApi -> botDb : update(<b>outMsg</b>)\n(set processing=false, status=FAILED,\n retry_at=now+delay, attempts++)
 
 else send success
   twilio --> botApi : 2xx
-  twilio -> whatsapp : deliver(<b>replyMessage</b>)
-  whatsapp -> client : message(<b>replyMessage</b>)
-  botApi -> crmApi : sendToCrm(<b>replyMessage</b>) 
+  twilio -> whatsapp : deliver(<b>outMsg</b>)
+  whatsapp -> client : message(<b>outMsg</b>)
+  botApi -> crmApi : sendToCrm(<b>outMsg</b>) 
  
-  crmApi -> crmDb : persist(<b>replyMessage</b>)
-  botApi -> botDb : delete(<b>replyMessage</b>)\n(source of truth is CRM DB)
+  crmApi -> crmDb : persist(<b>outMsg</b>)
+  botApi -> botDb : delete(<b>outMsg</b>)\n(source of truth is CRM DB)
 end
 
 == Outboud Message delivery retry scheduler ==
 loop every X seconds
   botApi -> botDb : fetch where\nstatus=FAILED and processing=false\nand retry_at<=now
   loop for each pending retry
-    botApi ->> outboundQueue : republish(<b>replyMessage</b>)
+    botApi ->> outboundQueue : republish(<b>outMsg</b>)
   end
 end
 
 @enduml
 ```
 </details>
+
+### Legenda do Diagrama
+
+- **inMsg** — mensagem de entrada (*inbound message*).
+- **outMsg** — mensagem de saída (*outbound message*).
+- **PENDING** — registrada e aguardando processamento.
+- **PROCESSING** — em processamento ativo.
+- **FAILED** — falha ocorrida; elegível para retry.
+- **processing=false** — mensagem livre para reprocessamento.
+- **retry_at** — instante mínimo para nova tentativa.
+- **attempts** — contador de tentativas realizadas.
+- **publish / republish** — envio inicial / reenvio para fila.
+- **2xx / non-2xx** — resposta de sucesso / erro HTTP.
+- **source of truth** — banco responsável pelo dado final.
+
