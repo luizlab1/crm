@@ -107,7 +107,7 @@ end
 ---
 
 ### Diagrama do Process Flow (Bot Engine)
-![Fluxo Principal](https://img.plantuml.biz/plantuml/svg/ZLPTRzem57r7uZ_SiPTMMZ-slLHLGVqWqP1AOHIfUq2gdEG25i7sRATqclRVTsqd9K1f2q8Ovznpphs-kU7IMAPjiSoR3RFWGZ7Dbd0jduSioxYOmRVJ-eKXONdA5HEs3cWs4laChOc8dYrgmNBeeaAHeKWvcebemUV8lveD09PQgU4cvoWiC0EfNxahQiqEhOSvi-PAgPR3hDmFfjGEQhpYEPSUO_sosI1T83irLpsHo89s7p2PIxc00qF6SmI3-ecdU1WCdiLVutX7O8J6mjMm5sm4WYl5uU9Y8MtEHQVZGZ9cMS8CGgjRhkfuf__SJIYcByLCkf1Taz6JgyUrbka2jNSKdxgte_zTO47SLHuJCPQAfrw2Xps_uKonwOAzBd0jBKHYnWLM-SRHsTlv9j9-E5V2VYZFcr4_P1V7twFJj_LJlVomFc6zz50QEzDexd_URXbejylyOKXLHkEw0DfjvooaURHPpNF8kR4e3YwI3XTzCxiuIJg7B_2ZJZtdSr2e3U6tqSs6LBPIX3uJR8RQRGDi4BaLaGHSdClLCHTqCocDEvJroB94cv6qsHFSSfOFo1MpN0fpS7nyx6FBY11RTxu_n7tUjPiKFCy6XIMVkuQtecjLgp7KAYWzpqi9Dmd2dRuLREYampJOYNVHBBSGBeCfKXSLzg5Y8zvgoX1pXZb_Glqg5Qo1heXXa9s3cSlL7lpxnnLpiRVo5SiRHxSlV5k-Di0sBL2-QF6XcbVk3BlHRJIEuAICEVbR7MelSydzgmdKQDSYwpCEvAyrnGSR8n1uMrUYwZ6NuqGS65de545EmUh2pe4Re143tUiWKNKFvZGnoWP0hQNUFPiD-KBHdDdoJ6fJilD8ZqnRcFPzTDTz70yUnm-zszxWCHgD1gCl4-4XwcN2jAUCfCjygKUTeVAB1j88KqbzzWTEQ6cA9JsKqZbcHOxQZwPSIWNe4R_eUPLAaPcTqR5sFKMRpgazKMDf97Zzr8vxTxtx7r4N60t4LoqwMYytfSSpCkBHfAUplJU_zePZBPUtpDXxYygLgwGDJUBJzjcMAL_Ij_-pyHy0)
+![Fluxo Principal](https://img.plantuml.biz/plantuml/svg/ZLHBZzem4Bv7od-OxebANQXwN16qK88Q2HO4IDl3IiX99c1XxDIFibMr_xss4rW2bFO2ZkTxp8mzVbIQI6rsB0pKblAIIBA3WNYTaJodV0rVFfy6PXPBCreIhay1OL2-1-1kkQUCYZiW2hHVdiKJdWh3StZ6T2F45lgpn8FtrNU_fD3jReLcbFTwOV33eC5trbAKDFDuMktu3SSWnPOuGiDi8FJH81NwN3mdcgH4OGLq7gym71pG_dkOMiP4yBMu4Fywdnp5Cxax5m-3A8AOhob7c4cHeLAkPL4K1eTKxfjLF02ZIYDlTTCUvHErxdRItiSZ_BvtcjK3b2YLnP-Zmq2K-k084yB96cKO03HatCfALAWH4_isvHfbAV52y9HPrzbasis4Kqq9czgSYAQ2grQxtVR9_DCtDPJbKwEjuItdlvKkFFDO-ocbkdzdTWfjkttWWWr0c8Og2CfaZkDs_wS18yglbD_adbpn9Zz7XXhhYKXS0rh3U1mlO-ZKdCxlGskIt6NxTY7Uw4ybw9Nw_D1Sbz8BRobXP8OW2j3Iw0rG1VOcUpraTXRg-b5A8M-QcDBE3pRFpEeNjgALVLYqKT4YVXgkbjFLyZaP9zDLF9zFvvzUk8UKnvc82cADgmnu7WR-nu_F73Fn4-KlwDYbCZi4bMqmDmob7oGcH0de4Tz1MJ3FrOrhKw3EDh3VeCGwYIhF3z4eUKeMt-8X4Fl8N4tFoNgxGaX0OdMazPFvbHPL1onzmYCfTcEYz49ZwLfLorQdU57oe_stp_4V)
 
 <details>
   <summary>Código do diagrama</summary>
@@ -119,61 +119,32 @@ Você poderá editar o código abaixo no site [https://editor.plantuml.com](http
 skinparam BoxPadding 20
 skinparam ParticipantPadding 20
 
-box "\nExternal Dependencies\n" #EEEEEE
-  actor Client as client
-  participant "WhatsApp" as whatsapp
-  participant "Twilio" as twilio
-end box
-
-box "\nInbound Webhook (single service)\n" #E8F1FF
-  participant "Rest API" as webhookApi <<kotlin>>
-  database "Database" as webhookInboxDb <<Mongo>>
-end box
-
-box "\nEvent Brocker\n" #F0F0F0
-  queue "Inbound \nTopic" as inboundTopic <<kafka>>
-end box
-
-box "\nBot Engine\n" #E8FFE8
-  participant "Rest API" as botApi <<kotlin>>
-  database "Database" as botInboxDb <<Mongo>>
-end box
-
-box "\nCRM\n" #FFF3E0
-  participant "Rest API" as crmApi <<kotlin>>
-  database "Database" as crmDb <<PostgresSQL>>
-end box
+participant "Twilio" as twilio
+participant "Inbound Webhook API" as webhookApi <<kotlin>>
+queue "Inbound Topic" as inboundTopic <<kafka>>
+participant "Bot API" as botApi <<kotlin>>
+database "Bot Inbox DB" as botInboxDb <<Mongo>>
+participant "CRM API" as crmApi <<kotlin>>
 
 == Engine Processing ==
 botApi <- inboundTopic : listen(<b>inMsg</b>)
 botApi -> botInboxDb : persist(<b>inMsg</b>)
 
 opt Process Manager
-
   botApi -> botApi : processFlow.interpret(<b>inMsg</b>)
   botApi -> crmApi : processFlow.crmInitialOperations(...)
-  crmApi -> crmDb : persistInitialOperations(...)
-  
-    botApi -> botApi : processFlow.buildOutMsg(<b>inMsg</b>)
-    botApi -> botInboxDb : processFlow.persist(<b>outMsg</b>)
 
-    botApi -> twilio : processFlow.sendTwilio(<b>outMsg</b>)
-    alt Twilio success
-      twilio -> whatsapp : deliver(<b>outMsg</b>)
-      whatsapp -> client : show(<b>outMsg</b>)
-      botApi -> crmApi : processFlow.crmFinalOperations(...)
-  
-  
-        crmApi -> crmDb : persistFinalOperations(...)
-        botApi -> webhookApi : processFlow.deleteWebhookInMsg(DELETE /webhook/{<b>inMsgId</b>})
-        webhookApi -> webhookInboxDb : delete(<b>inMsg</b>)
-        botApi -> botInboxDb : processFlow.deleteInMsgAndOutMsg(...)\n(source of truth is CRM DB)
-   
+  botApi -> botApi : processFlow.buildOutMsg(<b>inMsg</b>)
+  botApi -> botInboxDb : persist(<b>outMsg</b>)
 
-    else Twilio error
-      botApi -> botInboxDb : update(<b>inMsg</b>)\n(flow_status=SEND_TO_TWILIO_ERROR,\nflow_processing=false)
-    end
-
+  botApi -> twilio : processFlow.sendTwilio(<b>outMsg</b>)
+  alt Twilio success
+    botApi -> crmApi : processFlow.crmFinalOperations(...)
+    botApi -> webhookApi : processFlow.deleteWebhookInMsg(DELETE /webhook/{<b>inMsgId</b>})
+    botApi -> botInboxDb : deleteInMsgAndOutMsg(...)\n(source of truth is CRM)
+  else Twilio error
+    botApi -> botInboxDb : update(<b>inMsg</b>)\n(flow_status=SEND_TO_TWILIO_ERROR,\nflow_processing=false)
+  end
 end
 
 == Recovery / Resume scheduler ==
@@ -185,7 +156,6 @@ loop every X seconds
 end
 
 @enduml
-
 ```
 </details>
 
