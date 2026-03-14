@@ -2,6 +2,7 @@ package com.example.crm.infrastructure.web.controller
 
 import com.example.crm.infrastructure.persistence.entity.*
 import com.example.crm.infrastructure.persistence.repository.PersonJpaRepository
+import com.example.crm.application.service.PersonService
 import com.example.crm.infrastructure.web.dto.request.PersonRequest
 import com.example.crm.infrastructure.web.dto.response.*
 import org.springframework.data.domain.PageRequest
@@ -12,7 +13,8 @@ import java.net.URI
 
 @RestController
 @RequestMapping("/api/v1/persons")
-class PersonController(private val repository: PersonJpaRepository) {
+class PersonController(private val repository: PersonJpaRepository,
+                       private val personService: PersonService) {
 
     @GetMapping
     fun findAll(
@@ -21,11 +23,9 @@ class PersonController(private val repository: PersonJpaRepository) {
         @RequestParam(required = false) tenantId: Long?
     ): ResponseEntity<PageResponse<PersonResponse>> {
         val pageable = PageRequest.of(page, size, Sort.by("id"))
-        val result = if (tenantId != null) repository.findByTenantId(tenantId, pageable)
-                     else repository.findAll(pageable)
+        val result = personService.list(pageable, tenantId)
         return ResponseEntity.ok(PageResponse(
-            content = result.content.map { it.toResponse() },
-            page = result.number, size = result.size,
+            content = result.content, page = result.number, size = result.size,
             totalElements = result.totalElements, totalPages = result.totalPages
         ))
     }
