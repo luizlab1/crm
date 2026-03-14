@@ -278,7 +278,19 @@ cd ..
 .\gradlew.bat bootRun
 ```
 
-URLs úteis
+3) Rodar todos os testes
+```powershell
+.\gradlew.bat test
+```
+
+Executa todos os testes JUnit.
+
+Rodar testes com relatório de cobertura (JaCoCo)
+```powershell
+.\gradlew.bat test jacocoTestReport
+```
+
+### URLs úteis
 
 - Swagger UI: http://localhost:8080/swagger-ui/index.html
 - OpenAPI JSON: http://localhost:8080/v3/api-docs

@@ -1,3 +1,7 @@
+import org.gradle.api.tasks.compile.JavaCompile
+import org.gradle.api.tasks.testing.Test
+import org.gradle.jvm.toolchain.JavaLanguageVersion
+import org.gradle.testing.jacoco.tasks.JacocoReport
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -7,6 +11,7 @@ plugins {
 
     id("org.springframework.boot") version "4.0.2"
     id("io.spring.dependency-management") version "1.1.7"
+    id("jacoco")
 }
 
 group = "com.example"
@@ -14,7 +19,6 @@ version = "0.0.1-SNAPSHOT"
 description = "CRM"
 
 java {
-    // JDK usado para compilar/rodar
     toolchain {
         languageVersion = JavaLanguageVersion.of(25)
     }
@@ -36,19 +40,17 @@ dependencies {
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-
     testImplementation("io.mockk:mockk:1.14.9")
-
-    testImplementation("io.rest-assured:rest-assured:6.0.0")
-    testImplementation("io.rest-assured:kotlin-extensions:6.0.0")
-
+    testImplementation("com.ninja-squad:springmockk:5.0.0")
+    testImplementation("io.rest-assured:rest-assured:5.5.6")
+    testImplementation("io.rest-assured:kotlin-extensions:5.5.6")
     testImplementation("com.tngtech.archunit:archunit-junit5:1.4.1")
+
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 kotlin {
     compilerOptions {
-        // bytecode Kotlin em 21 (executa em Java 25)
         jvmTarget.set(JvmTarget.JVM_21)
         freeCompilerArgs.addAll(
             "-Xjsr305=strict",
@@ -57,7 +59,6 @@ kotlin {
     }
 }
 
-// Alinha o bytecode Java (se houver) para 21 também, evitando o erro do Gradle
 tasks.withType<JavaCompile> {
     options.release.set(21)
 }
@@ -68,6 +69,21 @@ allOpen {
     annotation("jakarta.persistence.Embeddable")
 }
 
+jacoco {
+    toolVersion = "0.8.12"
+}
+
 tasks.withType<Test> {
     useJUnitPlatform()
+    finalizedBy(tasks.named("jacocoTestReport"))
+}
+
+tasks.named<JacocoReport>("jacocoTestReport") {
+    dependsOn(tasks.test)
+
+    reports {
+        xml.required.set(true)
+        csv.required.set(false)
+        html.required.set(true)
+    }
 }
