@@ -254,4 +254,34 @@ sales
     └── config
 ```
 
+## Como rodar e acessar
 
+Pré-requisitos
+
+- Java 25
+- Docker & Docker Compose
+- (Opcional) Gradle wrapper já incluído
+
+Passos mínimos
+
+1) Subir o banco (no diretório `infra-crm`):
+
+```powershell
+cd infra-crm
+docker compose up -d
+```
+
+2) Rodar a aplicação (na raiz do projeto):
+
+```powershell
+cd ..
+.\gradlew.bat bootRun
+```
+
+URLs úteis
+
+- Swagger UI: http://localhost:8080/swagger-ui/index.html
+- OpenAPI JSON: http://localhost:8080/v3/api-docs
+- Health: GET http://localhost:8080/health/live  → {"status":"UP"}
+
+Pronto — apenas isso é necessário para subir a aplicação e acessar a documentação.
