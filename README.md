@@ -1,24 +1,66 @@
-# Stack
-Kotlin, Spring Boot, MongoDB, PostgreSQL, Kafka, Twilio API, WhatsApp Business API.
+# WhatsApp CRM Bot Platform
 
-# Arquitetura
+## Stack
 
-Arquitetura Hexagonal com ddd.
+- Kotlin
+- Spring Boot
+- MongoDB
+- PostgreSQL
+- Kafka
+- Twilio API
+- WhatsApp Business API
 
-### Componentes
-- **Webhook:** Serviço responsável por receber mensagens do WhatsApp via Twilio e persistir e encaminhar para o bot engine. Ele foi pensado para fazer apenas esta tarefa simples para reduzir riscos de falhas na entrada das mensagens no sistema.
-- **Bot Engine:** Serviço principal que processa as mensagens recebidas, aplica a lógica de negócio, interage com o CRM e gera respostas.
-- **CRM:** Sistema de gerenciamento de relacionamento com o cliente, utilizado para armazenar e gerenciar dados dos clientes e interações.
+## Arquitetura
 
----
+O sistema segue **Arquitetura Hexagonal com DDD (Domain-Driven Design)**, com separação clara entre:
 
-### Diagrama do Fluxo Principal
+- domínio de negócio
+- casos de uso
+- infraestrutura e integrações externas
+
+Essa abordagem reduz acoplamento, melhora testabilidade e facilita evolução do sistema.
+
+## Componentes
+
+### Webhook
+
+Responsável por:
+
+- receber mensagens do WhatsApp via **Twilio**
+- persistir a mensagem recebida
+- publicar o evento para processamento
+
+Foi projetado para executar **uma responsabilidade simples e crítica**, reduzindo o risco de perda de mensagens na entrada do sistema.
+
+### Bot Engine
+
+Serviço principal que:
+
+- consome mensagens da fila
+- processa a lógica do bot
+- interage com o CRM
+- gera respostas para o usuário
+- executa retry e recuperação de fluxo
+
+### CRM
+
+Responsável por:
+
+- persistência definitiva das interações
+- gerenciamento de clientes
+- histórico de conversas
+- atualização de dados de negócio
+
+O **CRM é a source of truth** dos dados finais.
+
+## Fluxo Principal
+
 ![Fluxo Principal](https://img.plantuml.biz/plantuml/svg/fLPHZzeu47v7uZ_CSIyWNNVtUgfKhHRKPKdka9OjjxlNxGDIvIG3M0GxPpiBfwh_lMCxWP10YtJmWEryC_Dvvfi97xHXokJhjDtIAouofjWQXd8xPKd2nGBUNbKVJ0dBOvunOQg0TYkIM-ZCHB0rg0HBOOGPYWH5p57FH0T-3TodtG9WiP4AxbAEmW3J4BkLVPBjlKFdPScClisoZiLix8PbMGFrlE4fbmvZtBBTehX0T2ginYAIEPs-OBIKSWLTJSHJ18tgbSVOymJVXx-7OIF08se3jzEnf-4Tt6OSRcvMqgHS30RM9666HKmZT4R5gegtyRUZY6mcKYoaDMcI35vjFePAnYjKZb5uPR_M_RyvvkIxlCTCFCkCnou4zsVkm99YynKx7c0e3GHYmGMMzms3zp--RoJDsNSbx5dtl7kS-Dk5uH_1rO_ZnsfzTdp2kj1JgSr2eNxw-xv6eD-72MhD5bXcpUgtts-tl0JXpM0dDBY6ZU86kpVHW8k9NjnSHeDUkxLxJbWlE4BEfTembTInnNFhTQ-Rwt9JHvFlFMflK-Rq6Z9KccjpQ3SJNMfWa-l-D7WOZH_-_19y2XwUUpLlWqETaBCyIhbUDfmPlaQPc_uxNNVH99HdL0eynSVn-3BzPtW_Vleh6DNSLTFtTbkMfspGHupbAwh_OEffeeAdU8b9djBA5YoLCWDqa7VKnh4KYRRQ-0dZEPfuIJL6HSr_96tMXNDD5GLaX1NKD4MkC055aLHYKRLGv-NtYE7_poe0ITpfl4YYxt6OqYGXjPSIBrlvJPqfqJGewaGBE16izFK93TguCZDbH9WmGJscG1AQ6Iw5Ays1Hzy9cJSey1V5zbOamvodoSVSK8Hc1lUEYl7GS4JdTqic5gYx5nSNpgY0UgEJL_aDQ2TTNB-T2JhmLTVUPNA4nqx9DHwQYk9VKDq3lywyCXtsCoV1b9EgZy2hWwSOLzUWbtBJm1voEnWzDNuK3Gs-b0gqsHu5zy5p09U5sUNNCZrZT_5llJEwpBjjQgIcWRg18q35B-fkAsTrBtCL8yWv69MR9N0Dz0Q1qR1NrVnkO5pIKkThQkzJy-9pTLwS8EJdn3oL6pyiPiAtto_zSFpW6WyOlLUoNOlrvopLs1mVof9X4VtNg8wEdxU2iyDGoVKzq-R9O6RJMO36UmrMM_y3_Rh_STy1)
 
 <details>
   <summary>Código do diagrama</summary>
 
-Você poderá editar o código abaixo no site [https://editor.plantuml.com](https://editor.plantuml.com).
+Você pode editar este código em https://editor.plantuml.com
 
 ```plantuml
 @startuml
@@ -36,7 +78,7 @@ box "\nInbound Webhook (single service)\n" #E8F1FF
   database "Database" as webhookInboxDb <<Mongo>>
 end box
 
-box "\nEvent Brocker\n" #F0F0F0
+box "\nEvent Broker\n" #F0F0F0
   queue "Inbound \nTopic" as inboundTopic <<kafka>>
 end box
 
@@ -47,10 +89,10 @@ end box
 
 box "\nCRM\n" #FFF3E0
   participant "Rest API" as crmApi <<kotlin>>
-  database "Database" as crmDb <<PostgresSQL>>
+  database "Database" as crmDb <<PostgreSQL>>
 end box
 
-== Message inbounding ==
+== Message Inbound ==
 client -> whatsapp : write(<b>inMsg</b>)
 whatsapp -> twilio : forward(<b>inMsg</b>)
 twilio -> webhookApi : webhook(<b>inMsg</b>)
@@ -87,36 +129,25 @@ opt Process Manager operations
   botApi -> botInboxDb : deleteInMsgAndOutMsg(...)\n(source of truth is CRM DB)
 end
 
-== Recovery / Resume scheduler ==
+== Recovery / Resume Scheduler ==
 loop every X seconds
   botApi -> botInboxDb : fetch flow where\nstatus!=FINISHED and processing=false
   loop for each resumable record
     botApi -> botApi : processManager.resumeFromLastStep(<b>processId</b>)
   end
 end
-
 @enduml
 ```
 </details>
 
-### Legenda do Diagrama
+## Fluxo de Processamento do Bot
 
-- **inMsg** — mensagem de entrada (*inbound message*).
-- **outMsg** — mensagem de saída (*outbound message*).
-- **processing=false** — mensagem livre para reprocessamento.
-- **publish / republish** — envio inicial / reenvio para fila.
-- **2xx / non-2xx** — resposta de sucesso / erro HTTP.
-- **source of truth** — banco responsável pelo dado final.
-
----
-
-### Diagrama do Process Flow (Bot Engine)
-![Fluxo Principal](https://img.plantuml.biz/plantuml/svg/ZLHBZzem4Bv7od-OxebANQXwN16qK88Q2HO4IDl3IiX99c1XxDIFibMr_xss4rW2bFO2ZkTxp8mzVbIQI6rsB0pKblAIIBA3WNYTaJodV0rVFfy6PXPBCreIhay1OL2-1-1kkQUCYZiW2hHVdiKJdWh3StZ6T2F45lgpn8FtrNU_fD3jReLcbFTwOV33eC5trbAKDFDuMktu3SSWnPOuGiDi8FJH81NwN3mdcgH4OGLq7gym71pG_dkOMiP4yBMu4Fywdnp5Cxax5m-3A8AOhob7c4cHeLAkPL4K1eTKxfjLF02ZIYDlTTCUvHErxdRItiSZ_BvtcjK3b2YLnP-Zmq2K-k084yB96cKO03HatCfALAWH4_isvHfbAV52y9HPrzbasis4Kqq9czgSYAQ2grQxtVR9_DCtDPJbKwEjuItdlvKkFFDO-ocbkdzdTWfjkttWWWr0c8Og2CfaZkDs_wS18yglbD_adbpn9Zz7XXhhYKXS0rh3U1mlO-ZKdCxlGskIt6NxTY7Uw4ybw9Nw_D1Sbz8BRobXP8OW2j3Iw0rG1VOcUpraTXRg-b5A8M-QcDBE3pRFpEeNjgALVLYqKT4YVXgkbjFLyZaP9zDLF9zFvvzUk8UKnvc82cADgmnu7WR-nu_F73Fn4-KlwDYbCZi4bMqmDmob7oGcH0de4Tz1MJ3FrOrhKw3EDh3VeCGwYIhF3z4eUKeMt-8X4Fl8N4tFoNgxGaX0OdMazPFvbHPL1onzmYCfTcEYz49ZwLfLorQdU57oe_stp_4V)
+![Process Flow](https://img.plantuml.biz/plantuml/svg/ZLHBZzem4Bv7od-OxebANQXwN16qK88Q2HO4IDl3IiX99c1XxDIFibMr_xss4rW2bFO2ZkTxp8mzVbIQI6rsB0pKblAIIBA3WNYTaJodV0rVFfy6PXPBCreIhay1OL2-1-1kkQUCYZiW2hHVdiKJdWh3StZ6T2F45lgpn8FtrNU_fD3jReLcbFTwOV33eC5trbAKDFDuMktu3SSWnPOuGiDi8FJH81NwN3mdcgH4OGLq7gym71pG_dkOMiP4yBMu4Fywdnp5Cxax5m-3A8AOhob7c4cHeLAkPL4K1eTKxfjLF02ZIYDlTTCUvHErxdRItiSZ_BvtcjK3b2YLnP-Zmq2K-k084yB96cKO03HatCfALAWH4_isvHfbAV52y9HPrzbasis4Kqq9czgSYAQ2grQxtVR9_DCtDPJbKwEjuItdlvKkFFDO-ocbkdzdTWfjkttWWWr0c8Og2CfaZkDs_wS18yglbD_adbpn9Zz7XXhhYKXS0rh3U1mlO-ZKdCxlGskIt6NxTY7Uw4ybw9Nw_D1Sbz8BRobXP8OW2j3Iw0rG1VOcUpraTXRg-b5A8M-QcDBE3pRFpEeNjgALVLYqKT4YVXgkbjFLyZaP9zDLF9zFvvzUk8UKnvc82cADgmnu7WR-nu_F73Fn4-KlwDYbCZi4bMqmDmob7oGcH0de4Tz1MJ3FrOrhKw3EDh3VeCGwYIhF3z4eUKeMt-8X4Fl8N4tFoNgxGaX0OdMazPFvbHPL1onzmYCfTcEYz49ZwLfLorQdU57oe_stp_4V)
 
 <details>
   <summary>Código do diagrama</summary>
 
-Você poderá editar o código abaixo no site [https://editor.plantuml.com](https://editor.plantuml.com).
+Você pode editar este código em https://editor.plantuml.com
 
 ```plantuml
 @startuml
@@ -151,38 +182,35 @@ opt Process Manager
   end
 end
 
-== Recovery / Resume scheduler ==
+== Recovery / Resume Scheduler ==
 loop every X seconds
   botApi -> botInboxDb : fetch where\nflow_status!=FINISHED and flow_processing=false
   loop for each record
     botApi -> botApi : resumeFromLastStep(<b>processId</b>)
   end
 end
-
 @enduml
 ```
 </details>
 
-### Legenda do Diagrama
+## Legenda
 
-- **inMsg** — mensagem de entrada (*inbound message*).
-- **outMsg** — mensagem de saída (*outbound message*).
-- **PENDING** — registrada e aguardando processamento.
-- **PROCESSING** — em processamento ativo.
-- **FAILED** — falha ocorrida; elegível para retry.
-- **processing=false** — mensagem livre para reprocessamento.
-- **retry_at** — instante mínimo para nova tentativa.
-- **attempts** — contador de tentativas realizadas.
-- **publish / republish** — envio inicial / reenvio para fila.
-- **2xx / non-2xx** — resposta de sucesso / erro HTTP.
-- **source of truth** — banco responsável pelo dado final.
+- **inMsg**: mensagem de entrada
+- **outMsg**: mensagem de saída
+- **PENDING**: registrada e aguardando processamento
+- **PROCESSING**: em processamento ativo
+- **FAILED**: falha ocorrida; elegível para retry
+- **processing=false**: mensagem livre para reprocessamento
+- **retry_at**: instante mínimo para nova tentativa
+- **attempts**: contador de tentativas realizadas
+- **publish / republish**: envio inicial / reenvio para fila
+- **2xx / non-2xx**: resposta de sucesso / erro HTTP
+- **source of truth**: banco responsável pelo dado final
 
+## Estrutura do Projeto
 
-
-
-### Estrutura do Projeto
-
-```
+```text
+sales
 ├── domain
 │   ├── model
 │   ├── repository
@@ -209,25 +237,21 @@ end
     │   ├── request
     │   ├── response
     │   └── mapper
-    │
     ├── persistence
     │   ├── entity
     │   ├── repository
     │   ├── mapper
     │   └── specification
-    │
     ├── messaging
     │   ├── producer
     │   ├── consumer
     │   └── mapper
-    │
     ├── client
     │   ├── http
     │   ├── grpc
     │   └── mapper
-    │
     ├── scheduler
-    │
     └── config
 ```
+
 
