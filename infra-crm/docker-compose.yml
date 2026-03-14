@@ -1,0 +1,62 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: crm-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: crm
+      POSTGRES_USER: crm
+      POSTGRES_PASSWORD: crm
+      TZ: America/Sao_Paulo
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./postgres/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U crm -d crm" ]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+
+  pgadmin-init:
+    image: alpine:3.20
+    container_name: crm-pgadmin-init
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    command: >
+      sh -c '
+        umask 077 &&
+        printf "postgres:5432:crm:crm:crm\n" > /var/lib/pgadmin/pgpass &&
+        chmod 600 /var/lib/pgadmin/pgpass &&
+        chown -R 5050:5050 /var/lib/pgadmin
+      '
+    restart: "no"
+
+  pgadmin:
+    image: dpage/pgadmin4:8
+    container_name: crm-pgadmin
+    restart: unless-stopped
+    depends_on:
+      pgadmin-init:
+        condition: service_completed_successfully
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@crm.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+      TZ: America/Sao_Paulo
+      PGADMIN_SERVER_JSON_FILE: /pgadmin4/servers.json
+      PGADMIN_PGPASS_FILE: /var/lib/pgadmin/pgpass
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+      - ./pgadmin/servers.json:/pgadmin4/servers.json:ro
+
+volumes:
+  postgres_data:
+  pgadmin_data:
