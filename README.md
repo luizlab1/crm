@@ -1,5 +1,9 @@
+# Stack
+Kotlin, Spring Boot, MongoDB, PostgreSQL, Kafka, Twilio API, WhatsApp Business API.
 
 # Arquitetura
+
+Arquitetura Hexagonal com ddd.
 
 ### Componentes
 - **Webhook:** Serviço responsável por receber mensagens do WhatsApp via Twilio e persistir e encaminhar para o bot engine. Ele foi pensado para fazer apenas esta tarefa simples para reduzir riscos de falhas na entrada das mensagens no sistema.
@@ -172,4 +176,58 @@ end
 - **publish / republish** — envio inicial / reenvio para fila.
 - **2xx / non-2xx** — resposta de sucesso / erro HTTP.
 - **source of truth** — banco responsável pelo dado final.
+
+
+
+
+### Estrutura do Projeto
+
+```
+├── domain
+│   ├── model
+│   ├── repository
+│   ├── service
+│   ├── event
+│   ├── exception
+│   ├── specification
+│   └── valueobject
+│
+├── application
+│   ├── usecase
+│   ├── port
+│   │   ├── input
+│   │   └── output
+│   ├── command
+│   ├── query
+│   ├── dto
+│   ├── mapper
+│   └── service
+│
+└── infrastructure
+    ├── web
+    │   ├── controller
+    │   ├── request
+    │   ├── response
+    │   └── mapper
+    │
+    ├── persistence
+    │   ├── entity
+    │   ├── repository
+    │   ├── mapper
+    │   └── specification
+    │
+    ├── messaging
+    │   ├── producer
+    │   ├── consumer
+    │   └── mapper
+    │
+    ├── client
+    │   ├── http
+    │   ├── grpc
+    │   └── mapper
+    │
+    ├── scheduler
+    │
+    └── config
+```
 
