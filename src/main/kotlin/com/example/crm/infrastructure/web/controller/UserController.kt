@@ -1,10 +1,10 @@
 package com.example.crm.infrastructure.web.controller
 
-import com.example.crm.infrastructure.persistence.entity.UserJpaEntity
-import com.example.crm.infrastructure.persistence.repository.UserJpaRepository
+import com.example.crm.application.port.input.UserUseCase
 import com.example.crm.infrastructure.web.dto.request.UserRequest
 import com.example.crm.infrastructure.web.dto.response.PageResponse
 import com.example.crm.infrastructure.web.dto.response.UserResponse
+import com.example.crm.infrastructure.web.mapper.UserWebMapper
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.http.ResponseEntity
@@ -13,7 +13,10 @@ import java.net.URI
 
 @RestController
 @RequestMapping("/api/v1/users")
-class UserController(private val repository: UserJpaRepository) {
+class UserController(
+    private val useCase: UserUseCase,
+    private val mapper: UserWebMapper
+) {
 
     @GetMapping
     fun findAll(
@@ -22,56 +25,32 @@ class UserController(private val repository: UserJpaRepository) {
         @RequestParam(required = false) tenantId: Long?
     ): ResponseEntity<PageResponse<UserResponse>> {
         val pageable = PageRequest.of(page, size, Sort.by("id"))
-        val result = if (tenantId != null) repository.findByTenantId(tenantId, pageable)
-                     else repository.findAll(pageable)
+        val result = useCase.list(pageable, tenantId)
         return ResponseEntity.ok(PageResponse(
-            content = result.content.map { it.toResponse() },
+            content = result.content.map { mapper.toResponse(it) },
             page = result.number, size = result.size,
             totalElements = result.totalElements, totalPages = result.totalPages
         ))
     }
 
     @GetMapping("/{id}")
-    fun findById(@PathVariable id: Long): ResponseEntity<UserResponse> {
-        val entity = repository.findById(id).orElseThrow { NoSuchElementException("User not found: $id") }
-        return ResponseEntity.ok(entity.toResponse())
-    }
+    fun findById(@PathVariable id: Long): ResponseEntity<UserResponse> =
+        ResponseEntity.ok(mapper.toResponse(useCase.getById(id)))
 
     @PostMapping
     fun create(@RequestBody request: UserRequest): ResponseEntity<UserResponse> {
-        val entity = UserJpaEntity(
-            tenantId = request.tenantId, personId = request.personId,
-            email = request.email, passwordHash = request.passwordHash,
-            isActive = request.isActive
-        )
-        val saved = repository.save(entity)
-        return ResponseEntity.created(URI.create("/api/v1/users/${saved.id}")).body(saved.toResponse())
+        val created = useCase.create(mapper.toDomain(request))
+        return ResponseEntity.created(URI.create("/api/v1/users/${created.id}"))
+            .body(mapper.toResponse(created))
     }
 
     @PutMapping("/{id}")
-    fun update(@PathVariable id: Long, @RequestBody request: UserRequest): ResponseEntity<UserResponse> {
-        val entity = repository.findById(id).orElseThrow { NoSuchElementException("User not found: $id") }
-        entity.tenantId = request.tenantId
-        entity.personId = request.personId
-        entity.email = request.email
-        entity.passwordHash = request.passwordHash
-        entity.isActive = request.isActive
-        val saved = repository.save(entity)
-        return ResponseEntity.ok(saved.toResponse())
-    }
+    fun update(@PathVariable id: Long, @RequestBody request: UserRequest): ResponseEntity<UserResponse> =
+        ResponseEntity.ok(mapper.toResponse(useCase.update(id, mapper.toDomain(request))))
 
     @DeleteMapping("/{id}")
     fun delete(@PathVariable id: Long): ResponseEntity<Void> {
-        val entity = repository.findById(id).orElseThrow { NoSuchElementException("User not found: $id") }
-        entity.isActive = false
-        repository.save(entity)
+        useCase.delete(id)
         return ResponseEntity.noContent().build()
     }
-
-    private fun UserJpaEntity.toResponse() = UserResponse(
-        id = id, tenantId = tenantId, personId = personId, code = code,
-        email = email, isActive = isActive,
-        createdAt = createdAt, updatedAt = updatedAt
-    )
 }
-

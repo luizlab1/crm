@@ -1,10 +1,10 @@
 package com.example.crm.infrastructure.web.controller
 
-import com.example.crm.infrastructure.persistence.entity.ItemJpaEntity
-import com.example.crm.infrastructure.persistence.repository.ItemJpaRepository
+import com.example.crm.application.port.input.ItemUseCase
 import com.example.crm.infrastructure.web.dto.request.ItemRequest
 import com.example.crm.infrastructure.web.dto.response.ItemResponse
 import com.example.crm.infrastructure.web.dto.response.PageResponse
+import com.example.crm.infrastructure.web.mapper.ItemWebMapper
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.http.ResponseEntity
@@ -13,7 +13,10 @@ import java.net.URI
 
 @RestController
 @RequestMapping("/api/v1/items")
-class ItemController(private val repository: ItemJpaRepository) {
+class ItemController(
+    private val useCase: ItemUseCase,
+    private val mapper: ItemWebMapper
+) {
 
     @GetMapping
     fun findAll(
@@ -22,57 +25,32 @@ class ItemController(private val repository: ItemJpaRepository) {
         @RequestParam(required = false) tenantId: Long?
     ): ResponseEntity<PageResponse<ItemResponse>> {
         val pageable = PageRequest.of(page, size, Sort.by("name"))
-        val result = if (tenantId != null) repository.findByTenantId(tenantId, pageable)
-                     else repository.findAll(pageable)
+        val result = useCase.list(pageable, tenantId)
         return ResponseEntity.ok(PageResponse(
-            content = result.content.map { it.toResponse() },
+            content = result.content.map { mapper.toResponse(it) },
             page = result.number, size = result.size,
             totalElements = result.totalElements, totalPages = result.totalPages
         ))
     }
 
     @GetMapping("/{id}")
-    fun findById(@PathVariable id: Long): ResponseEntity<ItemResponse> {
-        val entity = repository.findById(id).orElseThrow { NoSuchElementException("Item not found: $id") }
-        return ResponseEntity.ok(entity.toResponse())
-    }
+    fun findById(@PathVariable id: Long): ResponseEntity<ItemResponse> =
+        ResponseEntity.ok(mapper.toResponse(useCase.getById(id)))
 
     @PostMapping
     fun create(@RequestBody request: ItemRequest): ResponseEntity<ItemResponse> {
-        val entity = ItemJpaEntity(
-            tenantId = request.tenantId, categoryId = request.categoryId,
-            type = request.type, name = request.name,
-            sku = request.sku, isActive = request.isActive
-        )
-        val saved = repository.save(entity)
-        return ResponseEntity.created(URI.create("/api/v1/items/${saved.id}")).body(saved.toResponse())
+        val created = useCase.create(mapper.toDomain(request))
+        return ResponseEntity.created(URI.create("/api/v1/items/${created.id}"))
+            .body(mapper.toResponse(created))
     }
 
     @PutMapping("/{id}")
-    fun update(@PathVariable id: Long, @RequestBody request: ItemRequest): ResponseEntity<ItemResponse> {
-        val entity = repository.findById(id).orElseThrow { NoSuchElementException("Item not found: $id") }
-        entity.tenantId = request.tenantId
-        entity.categoryId = request.categoryId
-        entity.type = request.type
-        entity.name = request.name
-        entity.sku = request.sku
-        entity.isActive = request.isActive
-        val saved = repository.save(entity)
-        return ResponseEntity.ok(saved.toResponse())
-    }
+    fun update(@PathVariable id: Long, @RequestBody request: ItemRequest): ResponseEntity<ItemResponse> =
+        ResponseEntity.ok(mapper.toResponse(useCase.update(id, mapper.toDomain(request))))
 
     @DeleteMapping("/{id}")
     fun delete(@PathVariable id: Long): ResponseEntity<Void> {
-        val entity = repository.findById(id).orElseThrow { NoSuchElementException("Item not found: $id") }
-        entity.isActive = false
-        repository.save(entity)
+        useCase.delete(id)
         return ResponseEntity.noContent().build()
     }
-
-    private fun ItemJpaEntity.toResponse() = ItemResponse(
-        id = id, code = code, tenantId = tenantId, categoryId = categoryId,
-        type = type, name = name, sku = sku, isActive = isActive,
-        createdAt = createdAt, updatedAt = updatedAt
-    )
 }
-
