@@ -20,7 +20,9 @@ description = "CRM"
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(25)
+        // project Kotlin/JVM target and compile release are set to 21
+        // use JDK 21 to match the environment and avoid auto-provisioning toolchains
+        languageVersion = JavaLanguageVersion.of(21)
     }
 }
 
