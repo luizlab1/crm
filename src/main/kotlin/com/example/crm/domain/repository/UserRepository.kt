@@ -9,5 +9,5 @@ interface UserRepository {
     fun findByTenantId(tenantId: Long, pageable: Pageable): Page<User>
     fun findById(id: Long): User?
     fun save(user: User): User
+    fun findByEmail(email: String): User?
 }
-

@@ -20,3 +20,12 @@ spring:
 server:
   port: 8080
 
+# Configure springdoc swagger-ui to include our extra script
+springdoc:
+  swagger-ui:
+    init-oauth: false
+    urls: []
+    # add our custom JS to be loaded by Swagger UI
+    url: 
+    additional-scripts:
+      - /swagger-ui/swagger-auth.js

@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 
 @Service
 @Transactional
@@ -24,8 +25,12 @@ class UserUseCaseImpl(
     override fun getById(id: Long): User =
         userRepository.findById(id) ?: throw EntityNotFoundException("User", id)
 
-    override fun create(user: User): User =
-        userRepository.save(user)
+    @Transactional(readOnly = true)
+    override fun getByEmail(email: String): User? = userRepository.findByEmail(email)
+
+    override fun create(user: User): User {
+        return userRepository.save(user)
+    }
 
     override fun update(id: Long, user: User): User {
         val existing = userRepository.findById(id) ?: throw EntityNotFoundException("User", id)
@@ -38,4 +43,3 @@ class UserUseCaseImpl(
         userRepository.save(existing.copy(isActive = false))
     }
 }
-

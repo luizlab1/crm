@@ -25,6 +25,7 @@ class UserRepositoryAdapter(
     override fun findByTenantId(tenantId: Long, pageable: Pageable): Page<User> = jpa.findByTenantId(tenantId, pageable).map { mapper.toDomain(it) }
     override fun findById(id: Long): User? = jpa.findById(id).map { mapper.toDomain(it) }.orElse(null)
     override fun save(user: User): User = mapper.toDomain(jpa.save(mapper.toEntity(user)))
+    override fun findByEmail(email: String): User? = jpa.findByEmail(email)?.let { mapper.toDomain(it) }
 }
 
 @Component
@@ -138,4 +139,3 @@ class UnitOfMeasureRepositoryAdapter(
     override fun findAll(pageable: Pageable): Page<UnitOfMeasure> = jpa.findAll(pageable).map { mapper.toDomain(it) }
     override fun findById(id: Long): UnitOfMeasure? = jpa.findById(id).map { mapper.toDomain(it) }.orElse(null)
 }
-
