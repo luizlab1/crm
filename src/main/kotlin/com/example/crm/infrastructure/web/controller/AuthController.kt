@@ -9,8 +9,14 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.parameters.RequestBody as OasRequestBody
 import io.swagger.v3.oas.annotations.media.Content as OasContent
 import io.swagger.v3.oas.annotations.media.ExampleObject as OasExampleObject
+import io.swagger.v3.oas.annotations.media.Schema
 
-data class AuthRequest(val email: String, val password: String)
+data class AuthRequest(
+    @field:Schema(example = "admin@saas.com")
+    val email: String,
+    @field:Schema(example = "string")
+    val password: String
+)
 data class AuthResponse(val token: String)
 
 @RestController
