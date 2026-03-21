@@ -5,6 +5,10 @@ import com.example.crm.application.port.input.UserUseCase
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.parameters.RequestBody as OasRequestBody
+import io.swagger.v3.oas.annotations.media.Content as OasContent
+import io.swagger.v3.oas.annotations.media.ExampleObject as OasExampleObject
 
 data class AuthRequest(val email: String, val password: String)
 data class AuthResponse(val token: String)
@@ -14,7 +18,13 @@ data class AuthResponse(val token: String)
 class AuthController(private val jwtService: JwtService, private val userUseCase: UserUseCase) {
 
     @PostMapping("/token")
-    fun token(@RequestBody req: AuthRequest): ResponseEntity<AuthResponse> {
+    @Operation(
+        summary = "Authenticate and return JWT token",
+        requestBody = OasRequestBody(
+            content = [OasContent(mediaType = "application/json", examples = [OasExampleObject(value = "{\"email\": \"admin@saas.com\", \"password\": \"string\"}")])]
+        )
+    )
+    fun token(@org.springframework.web.bind.annotation.RequestBody req: AuthRequest): ResponseEntity<AuthResponse> {
         val user = userUseCase.getByEmail(req.email) ?: return ResponseEntity.status(401).build()
 
         // Verify password using BCryptPasswordEncoder. Some bcrypt implementations
