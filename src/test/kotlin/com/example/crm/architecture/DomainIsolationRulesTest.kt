@@ -5,9 +5,10 @@ import org.junit.jupiter.api.Test
 
 class DomainIsolationRulesTest {
 
+    private val importedClasses by lazy { ArchUnitTestHelper.importAppClasses() }
+
     @Test
     fun domain_should_not_depend_on_infrastructure() {
-        val classes = ArchUnitTestHelper.importAppClasses()
         val rule = classes().that().resideInAPackage("..domain..")
             .should().onlyDependOnClassesThat().resideInAnyPackage(
                 "..domain..",
@@ -16,6 +17,6 @@ class DomainIsolationRulesTest {
                 "kotlin..",
                 "org.jetbrains.annotations.."
             )
-        rule.check(classes)
+        rule.check(importedClasses)
     }
 }

@@ -5,9 +5,10 @@ import org.junit.jupiter.api.Test
 
 class IntegrationBoundaryRulesTest {
 
+    private val importedClasses by lazy { ArchUnitTestHelper.importAppClasses() }
+
     @Test
-    fun external_clients_should_be_used_only_by_infrastructure_or_adapters() {
-        val classes = ArchUnitTestHelper.importAppClasses()
+    fun infrastructure_should_only_depend_on_explicit_internal_and_external_packages() {
         val rule = classes().that().resideInAPackage("..infrastructure..")
             .should().onlyDependOnClassesThat().resideInAnyPackage(
                 "..infrastructure..",
@@ -31,6 +32,6 @@ class IntegrationBoundaryRulesTest {
                 "org.springdoc..",
                 "org.hibernate.."
             )
-        rule.check(classes)
+        rule.check(importedClasses)
     }
 }

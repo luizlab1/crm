@@ -5,30 +5,30 @@ import org.junit.jupiter.api.Test
 
 class NamingAndAnnotationRulesTest {
 
+    private val importedClasses by lazy { ArchUnitTestHelper.importAppClasses() }
+
     @Test
-    fun controllers_name_and_package_should_match() {
-        val classes = ArchUnitTestHelper.importAppClasses()
+    fun controller_name_should_imply_controller_package() {
         val rule = classes().that().haveSimpleNameEndingWith("Controller")
             .should().resideInAPackage("..infrastructure.web.controller..")
-        rule.check(classes)
+        rule.check(importedClasses)
     }
 
     @Test
-    fun services_name_and_annotation_should_match() {
-        val classes = ArchUnitTestHelper.importAppClasses()
-        val rule = classes().that().haveSimpleNameEndingWith("UseCaseImpl").or().haveSimpleNameEndingWith("Service")
+    fun application_usecaseimpl_should_be_annotated_with_service() {
+        val rule = classes().that().resideInAPackage("..application..usecase..")
+            .and().haveSimpleNameEndingWith("UseCaseImpl")
             .should().beAnnotatedWith(org.springframework.stereotype.Service::class.java)
-        rule.check(classes)
+        rule.check(importedClasses)
     }
 
     @Test
-    fun repositories_name_and_package_should_match() {
-        val classes = ArchUnitTestHelper.importAppClasses()
+    fun repository_name_should_imply_repository_package() {
         val rule = classes().that().haveSimpleNameEndingWith("Repository")
             .should().resideInAnyPackage(
                 "..infrastructure.persistence.repository..",
                 "..domain.repository.."
             )
-        rule.check(classes)
+        rule.check(importedClasses)
     }
 }

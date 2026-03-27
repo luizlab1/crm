@@ -5,9 +5,10 @@ import org.junit.jupiter.api.Test
 
 class ModuleDependencyRulesTest {
 
+    private val importedClasses by lazy { ArchUnitTestHelper.importAppClasses() }
+
     @Test
-    fun modules_should_not_depend_on_each_other_unless_whitelisted() {
-        val classes = ArchUnitTestHelper.importAppClasses()
+    fun infrastructure_should_not_use_generic_third_party_allowlist() {
         val rule = classes().that().resideInAPackage("..infrastructure..")
             .should().onlyDependOnClassesThat().resideInAnyPackage(
                 "..infrastructure..",
@@ -15,11 +16,22 @@ class ModuleDependencyRulesTest {
                 "..domain..",
                 "java..",
                 "kotlin..",
-                "org..",
+                "kotlin.jvm..",
+                "kotlin.jvm.internal..",
+                "kotlin.reflect..",
+                "kotlinx..",
+                "org.jetbrains.annotations..",
+                "org.springframework..",
+                "org.springframework.boot..",
+                "org.slf4j..",
+                "org.hibernate..",
+                "org.springdoc..",
                 "jakarta..",
-                "io..",
-                "com.fasterxml.."
+                "javax..",
+                "io.jsonwebtoken..",
+                "io.swagger.v3..",
+                "com.fasterxml.jackson.."
             )
-        rule.check(classes)
+        rule.check(importedClasses)
     }
 }
