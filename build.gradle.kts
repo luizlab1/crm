@@ -11,6 +11,7 @@ plugins {
 
     id("org.springframework.boot") version "4.0.2"
     id("io.spring.dependency-management") version "1.1.7"
+    id("dev.detekt") version "2.0.0-alpha.1"
     id("jacoco")
 }
 
@@ -28,6 +29,14 @@ java {
 
 repositories {
     mavenCentral()
+}
+
+configurations.matching { it.name == "detekt" }.configureEach {
+    resolutionStrategy.eachDependency {
+        if (requested.group == "org.jetbrains.kotlin") {
+            useVersion("2.2.20")
+        }
+    }
 }
 
 dependencies {
@@ -92,4 +101,10 @@ tasks.named<JacocoReport>("jacocoTestReport") {
         csv.required.set(false)
         html.required.set(true)
     }
+}
+
+tasks.register("lint") {
+    group = "verification"
+    description = "Runs lint checks via detekt"
+    dependsOn("detekt")
 }

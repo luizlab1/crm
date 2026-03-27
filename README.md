@@ -261,6 +261,18 @@ Pré-requisitos
 - Java 25
 - Docker & Docker Compose
 - (Opcional) Gradle wrapper já incluído
+- GNU Make (para usar `make lint` em qualquer SO)
+
+### Lint
+
+```bash
+make lint
+```
+
+Esse comando executa `detekt` via Gradle (`gradlew`).
+
+- Linux/macOS: instale `make` pelo gerenciador do sistema.
+- Windows: instale `make` e garanta que esteja no `PATH` (ex.: Chocolatey/Scoop).
 
 Passos mínimos
 
