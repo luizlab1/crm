@@ -1,0 +1,43 @@
+name: Kotlin CI/CD
+
+on:
+  push:
+    branches: [master]
+
+env:
+  APP_NAME: crm-api
+  APP_DIR: /opt/crm-api
+  APP_JAR: /opt/crm-api/crm-api.jar
+  SERVICE_NAME: crm-api
+
+jobs:
+  build-and-deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Dar permissão ao gradlew
+        run: chmod +x ./gradlew
+
+      - name: Build
+        run: ./gradlew clean build
+
+      - name: Garantir diretório de deploy
+        run: sudo mkdir -p ${{ env.APP_DIR }}
+
+      - name: Copiar jar para deploy
+        run: sudo cp build/libs/*.jar ${{ env.APP_JAR }}
+
+      - name: Reiniciar aplicação
+        run: sudo systemctl restart ${{ env.SERVICE_NAME }}
+
+      - name: Ver status do serviço
+        run: sudo systemctl status ${{ env.SERVICE_NAME }} --no-pager
