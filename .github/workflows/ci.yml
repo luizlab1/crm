@@ -9,6 +9,8 @@ env:
   APP_DIR: /opt/crm-api
   APP_JAR: /opt/crm-api/crm-api.jar
   SERVICE_NAME: crm-api
+  SERVICE_FILE: /etc/systemd/system/crm-api.service
+  PORT: 8080
 
 jobs:
   build-and-deploy:
@@ -30,14 +32,45 @@ jobs:
       - name: Build
         run: ./gradlew clean build
 
-      - name: Garantir diretório de deploy
+      - name: Garantir diretório
         run: sudo mkdir -p ${{ env.APP_DIR }}
 
-      - name: Copiar jar para deploy
+      - name: Copiar jar
         run: sudo cp build/libs/*.jar ${{ env.APP_JAR }}
 
-      - name: Reiniciar aplicação
+      # 🔴 Mata qualquer processo na porta (evita conflito)
+      - name: Liberar porta
+        run: |
+          sudo fuser -k ${{ env.PORT }}/tcp || true
+
+      # 🔴 Criar/atualizar service (idempotente)
+      - name: Criar service
+        run: |
+          sudo bash -c "cat > ${{ env.SERVICE_FILE }}" <<EOF
+          [Unit]
+          Description=CRM API
+          After=network.target
+
+          [Service]
+          User=root
+          WorkingDirectory=${{ env.APP_DIR }}
+          ExecStart=/usr/bin/java -jar ${{ env.APP_JAR }} --server.port=${{ env.PORT }}
+          SuccessExitStatus=143
+          Restart=always
+          RestartSec=5
+
+          [Install]
+          WantedBy=multi-user.target
+          EOF
+
+      - name: Reload systemd
+        run: sudo systemctl daemon-reload
+
+      - name: Enable service
+        run: sudo systemctl enable ${{ env.SERVICE_NAME }}
+
+      - name: Restart service
         run: sudo systemctl restart ${{ env.SERVICE_NAME }}
 
-      - name: Ver status do serviço
+      - name: Status
         run: sudo systemctl status ${{ env.SERVICE_NAME }} --no-pager
