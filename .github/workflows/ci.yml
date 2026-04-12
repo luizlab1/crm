@@ -35,16 +35,7 @@ jobs:
       - name: Garantir diretório
         run: sudo mkdir -p ${{ env.APP_DIR }}
 
-      - name: Copiar jar
-        run: sudo cp build/libs/*.jar ${{ env.APP_JAR }}
-
-      # 🔴 Mata qualquer processo na porta (evita conflito)
-      - name: Liberar porta
-        run: |
-          sudo fuser -k ${{ env.PORT }}/tcp || true
-
-      # 🔴 Criar/atualizar service (idempotente)
-      - name: Criar service
+      - name: Criar ou atualizar service
         run: |
           sudo bash -c "cat > ${{ env.SERVICE_FILE }}" <<EOF
           [Unit]
@@ -69,8 +60,17 @@ jobs:
       - name: Enable service
         run: sudo systemctl enable ${{ env.SERVICE_NAME }}
 
-      - name: Restart service
-        run: sudo systemctl restart ${{ env.SERVICE_NAME }}
+      - name: Parar serviço se existir
+        run: sudo systemctl stop ${{ env.SERVICE_NAME }} || true
 
-      - name: Status
+      - name: Copiar jar
+        run: sudo cp build/libs/*.jar ${{ env.APP_JAR }}
+
+      - name: Iniciar serviço
+        run: sudo systemctl start ${{ env.SERVICE_NAME }}
+
+      - name: Ver status do serviço
         run: sudo systemctl status ${{ env.SERVICE_NAME }} --no-pager
+
+      - name: Health check
+        run: curl -f http://localhost:${{ env.PORT }} || exit 1
