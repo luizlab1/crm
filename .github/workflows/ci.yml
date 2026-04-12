@@ -73,7 +73,22 @@ jobs:
         run: sudo systemctl start ${{ env.SERVICE_NAME }}
 
       - name: Ver status do serviço
-        run: sudo systemctl status ${{ env.SERVICE_NAME }} --no-pager
+        run: sudo systemctl status ${{ env.SERVICE_NAME }} --no-pager || true
 
       - name: Health check
-        run: curl -f http://localhost:${{ env.PORT }} || exit 1
+        run: |
+          for i in {1..30}; do
+            if curl -fsS http://localhost:${{ env.PORT }} > /dev/null; then
+              echo "Aplicação respondeu com sucesso."
+              exit 0
+            fi
+            echo "Aguardando aplicação subir... tentativa $i/30"
+            sleep 5
+          done
+
+          echo "Aplicação não respondeu no tempo esperado."
+          echo "===== systemctl status ====="
+          sudo systemctl status ${{ env.SERVICE_NAME }} --no-pager || true
+          echo "===== journalctl ====="
+          sudo journalctl -u ${{ env.SERVICE_NAME }} -n 200 --no-pager || true
+          exit 1
