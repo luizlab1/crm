@@ -16,9 +16,16 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 @Configuration
 class SecurityConfig(
     private val jwtAuthenticationFilter: JwtAuthenticationFilter,
-    @Value("\${app.cors.allowed-origin-patterns:http://localhost:*,http://127.0.0.1:*,https://*.luizlab.com:*,http://*.luizlab.com:*}")
+    @Value("\${app.cors.allowed-origin-patterns:}")
     private val corsAllowedOriginPatterns: String,
 ) {
+
+    private val defaultCorsAllowedOriginPatterns = listOf(
+        "http://localhost:*",
+        "http://127.0.0.1:*",
+        "https://*.luizlab.com:*",
+        "http://*.luizlab.com:*"
+    )
 
     @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
@@ -48,8 +55,17 @@ class SecurityConfig(
 
     @Bean
     fun corsConfigurationSource(): CorsConfigurationSource {
+        val configuredOriginPatterns = corsAllowedOriginPatterns
+            .split(",")
+            .map { it.trim() }
+            .filter { it.isNotBlank() }
+
         val configuration = CorsConfiguration().apply {
-            allowedOriginPatterns = corsAllowedOriginPatterns.split(",").map { it.trim() }.filter { it.isNotBlank() }
+            allowedOriginPatterns = if (configuredOriginPatterns.isNotEmpty()) {
+                configuredOriginPatterns
+            } else {
+                defaultCorsAllowedOriginPatterns
+            }
             allowedMethods = listOf("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
             allowedHeaders = listOf("*")
             exposedHeaders = listOf("Authorization")
