@@ -1,0 +1,137 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>EmptyFunctionBlock:CrmApplicationTests.kt:CrmApplicationTests${ }</ID>
+    <ID>EmptyKotlinFile:HexagonalArchitectureTest.kt:.HexagonalArchitectureTest.kt</ID>
+    <ID>LongMethod:UseCasesTest.kt:UseCasesTest$@Test fun `it should execute tenant filtered use cases`()</ID>
+    <ID>MagicNumber:AuthController.kt:AuthController$401</ID>
+    <ID>MagicNumber:GlobalExceptionHandler.kt:GlobalExceptionHandler$400</ID>
+    <ID>MagicNumber:GlobalExceptionHandler.kt:GlobalExceptionHandler$404</ID>
+    <ID>MagicNumber:GlobalExceptionHandler.kt:GlobalExceptionHandler$500</ID>
+    <ID>MaxLineLength:AuthController.kt:AuthController$content = [OasContent(mediaType = "application/json", examples = [OasExampleObject(value = "{\"email\": \"admin@saas.com\", \"password\": \"string\"}")])]</ID>
+    <ID>MaxLineLength:ItemCategoryController.kt:ItemCategoryController$fun</ID>
+    <ID>MaxLineLength:JwtAuthenticationFilter.kt:JwtAuthenticationFilter$override</ID>
+    <ID>MaxLineLength:JwtAuthenticationFilter.kt:JwtAuthenticationFilter$val auth = UsernamePasswordAuthenticationToken(subject, null, listOf(SimpleGrantedAuthority("ROLE_USER")))</ID>
+    <ID>MaxLineLength:PersistenceMappersTest.kt:PersistenceMappersTest$contacts = listOf(Contact(id = 1, type = "EMAIL", contactValue = "maria@crm.com", isPrimary = true, createdAt = now, updatedAt = now))</ID>
+    <ID>MaxLineLength:PersistenceMappersTest.kt:PersistenceMappersTest$items = listOf(OrderItem(id = 1, itemId = 100, quantity = 2, unitPriceCents = 500, totalPriceCents = 1000, createdAt = now))</ID>
+    <ID>MaxLineLength:PersistenceMappersTest.kt:PersistenceMappersTest$steps = listOf(PipelineFlowStep(id = 3, stepOrder = 1, code = "S1", name = "Inicio", stepType = "START", isTerminal = false, createdAt = now, updatedAt = now))</ID>
+    <ID>MaxLineLength:PersistenceMappersTest.kt:PersistenceMappersTest$val appointment = Appointment(id = 7, status = "DONE", scheduledAt = now, totalCents = 500, createdAt = now, updatedAt = now)</ID>
+    <ID>MaxLineLength:PersistenceMappersTest.kt:PersistenceMappersTest$val customer = Customer(id = 12, tenantId = 1, personId = 11, fullName = "Maria", email = "maria@crm.com", createdAt = now, updatedAt = now)</ID>
+    <ID>MaxLineLength:PersistenceMappersTest.kt:PersistenceMappersTest$val item = Item(id = 4, tenantId = 1, categoryId = 5, type = "SERVICE", name = "Item", sku = "SKU-1", createdAt = now, updatedAt = now)</ID>
+    <ID>MaxLineLength:PersistenceMappersTest.kt:PersistenceMappersTest$val lead = Lead(id = 14, tenantId = 1, flowId = 20, customerId = 12, status = "NEW", source = "WHATSAPP", createdAt = now, updatedAt = now)</ID>
+    <ID>MaxLineLength:PersistenceMappersTest.kt:PersistenceMappersTest$val leadMessage = LeadMessage(id = 2, leadId = 14, message = "Oi", channel = "CHAT", createdByUserId = 99, createdAt = now)</ID>
+    <ID>MaxLineLength:PersistenceMappersTest.kt:PersistenceMappersTest$val schedule = Schedule(id = 8, tenantId = 1, customerId = 2, appointmentId = 7, description = "Agendado", createdAt = now, updatedAt = now)</ID>
+    <ID>MaxLineLength:PersistenceMappersTest.kt:PersistenceMappersTest$val user = User(id = 2, tenantId = 1, email = "a@crm.com", passwordHash = "hash", createdAt = now, updatedAt = now)</ID>
+    <ID>MaxLineLength:PipelineFlowController.kt:PipelineFlowController$fun</ID>
+    <ID>MaxLineLength:RepositoryAdaptersTest.kt:RepositoryAdaptersTest$val cityEntity = com.example.crm.infrastructure.persistence.entity.CityJpaEntity(id = 1, stateId = 1, city = "Campinas", ibgeCode = 3509502)</ID>
+    <ID>MaxLineLength:RepositoryAdaptersTest.kt:RepositoryAdaptersTest$val flow = PipelineFlow(id = 1, tenantId = 10, code = "FLOW", name = "Flow", steps = listOf(PipelineFlowStep(stepOrder = 1, code = "S1", name = "Start", stepType = "START", createdAt = now, updatedAt = now)), createdAt = now, updatedAt = now)</ID>
+    <ID>MaxLineLength:RepositoryAdaptersTest.kt:RepositoryAdaptersTest$val order = Order(id = 1, tenantId = 10, customerId = 20, userId = 30, items = listOf(OrderItem(itemId = 100, unitPriceCents = 100, totalPriceCents = 100, createdAt = now)), createdAt = now, updatedAt = now)</ID>
+    <ID>MaxLineLength:RepositoryAdaptersTest.kt:RepositoryAdaptersTest$val person = Person(id = 1, tenantId = 10, contacts = listOf(Contact(id = 1, type = "EMAIL", contactValue = "m@crm.com", createdAt = now, updatedAt = now)), createdAt = now, updatedAt = now)</ID>
+    <ID>MaxLineLength:RepositoryAdaptersTest.kt:RepositoryAdaptersTest$val stateEntity = com.example.crm.infrastructure.persistence.entity.StateJpaEntity(id = 1, countryId = 1, acronym = "SP", state = "São Paulo", ibgeCode = 35)</ID>
+    <ID>MaxLineLength:ResponseDtosTest.kt:ResponseDtosTest$AddressResponse(1, "Rua A", "10", null, "Centro", 1, "13000-000", BigDecimal("-10"), BigDecimal("20"), true, now, now).id shouldBe 1</ID>
+    <ID>MaxLineLength:ResponseDtosTest.kt:ResponseDtosTest$OrderResponse(1, uuid, 1, 2, 3, "DRAFT", 1000, 0, 1000, "BRL", null, listOf(orderItem), now, now).items.size shouldBe 1</ID>
+    <ID>MaxLineLength:ResponseDtosTest.kt:ResponseDtosTest$PageResponse(content = listOf("a"), page = 0, size = 20, totalElements = 1, totalPages = 1).totalElements shouldBe 1</ID>
+    <ID>MaxLineLength:SecurityAndExceptionTest.kt:SecurityAndExceptionTest$every { repository.findByEmail("user@crm.com") } returns User(tenantId = 1, email = "user@crm.com", passwordHash = "hash")</ID>
+    <ID>MaxLineLength:SecurityConfig.kt:SecurityConfig$.</ID>
+    <ID>MaxLineLength:SimpleRepositoryAdapters.kt:ItemCategoryRepositoryAdapter$override fun findByTenantId(tenantId: Long, pageable: Pageable): Page&lt;ItemCategory&gt;</ID>
+    <ID>MaxLineLength:SimpleRepositoryAdapters.kt:ItemCategoryRepositoryAdapter$override fun save(itemCategory: ItemCategory): ItemCategory</ID>
+    <ID>MaxLineLength:SimpleRepositoryAdapters.kt:ItemRepositoryAdapter$override fun findByTenantId(tenantId: Long, pageable: Pageable): Page&lt;Item&gt;</ID>
+    <ID>MaxLineLength:SimpleRepositoryAdapters.kt:ScheduleRepositoryAdapter$override fun findByTenantId(tenantId: Long, pageable: Pageable): Page&lt;Schedule&gt;</ID>
+    <ID>MaxLineLength:SimpleRepositoryAdapters.kt:StateRepositoryAdapter$override fun findByCountryId(countryId: Long): List&lt;State&gt;</ID>
+    <ID>MaxLineLength:SimpleRepositoryAdapters.kt:UserRepositoryAdapter$override fun findByTenantId(tenantId: Long, pageable: Pageable): Page&lt;User&gt;</ID>
+    <ID>MaxLineLength:SimpleRepositoryAdapters.kt:WorkerRepositoryAdapter$override fun findByTenantId(tenantId: Long, pageable: Pageable): Page&lt;Worker&gt;</ID>
+    <ID>MaxLineLength:UseCasesTest.kt:UseCasesTest$every { cityRepo.findAll(pageable) } returns PageImpl(listOf(City(id = 3, stateId = 2, city = "Campinas", createdAt = now, updatedAt = now)))</ID>
+    <ID>MaxLineLength:UseCasesTest.kt:UseCasesTest$every { cityRepo.findById(3) } returns City(id = 3, stateId = 2, city = "Campinas", createdAt = now, updatedAt = now)</ID>
+    <ID>MaxLineLength:UseCasesTest.kt:UseCasesTest$every { cityRepo.findByStateId(2) } returns listOf(City(id = 3, stateId = 2, city = "Campinas", createdAt = now, updatedAt = now))</ID>
+    <ID>MaxLineLength:UseCasesTest.kt:UseCasesTest$every { countryRepo.findAll(pageable) } returns PageImpl(listOf(Country(id = 1, iso2 = "BR", iso3 = "BRA", country = "Brasil", createdAt = now, updatedAt = now)))</ID>
+    <ID>MaxLineLength:UseCasesTest.kt:UseCasesTest$every { countryRepo.findById(1) } returns Country(id = 1, iso2 = "BR", iso3 = "BRA", country = "Brasil", createdAt = now, updatedAt = now)</ID>
+    <ID>MaxLineLength:UseCasesTest.kt:UseCasesTest$every { leadRepo.findMessagesByLeadId(7) } returns listOf(LeadMessage(id = 1, leadId = 7, message = "oi", createdAt = now))</ID>
+    <ID>MaxLineLength:UseCasesTest.kt:UseCasesTest$every { stateRepo.findAll(pageable) } returns PageImpl(listOf(State(id = 2, countryId = 1, acronym = "SP", state = "São Paulo", createdAt = now, updatedAt = now)))</ID>
+    <ID>MaxLineLength:UseCasesTest.kt:UseCasesTest$every { stateRepo.findByCountryId(1) } returns listOf(State(id = 2, countryId = 1, acronym = "SP", state = "São Paulo", createdAt = now, updatedAt = now))</ID>
+    <ID>MaxLineLength:UseCasesTest.kt:UseCasesTest$every { stateRepo.findById(2) } returns State(id = 2, countryId = 1, acronym = "SP", state = "São Paulo", createdAt = now, updatedAt = now)</ID>
+    <ID>MaxLineLength:UseCasesTest.kt:UseCasesTest$every { uomRepo.findAll(pageable) } returns PageImpl(listOf(UnitOfMeasure(id = 4, code = "UN", name = "Unidade", createdAt = now, updatedAt = now)))</ID>
+    <ID>MaxLineLength:UseCasesTest.kt:UseCasesTest$every { uomRepo.findById(4) } returns UnitOfMeasure(id = 4, code = "UN", name = "Unidade", createdAt = now, updatedAt = now)</ID>
+    <ID>MaxLineLength:UseCasesTest.kt:UseCasesTest$val model = Address(id = 1, street = "Rua A", neighborhood = "Centro", cityId = 10, postalCode = "13000-000", createdAt = now, updatedAt = now)</ID>
+    <ID>MaxLineLength:UseCasesTest.kt:UseCasesTest$val schedule = Schedule(id = 4, tenantId = 10, customerId = 1, appointmentId = 7, createdAt = now, updatedAt = now)</ID>
+    <ID>MaxLineLength:UseCasesTest.kt:UseCasesTest$val user = User(id = 6, tenantId = 10, email = "u@crm.com", passwordHash = "hash", createdAt = now, updatedAt = now)</ID>
+    <ID>MaxLineLength:WebMappers.kt:OrderWebMapper$items = d.items.map { OrderItemResponse(it.id, it.itemId, it.quantity, it.unitPriceCents, it.totalPriceCents, it.createdAt) }</ID>
+    <ID>MaxLineLength:WebMappers.kt:OrderWebMapper$items = request.items.map { OrderItem(itemId = it.itemId, quantity = it.quantity, unitPriceCents = it.unitPriceCents, totalPriceCents = it.totalPriceCents) }</ID>
+    <ID>MaxLineLength:WebMappers.kt:PermissionWebMapper$fun toDomain(request: PermissionRequest)</ID>
+    <ID>MaxLineLength:WebMappers.kt:PersonWebMapper$contacts = request.contacts.map { Contact(type = it.type, contactValue = it.contactValue, isPrimary = it.isPrimary, isActive = it.isActive) }</ID>
+    <ID>MaxLineLength:WebMappers.kt:PipelineFlowWebMapper$PipelineFlowStepResponse(it.id, it.stepOrder, it.code, it.name, it.description, it.stepType, it.isTerminal, it.createdAt, it.updatedAt)</ID>
+    <ID>MaxLineLength:WebMappers.kt:RoleWebMapper$fun toDomain(request: RoleRequest)</ID>
+    <ID>MaxLineLength:WebMappersTest.kt:WebMappersTest$domain.copy(id = 1, code = java.util.UUID.fromString("11111111-1111-1111-1111-111111111111"), createdAt = now, updatedAt = now)</ID>
+    <ID>MaxLineLength:WebMappersTest.kt:WebMappersTest$domain.copy(id = 10, code = java.util.UUID.fromString("22222222-2222-2222-2222-222222222222"), createdAt = now, updatedAt = now)</ID>
+    <ID>MaxLineLength:WebMappersTest.kt:WebMappersTest$val city = CityWebMapper().toResponse(City(id = 3, stateId = 2, city = "Campinas", createdAt = now, updatedAt = now))</ID>
+    <ID>MaxLineLength:WebMappersTest.kt:WebMappersTest$val country = CountryWebMapper().toResponse(Country(id = 1, iso2 = "BR", iso3 = "BRA", country = "Brasil", createdAt = now, updatedAt = now))</ID>
+    <ID>MaxLineLength:WebMappersTest.kt:WebMappersTest$val state = StateWebMapper().toResponse(State(id = 2, countryId = 1, acronym = "SP", state = "São Paulo", createdAt = now, updatedAt = now))</ID>
+    <ID>MaxLineLength:WebMappersTest.kt:WebMappersTest$val uom = UnitOfMeasureWebMapper().toResponse(UnitOfMeasure(id = 4, code = "UN", name = "Unidade", symbol = "un", createdAt = now, updatedAt = now))</ID>
+    <ID>ReturnCount:AuthController.kt:AuthController$@PostMapping("/token") @Operation( summary = "Authenticate and return JWT token", requestBody = OasRequestBody( content = [OasContent(mediaType = "application/json", examples = [OasExampleObject(value = "{\"email\": \"admin@saas.com\", \"password\": \"string\"}")])] ) ) fun token(@org.springframework.web.bind.annotation.RequestBody req: AuthRequest): ResponseEntity&lt;AuthResponse&gt;</ID>
+    <ID>SwallowedException:JwtAuthenticationFilter.kt:JwtAuthenticationFilter$ex: Exception</ID>
+    <ID>TooGenericExceptionCaught:JwtAuthenticationFilter.kt:JwtAuthenticationFilter$ex: Exception</ID>
+    <ID>WildcardImport:AddressController.kt:import org.springframework.web.bind.annotation.*</ID>
+    <ID>WildcardImport:AddressJpaEntity.kt:import jakarta.persistence.*</ID>
+    <ID>WildcardImport:AppointmentController.kt:import org.springframework.web.bind.annotation.*</ID>
+    <ID>WildcardImport:AppointmentJpaEntity.kt:import jakarta.persistence.*</ID>
+    <ID>WildcardImport:AuthController.kt:import org.springframework.web.bind.annotation.*</ID>
+    <ID>WildcardImport:BaseJpaEntity.kt:import jakarta.persistence.*</ID>
+    <ID>WildcardImport:CityController.kt:import org.springframework.web.bind.annotation.*</ID>
+    <ID>WildcardImport:CityJpaEntity.kt:import jakarta.persistence.*</ID>
+    <ID>WildcardImport:ContactJpaEntity.kt:import jakarta.persistence.*</ID>
+    <ID>WildcardImport:CountryController.kt:import org.springframework.web.bind.annotation.*</ID>
+    <ID>WildcardImport:CountryJpaEntity.kt:import jakarta.persistence.*</ID>
+    <ID>WildcardImport:CustomerController.kt:import org.springframework.web.bind.annotation.*</ID>
+    <ID>WildcardImport:CustomerJpaEntity.kt:import jakarta.persistence.*</ID>
+    <ID>WildcardImport:ItemCategoryController.kt:import org.springframework.web.bind.annotation.*</ID>
+    <ID>WildcardImport:ItemCategoryJpaEntity.kt:import jakarta.persistence.*</ID>
+    <ID>WildcardImport:ItemController.kt:import org.springframework.web.bind.annotation.*</ID>
+    <ID>WildcardImport:ItemJpaEntity.kt:import jakarta.persistence.*</ID>
+    <ID>WildcardImport:LeadController.kt:import org.springframework.web.bind.annotation.*</ID>
+    <ID>WildcardImport:LeadJpaEntity.kt:import jakarta.persistence.*</ID>
+    <ID>WildcardImport:LeadMessageJpaEntity.kt:import jakarta.persistence.*</ID>
+    <ID>WildcardImport:OrderController.kt:import org.springframework.web.bind.annotation.*</ID>
+    <ID>WildcardImport:OrderItemJpaEntity.kt:import jakarta.persistence.*</ID>
+    <ID>WildcardImport:OrderJpaEntity.kt:import jakarta.persistence.*</ID>
+    <ID>WildcardImport:PermissionController.kt:import org.springframework.web.bind.annotation.*</ID>
+    <ID>WildcardImport:PermissionJpaEntity.kt:import jakarta.persistence.*</ID>
+    <ID>WildcardImport:PersistenceMappersTest.kt:import com.example.crm.domain.model.*</ID>
+    <ID>WildcardImport:PersonController.kt:import org.springframework.web.bind.annotation.*</ID>
+    <ID>WildcardImport:PersonJpaEntity.kt:import jakarta.persistence.*</ID>
+    <ID>WildcardImport:PersonLegalJpaEntity.kt:import jakarta.persistence.*</ID>
+    <ID>WildcardImport:PersonPhysicalJpaEntity.kt:import jakarta.persistence.*</ID>
+    <ID>WildcardImport:PipelineFlowController.kt:import org.springframework.web.bind.annotation.*</ID>
+    <ID>WildcardImport:PipelineFlowJpaEntity.kt:import jakarta.persistence.*</ID>
+    <ID>WildcardImport:PipelineFlowStepJpaEntity.kt:import jakarta.persistence.*</ID>
+    <ID>WildcardImport:RepositoryAdaptersTest.kt:import com.example.crm.domain.model.*</ID>
+    <ID>WildcardImport:RepositoryAdaptersTest.kt:import com.example.crm.infrastructure.persistence.mapper.*</ID>
+    <ID>WildcardImport:RepositoryAdaptersTest.kt:import com.example.crm.infrastructure.persistence.repository.*</ID>
+    <ID>WildcardImport:RoleController.kt:import org.springframework.web.bind.annotation.*</ID>
+    <ID>WildcardImport:RoleJpaEntity.kt:import jakarta.persistence.*</ID>
+    <ID>WildcardImport:ScheduleController.kt:import org.springframework.web.bind.annotation.*</ID>
+    <ID>WildcardImport:ScheduleJpaEntity.kt:import jakarta.persistence.*</ID>
+    <ID>WildcardImport:SimplePersistenceMappers.kt:import com.example.crm.domain.model.*</ID>
+    <ID>WildcardImport:SimplePersistenceMappers.kt:import com.example.crm.infrastructure.persistence.entity.*</ID>
+    <ID>WildcardImport:SimpleRepositoryAdapters.kt:import com.example.crm.domain.model.*</ID>
+    <ID>WildcardImport:SimpleRepositoryAdapters.kt:import com.example.crm.domain.repository.*</ID>
+    <ID>WildcardImport:SimpleRepositoryAdapters.kt:import com.example.crm.infrastructure.persistence.mapper.*</ID>
+    <ID>WildcardImport:SimpleRepositoryAdapters.kt:import com.example.crm.infrastructure.persistence.repository.*</ID>
+    <ID>WildcardImport:StateController.kt:import org.springframework.web.bind.annotation.*</ID>
+    <ID>WildcardImport:StateJpaEntity.kt:import jakarta.persistence.*</ID>
+    <ID>WildcardImport:TenantController.kt:import org.springframework.web.bind.annotation.*</ID>
+    <ID>WildcardImport:TenantJpaEntity.kt:import jakarta.persistence.*</ID>
+    <ID>WildcardImport:UnitOfMeasureController.kt:import org.springframework.web.bind.annotation.*</ID>
+    <ID>WildcardImport:UnitOfMeasureJpaEntity.kt:import jakarta.persistence.*</ID>
+    <ID>WildcardImport:UseCasesTest.kt:import com.example.crm.domain.model.*</ID>
+    <ID>WildcardImport:UseCasesTest.kt:import com.example.crm.domain.repository.*</ID>
+    <ID>WildcardImport:UserController.kt:import org.springframework.web.bind.annotation.*</ID>
+    <ID>WildcardImport:UserJpaEntity.kt:import jakarta.persistence.*</ID>
+    <ID>WildcardImport:WebMappers.kt:import com.example.crm.domain.model.*</ID>
+    <ID>WildcardImport:WebMappers.kt:import com.example.crm.infrastructure.web.dto.request.*</ID>
+    <ID>WildcardImport:WebMappers.kt:import com.example.crm.infrastructure.web.dto.response.*</ID>
+    <ID>WildcardImport:WebMappersTest.kt:import com.example.crm.domain.model.*</ID>
+    <ID>WildcardImport:WebMappersTest.kt:import com.example.crm.infrastructure.web.dto.request.*</ID>
+    <ID>WildcardImport:WorkerController.kt:import org.springframework.web.bind.annotation.*</ID>
+    <ID>WildcardImport:WorkerJpaEntity.kt:import jakarta.persistence.*</ID>
+  </CurrentIssues>
+</SmellBaseline>
