@@ -32,9 +32,9 @@ management:
       show-details: never
       group:
         readiness:
-          additional-path: /readyz
+          additional-path: server:/readyz
         liveness:
-          additional-path: /livez
+          additional-path: server:/livez
   health:
     readinessstate:
       enabled: true
