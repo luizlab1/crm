@@ -78,7 +78,7 @@ jobs:
       - name: Health check
         run: |
           for i in {1..30}; do
-            if curl -fsS http://localhost:${{ env.PORT }} > /dev/null; then
+            if curl -fsS http://localhost:${{ env.PORT }}/actuator/health/readiness > /dev/null || curl -fsS http://localhost:${{ env.PORT }}/actuator/health > /dev/null; then
               echo "Aplicação respondeu com sucesso."
               exit 0
             fi
