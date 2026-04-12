@@ -1,4 +1,4 @@
-name: Kotlin CI/CD 
+name: Kotlin CI/CD
 
 on:
   push:
@@ -14,7 +14,7 @@ env:
 
 jobs:
   build-and-deploy:
-    runs-on: LuizLabRunner
+    runs-on: self-hosted
 
     steps:
       - name: Checkout código
