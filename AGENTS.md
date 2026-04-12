@@ -37,6 +37,11 @@ make.cmd lint   # alternativa Windows sem GNU make
 
 **Ordem recomendada:** implementar → lint → testes do escopo → suite completa.
 
+**Gate obrigatório antes de concluir qualquer tarefa com alteração de código:**
+- Se houve mudança em código-fonte, o agente deve executar `./gradlew.bat detekt` e `./gradlew.bat test` (ou `\.\gradlew.bat` no PowerShell).
+- Se algum dos comandos ainda não foi executado na sessão após as mudanças, deve executar antes de marcar como pronto.
+- Se houver falha, o agente deve corrigir o problema e rodar novamente até passar.
+
 > README diz Java 25 — ignore. O build usa JDK 21 (`build.gradle.kts:26`). Confie no build.
 
 ---

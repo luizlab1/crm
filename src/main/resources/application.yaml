@@ -54,4 +54,4 @@ springdoc:
 app:
   cors:
     # aceita frontend local e subdominios luizlab
-    allowed-origin-patterns: http://localhost:*,http://127.0.0.1:*,https://*.luizlab.com:*,http://*.luizlab.com:*,https://luizlab.com:*,http://luizlab.com:*
+    allowed-origin-patterns: http://localhost:*,http://127.0.0.1:*,https://*.luizlab.com,http://*.luizlab.com,https://*.luizlab.com:*,http://*.luizlab.com:*,https://luizlab.com,http://luizlab.com,https://luizlab.com:*,http://luizlab.com:*

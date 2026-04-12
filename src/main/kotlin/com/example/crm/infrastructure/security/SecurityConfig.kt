@@ -23,6 +23,8 @@ class SecurityConfig(
     private val defaultCorsAllowedOriginPatterns = listOf(
         "http://localhost:*",
         "http://127.0.0.1:*",
+        "https://*.luizlab.com",
+        "http://*.luizlab.com",
         "https://*.luizlab.com:*",
         "http://*.luizlab.com:*"
     )
