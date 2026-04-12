@@ -14,10 +14,10 @@ env:
 
 jobs:
   build-and-deploy:
-    runs-on: self-hosted
+    runs-on: LuizLabRunner
 
     steps:
-      - name: Checkout código 
+      - name: Checkout código
         uses: actions/checkout@v4
 
       - name: Setup Java
