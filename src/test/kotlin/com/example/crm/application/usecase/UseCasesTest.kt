@@ -159,13 +159,13 @@ class UseCasesTest {
         every { flowRepo.findById(9) } returns flow
         every { flowRepo.save(any()) } answers { firstArg() }
 
-        CustomerUseCaseImpl(customerRepo).list(pageable, 10).content.first().id shouldBe 1
+        CustomerUseCaseImpl(customerRepo, personRepo).list(pageable, 10).content.first().id shouldBe 1
         ItemUseCaseImpl(itemRepo).list(pageable, 10).content.first().id shouldBe 2
         PersonUseCaseImpl(personRepo).list(pageable, 10).content.first().id shouldBe 3
         ScheduleUseCaseImpl(scheduleRepo).list(pageable, 10).content.first().id shouldBe 4
-        WorkerUseCaseImpl(workerRepo).list(pageable, 10).content.first().id shouldBe 5
+        WorkerUseCaseImpl(workerRepo, personRepo).list(pageable, 10).content.first().id shouldBe 5
 
-        val userUseCase = UserUseCaseImpl(userRepo)
+        val userUseCase = UserUseCaseImpl(userRepo, personRepo)
         userUseCase.getByEmail("u@crm.com")?.id shouldBe 6
         userUseCase.update(6, user.copy(email = "n@crm.com")).email shouldBe "n@crm.com"
 

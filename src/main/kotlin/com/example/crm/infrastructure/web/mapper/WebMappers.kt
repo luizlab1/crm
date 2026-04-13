@@ -27,14 +27,37 @@ class PersonWebMapper {
 
 @Component
 class CustomerWebMapper {
-    fun toDomain(request: CustomerRequest) = Customer(
-        tenantId = request.tenantId, personId = request.personId, fullName = request.fullName,
-        email = request.email, phone = request.phone, document = request.document, isActive = request.isActive
-    )
+    fun toDomain(request: CustomerRequest): Customer {
+        val person = if (request.physical != null || request.legal != null || request.contacts.isNotEmpty()) {
+            Person(
+                tenantId = request.tenantId,
+                physical = request.physical?.let { PersonPhysical(it.fullName, it.cpf, it.birthDate) },
+                legal = request.legal?.let { PersonLegal(it.corporateName, it.tradeName, it.cnpj) },
+                contacts = request.contacts.map {
+                    Contact(
+                        type = it.type,
+                        contactValue = it.contactValue,
+                        isPrimary = it.isPrimary,
+                        isActive = it.isActive
+                    )
+                }
+            )
+        } else null
+        return Customer(
+            tenantId = request.tenantId, fullName = request.fullName,
+            email = request.email, phone = request.phone, document = request.document,
+            isActive = request.isActive, person = person
+        )
+    }
     fun toResponse(d: Customer) = CustomerResponse(
         id = d.id, code = d.code, tenantId = d.tenantId, personId = d.personId,
         fullName = d.fullName, email = d.email, phone = d.phone, document = d.document,
-        isActive = d.isActive, createdAt = d.createdAt, updatedAt = d.updatedAt
+        isActive = d.isActive, createdAt = d.createdAt, updatedAt = d.updatedAt,
+        physical = d.person?.physical?.let { PersonPhysicalResponse(it.fullName, it.cpf, it.birthDate) },
+        legal = d.person?.legal?.let { PersonLegalResponse(it.corporateName, it.tradeName, it.cnpj) },
+        contacts = d.person?.contacts?.map {
+            ContactResponse(it.id, it.type, it.contactValue, it.isPrimary, it.isActive, it.createdAt, it.updatedAt)
+        } ?: emptyList()
     )
 }
 
@@ -115,25 +138,70 @@ class TenantWebMapper {
 
 @Component
 class UserWebMapper {
-    fun toDomain(request: UserRequest) = User(
-        tenantId = request.tenantId, personId = request.personId,
-        email = request.email, passwordHash = request.passwordHash, isActive = request.isActive
-    )
+    fun toDomain(request: UserRequest): User {
+        val person = if (request.physical != null || request.legal != null || request.contacts.isNotEmpty()) {
+            Person(
+                tenantId = request.tenantId,
+                physical = request.physical?.let { PersonPhysical(it.fullName, it.cpf, it.birthDate) },
+                legal = request.legal?.let { PersonLegal(it.corporateName, it.tradeName, it.cnpj) },
+                contacts = request.contacts.map {
+                    Contact(
+                        type = it.type,
+                        contactValue = it.contactValue,
+                        isPrimary = it.isPrimary,
+                        isActive = it.isActive
+                    )
+                }
+            )
+        } else null
+        return User(
+            tenantId = request.tenantId, email = request.email,
+            passwordHash = request.passwordHash, isActive = request.isActive, person = person
+        )
+    }
     fun toResponse(d: User) = UserResponse(
         id = d.id, tenantId = d.tenantId, personId = d.personId, code = d.code,
-        email = d.email, isActive = d.isActive, createdAt = d.createdAt, updatedAt = d.updatedAt
+        email = d.email, isActive = d.isActive, createdAt = d.createdAt, updatedAt = d.updatedAt,
+        physical = d.person?.physical?.let { PersonPhysicalResponse(it.fullName, it.cpf, it.birthDate) },
+        legal = d.person?.legal?.let { PersonLegalResponse(it.corporateName, it.tradeName, it.cnpj) },
+        contacts = d.person?.contacts?.map {
+            ContactResponse(it.id, it.type, it.contactValue, it.isPrimary, it.isActive, it.createdAt, it.updatedAt)
+        } ?: emptyList()
     )
 }
 
 @Component
 class WorkerWebMapper {
-    fun toDomain(request: WorkerRequest) = Worker(
-        tenantId = request.tenantId, personId = request.personId,
-        userId = request.userId, isActive = request.isActive
-    )
+    fun toDomain(request: WorkerRequest): Worker {
+        val person = if (request.physical != null || request.legal != null || request.contacts.isNotEmpty()) {
+            Person(
+                tenantId = request.tenantId,
+                physical = request.physical?.let { PersonPhysical(it.fullName, it.cpf, it.birthDate) },
+                legal = request.legal?.let { PersonLegal(it.corporateName, it.tradeName, it.cnpj) },
+                contacts = request.contacts.map {
+                    Contact(
+                        type = it.type,
+                        contactValue = it.contactValue,
+                        isPrimary = it.isPrimary,
+                        isActive = it.isActive
+                    )
+                }
+            )
+        } else null
+        // personId = 0 é placeholder — o use case vai criar/atualizar a person e preencher o personId real
+        return Worker(
+            tenantId = request.tenantId, personId = 0L,
+            userId = request.userId, isActive = request.isActive, person = person
+        )
+    }
     fun toResponse(d: Worker) = WorkerResponse(
         id = d.id, code = d.code, tenantId = d.tenantId, personId = d.personId,
-        userId = d.userId, isActive = d.isActive, createdAt = d.createdAt, updatedAt = d.updatedAt
+        userId = d.userId, isActive = d.isActive, createdAt = d.createdAt, updatedAt = d.updatedAt,
+        physical = d.person?.physical?.let { PersonPhysicalResponse(it.fullName, it.cpf, it.birthDate) },
+        legal = d.person?.legal?.let { PersonLegalResponse(it.corporateName, it.tradeName, it.cnpj) },
+        contacts = d.person?.contacts?.map {
+            ContactResponse(it.id, it.type, it.contactValue, it.isPrimary, it.isActive, it.createdAt, it.updatedAt)
+        } ?: emptyList()
     )
 }
 

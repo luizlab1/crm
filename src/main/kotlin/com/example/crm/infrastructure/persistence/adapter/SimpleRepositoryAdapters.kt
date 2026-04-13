@@ -2,6 +2,8 @@ package com.example.crm.infrastructure.persistence.adapter
 
 import com.example.crm.domain.model.*
 import com.example.crm.domain.repository.*
+import com.example.crm.infrastructure.persistence.entity.UserJpaEntity
+import com.example.crm.infrastructure.persistence.entity.WorkerJpaEntity
 import com.example.crm.infrastructure.persistence.mapper.*
 import com.example.crm.infrastructure.persistence.repository.*
 import org.springframework.data.domain.Page
@@ -19,23 +21,51 @@ class TenantRepositoryAdapter(
 
 @Component
 class UserRepositoryAdapter(
-    private val jpa: UserJpaRepository, private val mapper: UserPersistenceMapper
+    private val jpa: UserJpaRepository,
+    private val mapper: UserPersistenceMapper,
+    private val personJpaRepository: PersonJpaRepository,
+    private val contactJpaRepository: ContactJpaRepository,
+    private val personMapper: PersonPersistenceMapper
 ) : UserRepository {
-    override fun findAll(pageable: Pageable): Page<User> = jpa.findAll(pageable).map { mapper.toDomain(it) }
-    override fun findByTenantId(tenantId: Long, pageable: Pageable): Page<User> = jpa.findByTenantId(tenantId, pageable).map { mapper.toDomain(it) }
-    override fun findById(id: Long): User? = jpa.findById(id).map { mapper.toDomain(it) }.orElse(null)
+    override fun findAll(pageable: Pageable): Page<User> = jpa.findAll(pageable).map { enrich(it) }
+    override fun findByTenantId(tenantId: Long, pageable: Pageable): Page<User> = jpa.findByTenantId(tenantId, pageable).map { enrich(it) }
+    override fun findById(id: Long): User? = jpa.findById(id).map { enrich(it) }.orElse(null)
     override fun save(user: User): User = mapper.toDomain(jpa.save(mapper.toEntity(user)))
-    override fun findByEmail(email: String): User? = jpa.findByEmail(email)?.let { mapper.toDomain(it) }
+    override fun findByEmail(email: String): User? = jpa.findByEmail(email)?.let { enrich(it) }
+
+    private fun enrich(entity: UserJpaEntity): User {
+        val base = mapper.toDomain(entity)
+        val person = entity.personId?.let { pid ->
+            personJpaRepository.findById(pid).map { personEntity ->
+                val contacts = contactJpaRepository.findByPersonIdIn(listOf(pid))
+                personMapper.toDomain(personEntity).copy(contacts = contacts.map { personMapper.toDomain(it) })
+            }.orElse(null)
+        }
+        return base.copy(person = person)
+    }
 }
 
 @Component
 class WorkerRepositoryAdapter(
-    private val jpa: WorkerJpaRepository, private val mapper: WorkerPersistenceMapper
+    private val jpa: WorkerJpaRepository,
+    private val mapper: WorkerPersistenceMapper,
+    private val personJpaRepository: PersonJpaRepository,
+    private val contactJpaRepository: ContactJpaRepository,
+    private val personMapper: PersonPersistenceMapper
 ) : WorkerRepository {
-    override fun findAll(pageable: Pageable): Page<Worker> = jpa.findAll(pageable).map { mapper.toDomain(it) }
-    override fun findByTenantId(tenantId: Long, pageable: Pageable): Page<Worker> = jpa.findByTenantId(tenantId, pageable).map { mapper.toDomain(it) }
-    override fun findById(id: Long): Worker? = jpa.findById(id).map { mapper.toDomain(it) }.orElse(null)
+    override fun findAll(pageable: Pageable): Page<Worker> = jpa.findAll(pageable).map { enrich(it) }
+    override fun findByTenantId(tenantId: Long, pageable: Pageable): Page<Worker> = jpa.findByTenantId(tenantId, pageable).map { enrich(it) }
+    override fun findById(id: Long): Worker? = jpa.findById(id).map { enrich(it) }.orElse(null)
     override fun save(worker: Worker): Worker = mapper.toDomain(jpa.save(mapper.toEntity(worker)))
+
+    private fun enrich(entity: WorkerJpaEntity): Worker {
+        val base = mapper.toDomain(entity)
+        val person = personJpaRepository.findById(entity.personId).map { personEntity ->
+            val contacts = contactJpaRepository.findByPersonIdIn(listOf(entity.personId))
+            personMapper.toDomain(personEntity).copy(contacts = contacts.map { personMapper.toDomain(it) })
+        }.orElse(null)
+        return base.copy(person = person)
+    }
 }
 
 @Component

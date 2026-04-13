@@ -106,8 +106,8 @@ class WebMappersTest {
         val user = UserWebMapper().toDomain(UserRequest(tenantId = 1, email = "u@c.com", passwordHash = "hash"))
         user.email shouldBe "u@c.com"
 
-        val worker = WorkerWebMapper().toDomain(WorkerRequest(tenantId = 1, personId = 2))
-        worker.personId shouldBe 2
+        val worker = WorkerWebMapper().toDomain(WorkerRequest(tenantId = 1))
+        worker.tenantId shouldBe 1
 
         val item = ItemWebMapper().toDomain(ItemRequest(tenantId = 1, type = "SERVICE", name = "Consultoria"))
         item.type shouldBe "SERVICE"

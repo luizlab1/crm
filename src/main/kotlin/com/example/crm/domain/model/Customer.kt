@@ -14,6 +14,8 @@ data class Customer(
     val document: String? = null,
     val isActive: Boolean = true,
     val createdAt: OffsetDateTime = OffsetDateTime.now(),
-    val updatedAt: OffsetDateTime = OffsetDateTime.now()
+    val updatedAt: OffsetDateTime = OffsetDateTime.now(),
+    // dados de pessoa embutidos (gerenciados internamente pelo use case)
+    val person: Person? = null
 )
 

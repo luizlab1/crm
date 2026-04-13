@@ -117,8 +117,17 @@ class RepositoryAdaptersTest {
     @Test
     fun `it should execute customer and simple repository adapters`() {
         val customerRepo = mockk<CustomerJpaRepository>()
+        val personJpaRepo = mockk<PersonJpaRepository>()
+        val contactJpaRepo = mockk<ContactJpaRepository>()
         val customerMapper = CustomerPersistenceMapper()
-        val customerAdapter = CustomerRepositoryAdapter(customerRepo, customerMapper)
+        val personMapper = PersonPersistenceMapper()
+        val customerAdapter = CustomerRepositoryAdapter(
+            customerRepo,
+            personJpaRepo,
+            contactJpaRepo,
+            customerMapper,
+            personMapper
+        )
         val customer = Customer(id = 1, tenantId = 10, fullName = "Maria", createdAt = now, updatedAt = now)
         val customerEntity = customerMapper.toEntity(customer)
 
@@ -126,6 +135,8 @@ class RepositoryAdaptersTest {
         every { customerRepo.findByTenantId(10, pageable) } returns PageImpl(listOf(customerEntity))
         every { customerRepo.findById(1) } returns Optional.of(customerEntity)
         every { customerRepo.save(any()) } answers { firstArg() }
+        // customer sem personId — enrich não busca person
+        every { personJpaRepo.findById(any<Long>()) } returns Optional.empty()
 
         customerAdapter.findAll(pageable).content.first().fullName shouldBe "Maria"
         customerAdapter.findByTenantId(10, pageable).content.first().tenantId shouldBe 10

@@ -11,6 +11,9 @@ data class WorkerResponse(
     val userId: Long?,
     val isActive: Boolean,
     val createdAt: OffsetDateTime,
-    val updatedAt: OffsetDateTime
+    val updatedAt: OffsetDateTime,
+    // dados de pessoa embutidos
+    val physical: PersonPhysicalResponse? = null,
+    val legal: PersonLegalResponse? = null,
+    val contacts: List<ContactResponse> = emptyList()
 )
-

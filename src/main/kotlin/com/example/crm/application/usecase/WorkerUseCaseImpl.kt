@@ -2,7 +2,9 @@ package com.example.crm.application.usecase
 
 import com.example.crm.application.port.input.WorkerUseCase
 import com.example.crm.domain.exception.EntityNotFoundException
+import com.example.crm.domain.model.Person
 import com.example.crm.domain.model.Worker
+import com.example.crm.domain.repository.PersonRepository
 import com.example.crm.domain.repository.WorkerRepository
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -12,7 +14,8 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 @Transactional
 class WorkerUseCaseImpl(
-    private val workerRepository: WorkerRepository
+    private val workerRepository: WorkerRepository,
+    private val personRepository: PersonRepository
 ) : WorkerUseCase {
 
     @Transactional(readOnly = true)
@@ -24,12 +27,21 @@ class WorkerUseCaseImpl(
     override fun getById(id: Long): Worker =
         workerRepository.findById(id) ?: throw EntityNotFoundException("Worker", id)
 
-    override fun create(worker: Worker): Worker =
-        workerRepository.save(worker)
+    override fun create(worker: Worker): Worker {
+        val personId = upsertPerson(null, worker.person, worker.tenantId)
+        val effectivePersonId = personId ?: worker.personId
+        return workerRepository.save(worker.copy(personId = effectivePersonId))
+    }
 
     override fun update(id: Long, worker: Worker): Worker {
         val existing = workerRepository.findById(id) ?: throw EntityNotFoundException("Worker", id)
-        val updated = worker.copy(id = existing.id, code = existing.code, createdAt = existing.createdAt)
+        val personId = upsertPerson(existing.personId, worker.person, worker.tenantId)
+        val updated = worker.copy(
+            id = existing.id,
+            code = existing.code,
+            createdAt = existing.createdAt,
+            personId = personId ?: existing.personId
+        )
         return workerRepository.save(updated)
     }
 
@@ -37,5 +49,25 @@ class WorkerUseCaseImpl(
         val existing = workerRepository.findById(id) ?: throw EntityNotFoundException("Worker", id)
         workerRepository.save(existing.copy(isActive = false))
     }
-}
 
+    private fun upsertPerson(existingPersonId: Long?, personData: Person?, tenantId: Long): Long? {
+        if (personData == null) return existingPersonId
+        return if (existingPersonId != null && existingPersonId != 0L) {
+            val existing = personRepository.findById(existingPersonId)
+            if (existing != null) {
+                personRepository.save(
+                    personData.copy(
+                        id = existing.id,
+                        code = existing.code,
+                        tenantId = tenantId,
+                        createdAt = existing.createdAt
+                    )
+                ).id
+            } else {
+                personRepository.save(personData.copy(tenantId = tenantId)).id
+            }
+        } else {
+            personRepository.save(personData.copy(tenantId = tenantId)).id
+        }
+    }
+}
