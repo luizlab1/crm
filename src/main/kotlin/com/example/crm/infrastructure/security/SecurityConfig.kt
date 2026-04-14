@@ -26,7 +26,11 @@ class SecurityConfig(
         "https://*.luizlab.com",
         "http://*.luizlab.com",
         "https://*.luizlab.com:*",
-        "http://*.luizlab.com:*"
+        "http://*.luizlab.com:*",
+        "https://luizlab.com",
+        "http://luizlab.com",
+        "https://luizlab.com:*",
+        "http://luizlab.com:*"
     )
 
     @Bean
@@ -62,12 +66,11 @@ class SecurityConfig(
             .map { it.trim() }
             .filter { it.isNotBlank() }
 
+        val effectiveOriginPatterns = (defaultCorsAllowedOriginPatterns + configuredOriginPatterns)
+            .distinct()
+
         val configuration = CorsConfiguration().apply {
-            allowedOriginPatterns = if (configuredOriginPatterns.isNotEmpty()) {
-                configuredOriginPatterns
-            } else {
-                defaultCorsAllowedOriginPatterns
-            }
+            allowedOriginPatterns = effectiveOriginPatterns
             allowedMethods = listOf("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
             allowedHeaders = listOf("*")
             exposedHeaders = listOf("Authorization")
