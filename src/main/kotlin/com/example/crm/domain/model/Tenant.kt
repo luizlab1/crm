@@ -11,6 +11,8 @@ data class Tenant(
     val category: String,
     val isActive: Boolean = true,
     val createdAt: OffsetDateTime = OffsetDateTime.now(),
-    val updatedAt: OffsetDateTime = OffsetDateTime.now()
+    val updatedAt: OffsetDateTime = OffsetDateTime.now(),
+    val person: Person? = null,
+    val address: Address? = null
 )
 

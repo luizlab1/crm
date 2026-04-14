@@ -12,5 +12,6 @@ data class CustomerRequest(
     // dados de pessoa — quando fornecidos, a pessoa é criada/atualizada automaticamente
     val physical: PersonPhysicalRequest? = null,
     val legal: PersonLegalRequest? = null,
-    val contacts: List<ContactRequest> = emptyList()
+    val contacts: List<ContactRequest> = emptyList(),
+    val address: AddressRequest? = null
 )

@@ -28,7 +28,7 @@ class PersonWebMapper {
 @Component
 class CustomerWebMapper {
     fun toDomain(request: CustomerRequest): Customer {
-        val person = if (request.physical != null || request.legal != null || request.contacts.isNotEmpty()) {
+        val person = if (hasPersonPayload(request)) {
             Person(
                 tenantId = request.tenantId,
                 physical = request.physical?.let { PersonPhysical(it.fullName, it.cpf, it.birthDate) },
@@ -46,7 +46,20 @@ class CustomerWebMapper {
         return Customer(
             tenantId = request.tenantId, fullName = request.fullName,
             email = request.email, phone = request.phone, document = request.document,
-            isActive = request.isActive, person = person
+            isActive = request.isActive, person = person,
+            address = request.address?.let {
+                Address(
+                    street = it.street,
+                    number = it.number,
+                    complement = it.complement,
+                    neighborhood = it.neighborhood,
+                    cityId = it.cityId,
+                    postalCode = it.postalCode,
+                    latitude = it.latitude,
+                    longitude = it.longitude,
+                    isActive = it.isActive
+                )
+            }
         )
     }
     fun toResponse(d: Customer) = CustomerResponse(
@@ -57,8 +70,30 @@ class CustomerWebMapper {
         legal = d.person?.legal?.let { PersonLegalResponse(it.corporateName, it.tradeName, it.cnpj) },
         contacts = d.person?.contacts?.map {
             ContactResponse(it.id, it.type, it.contactValue, it.isPrimary, it.isActive, it.createdAt, it.updatedAt)
-        } ?: emptyList()
+        } ?: emptyList(),
+        address = d.address?.let {
+            AddressResponse(
+                id = it.id,
+                street = it.street,
+                number = it.number,
+                complement = it.complement,
+                neighborhood = it.neighborhood,
+                cityId = it.cityId,
+                postalCode = it.postalCode,
+                latitude = it.latitude,
+                longitude = it.longitude,
+                isActive = it.isActive,
+                createdAt = it.createdAt,
+                updatedAt = it.updatedAt
+            )
+        }
     )
+
+    private fun hasPersonPayload(request: CustomerRequest): Boolean =
+        request.physical != null ||
+            request.legal != null ||
+            request.contacts.isNotEmpty() ||
+            request.address != null
 }
 
 @Component
@@ -127,13 +162,68 @@ class PipelineFlowWebMapper {
 class TenantWebMapper {
     fun toDomain(request: TenantRequest) = Tenant(
         parentTenantId = request.parentTenantId, name = request.name,
-        category = request.category, isActive = request.isActive
+        category = request.category, isActive = request.isActive,
+        person = if (hasPersonPayload(request)) {
+            Person(
+                tenantId = 0L,
+                physical = request.physical?.let { PersonPhysical(it.fullName, it.cpf, it.birthDate) },
+                legal = request.legal?.let { PersonLegal(it.corporateName, it.tradeName, it.cnpj) },
+                contacts = request.contacts.map {
+                    Contact(
+                        type = it.type,
+                        contactValue = it.contactValue,
+                        isPrimary = it.isPrimary,
+                        isActive = it.isActive
+                    )
+                }
+            )
+        } else null,
+        address = request.address?.let {
+            Address(
+                street = it.street,
+                number = it.number,
+                complement = it.complement,
+                neighborhood = it.neighborhood,
+                cityId = it.cityId,
+                postalCode = it.postalCode,
+                latitude = it.latitude,
+                longitude = it.longitude,
+                isActive = it.isActive
+            )
+        }
     )
     fun toResponse(d: Tenant) = TenantResponse(
         id = d.id, parentTenantId = d.parentTenantId, code = d.code,
         name = d.name, category = d.category, isActive = d.isActive,
-        createdAt = d.createdAt, updatedAt = d.updatedAt
+        createdAt = d.createdAt, updatedAt = d.updatedAt,
+        physical = d.person?.physical?.let { PersonPhysicalResponse(it.fullName, it.cpf, it.birthDate) },
+        legal = d.person?.legal?.let { PersonLegalResponse(it.corporateName, it.tradeName, it.cnpj) },
+        contacts = d.person?.contacts?.map {
+            ContactResponse(it.id, it.type, it.contactValue, it.isPrimary, it.isActive, it.createdAt, it.updatedAt)
+        } ?: emptyList(),
+        address = d.address?.let {
+            AddressResponse(
+                id = it.id,
+                street = it.street,
+                number = it.number,
+                complement = it.complement,
+                neighborhood = it.neighborhood,
+                cityId = it.cityId,
+                postalCode = it.postalCode,
+                latitude = it.latitude,
+                longitude = it.longitude,
+                isActive = it.isActive,
+                createdAt = it.createdAt,
+                updatedAt = it.updatedAt
+            )
+        }
     )
+
+    private fun hasPersonPayload(request: TenantRequest): Boolean =
+        request.physical != null ||
+            request.legal != null ||
+            request.contacts.isNotEmpty() ||
+            request.address != null
 }
 
 @Component
@@ -173,7 +263,7 @@ class UserWebMapper {
 @Component
 class WorkerWebMapper {
     fun toDomain(request: WorkerRequest): Worker {
-        val person = if (request.physical != null || request.legal != null || request.contacts.isNotEmpty()) {
+        val person = if (hasPersonPayload(request)) {
             Person(
                 tenantId = request.tenantId,
                 physical = request.physical?.let { PersonPhysical(it.fullName, it.cpf, it.birthDate) },
@@ -191,7 +281,20 @@ class WorkerWebMapper {
         // personId = 0 é placeholder — o use case vai criar/atualizar a person e preencher o personId real
         return Worker(
             tenantId = request.tenantId, personId = 0L,
-            userId = request.userId, isActive = request.isActive, person = person
+            userId = request.userId, isActive = request.isActive, person = person,
+            address = request.address?.let {
+                Address(
+                    street = it.street,
+                    number = it.number,
+                    complement = it.complement,
+                    neighborhood = it.neighborhood,
+                    cityId = it.cityId,
+                    postalCode = it.postalCode,
+                    latitude = it.latitude,
+                    longitude = it.longitude,
+                    isActive = it.isActive
+                )
+            }
         )
     }
     fun toResponse(d: Worker) = WorkerResponse(
@@ -201,8 +304,30 @@ class WorkerWebMapper {
         legal = d.person?.legal?.let { PersonLegalResponse(it.corporateName, it.tradeName, it.cnpj) },
         contacts = d.person?.contacts?.map {
             ContactResponse(it.id, it.type, it.contactValue, it.isPrimary, it.isActive, it.createdAt, it.updatedAt)
-        } ?: emptyList()
+        } ?: emptyList(),
+        address = d.address?.let {
+            AddressResponse(
+                id = it.id,
+                street = it.street,
+                number = it.number,
+                complement = it.complement,
+                neighborhood = it.neighborhood,
+                cityId = it.cityId,
+                postalCode = it.postalCode,
+                latitude = it.latitude,
+                longitude = it.longitude,
+                isActive = it.isActive,
+                createdAt = it.createdAt,
+                updatedAt = it.updatedAt
+            )
+        }
     )
+
+    private fun hasPersonPayload(request: WorkerRequest): Boolean =
+        request.physical != null ||
+            request.legal != null ||
+            request.contacts.isNotEmpty() ||
+            request.address != null
 }
 
 @Component

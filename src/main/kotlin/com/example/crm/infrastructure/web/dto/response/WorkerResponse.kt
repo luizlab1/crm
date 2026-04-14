@@ -15,5 +15,6 @@ data class WorkerResponse(
     // dados de pessoa embutidos
     val physical: PersonPhysicalResponse? = null,
     val legal: PersonLegalResponse? = null,
-    val contacts: List<ContactResponse> = emptyList()
+    val contacts: List<ContactResponse> = emptyList(),
+    val address: AddressResponse? = null
 )

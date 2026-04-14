@@ -1,6 +1,7 @@
 package com.example.crm.infrastructure.persistence.adapter
 
 import com.example.crm.domain.model.*
+import com.example.crm.domain.repository.PersonAddressRepository
 import com.example.crm.infrastructure.persistence.mapper.*
 import com.example.crm.infrastructure.persistence.repository.*
 import com.example.crm.support.shouldBe
@@ -119,12 +120,14 @@ class RepositoryAdaptersTest {
         val customerRepo = mockk<CustomerJpaRepository>()
         val personJpaRepo = mockk<PersonJpaRepository>()
         val contactJpaRepo = mockk<ContactJpaRepository>()
+        val personAddressRepo = mockk<PersonAddressRepository>()
         val customerMapper = CustomerPersistenceMapper()
         val personMapper = PersonPersistenceMapper()
         val customerAdapter = CustomerRepositoryAdapter(
             customerRepo,
             personJpaRepo,
             contactJpaRepo,
+            personAddressRepo,
             customerMapper,
             personMapper
         )
@@ -137,6 +140,7 @@ class RepositoryAdaptersTest {
         every { customerRepo.save(any()) } answers { firstArg() }
         // customer sem personId — enrich não busca person
         every { personJpaRepo.findById(any<Long>()) } returns Optional.empty()
+        every { personAddressRepo.findPrimaryAddressByPersonId(any()) } returns null
 
         customerAdapter.findAll(pageable).content.first().fullName shouldBe "Maria"
         customerAdapter.findByTenantId(10, pageable).content.first().tenantId shouldBe 10

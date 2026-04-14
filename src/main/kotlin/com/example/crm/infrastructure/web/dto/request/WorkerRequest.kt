@@ -7,5 +7,6 @@ data class WorkerRequest(
     // dados de pessoa — obrigatório fornecer physical ou legal
     val physical: PersonPhysicalRequest? = null,
     val legal: PersonLegalRequest? = null,
-    val contacts: List<ContactRequest> = emptyList()
+    val contacts: List<ContactRequest> = emptyList(),
+    val address: AddressRequest? = null
 )

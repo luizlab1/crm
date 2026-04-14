@@ -2,6 +2,7 @@ package com.example.crm.infrastructure.persistence.adapter
 
 import com.example.crm.domain.model.Customer
 import com.example.crm.domain.repository.CustomerRepository
+import com.example.crm.domain.repository.PersonAddressRepository
 import com.example.crm.infrastructure.persistence.entity.CustomerJpaEntity
 import com.example.crm.infrastructure.persistence.mapper.CustomerPersistenceMapper
 import com.example.crm.infrastructure.persistence.mapper.PersonPersistenceMapper
@@ -17,6 +18,7 @@ class CustomerRepositoryAdapter(
     private val jpaRepository: CustomerJpaRepository,
     private val personJpaRepository: PersonJpaRepository,
     private val contactJpaRepository: ContactJpaRepository,
+    private val personAddressRepository: PersonAddressRepository,
     private val mapper: CustomerPersistenceMapper,
     private val personMapper: PersonPersistenceMapper
 ) : CustomerRepository {
@@ -46,7 +48,7 @@ class CustomerRepositoryAdapter(
                 domain.copy(contacts = contacts.map { personMapper.toDomain(it) })
             }.orElse(null)
         }
-        return base.copy(person = person)
+        val address = entity.personId?.let { personAddressRepository.findPrimaryAddressByPersonId(it) }
+        return base.copy(person = person, address = address)
     }
 }
-

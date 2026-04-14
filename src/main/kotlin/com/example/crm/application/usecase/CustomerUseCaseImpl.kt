@@ -5,6 +5,7 @@ import com.example.crm.domain.exception.EntityNotFoundException
 import com.example.crm.domain.model.Customer
 import com.example.crm.domain.model.Person
 import com.example.crm.domain.repository.CustomerRepository
+import com.example.crm.domain.repository.PersonAddressRepository
 import com.example.crm.domain.repository.PersonRepository
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -15,7 +16,8 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional
 class CustomerUseCaseImpl(
     private val customerRepository: CustomerRepository,
-    private val personRepository: PersonRepository
+    private val personRepository: PersonRepository,
+    private val personAddressRepository: PersonAddressRepository
 ) : CustomerUseCase {
 
     @Transactional(readOnly = true)
@@ -29,7 +31,13 @@ class CustomerUseCaseImpl(
 
     override fun create(customer: Customer): Customer {
         val personId = upsertPerson(null, customer.person, customer.tenantId)
-        return customerRepository.save(customer.copy(personId = personId ?: customer.personId))
+        val finalPersonId = personId ?: customer.personId
+        if (finalPersonId != null && customer.address != null) {
+            personAddressRepository.upsertPrimaryAddress(finalPersonId, customer.address)
+        }
+
+        val saved = customerRepository.save(customer.copy(personId = finalPersonId))
+        return customerRepository.findById(saved.id) ?: saved
     }
 
     override fun update(id: Long, customer: Customer): Customer {
@@ -41,7 +49,13 @@ class CustomerUseCaseImpl(
             createdAt = existing.createdAt,
             personId = personId ?: existing.personId
         )
-        return customerRepository.save(updated)
+        val finalPersonId = updated.personId
+        if (finalPersonId != null && customer.address != null) {
+            personAddressRepository.upsertPrimaryAddress(finalPersonId, customer.address)
+        }
+
+        val saved = customerRepository.save(updated)
+        return customerRepository.findById(saved.id) ?: saved
     }
 
     override fun delete(id: Long) {

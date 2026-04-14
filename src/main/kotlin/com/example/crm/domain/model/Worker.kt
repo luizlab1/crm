@@ -13,6 +13,7 @@ data class Worker(
     val createdAt: OffsetDateTime = OffsetDateTime.now(),
     val updatedAt: OffsetDateTime = OffsetDateTime.now(),
     // dados de pessoa embutidos (gerenciados internamente pelo use case)
-    val person: Person? = null
+    val person: Person? = null,
+    val address: Address? = null
 )
 

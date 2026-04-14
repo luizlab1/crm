@@ -51,7 +51,8 @@ class WorkerRepositoryAdapter(
     private val mapper: WorkerPersistenceMapper,
     private val personJpaRepository: PersonJpaRepository,
     private val contactJpaRepository: ContactJpaRepository,
-    private val personMapper: PersonPersistenceMapper
+    private val personMapper: PersonPersistenceMapper,
+    private val personAddressRepository: PersonAddressRepository
 ) : WorkerRepository {
     override fun findAll(pageable: Pageable): Page<Worker> = jpa.findAll(pageable).map { enrich(it) }
     override fun findByTenantId(tenantId: Long, pageable: Pageable): Page<Worker> = jpa.findByTenantId(tenantId, pageable).map { enrich(it) }
@@ -64,7 +65,8 @@ class WorkerRepositoryAdapter(
             val contacts = contactJpaRepository.findByPersonIdIn(listOf(entity.personId))
             personMapper.toDomain(personEntity).copy(contacts = contacts.map { personMapper.toDomain(it) })
         }.orElse(null)
-        return base.copy(person = person)
+        val address = personAddressRepository.findPrimaryAddressByPersonId(entity.personId)
+        return base.copy(person = person, address = address)
     }
 }
 

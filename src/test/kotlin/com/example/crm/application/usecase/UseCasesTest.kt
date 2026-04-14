@@ -91,6 +91,7 @@ class UseCasesTest {
     @Test
     fun `it should execute tenant filtered use cases`() {
         val customerRepo = mockk<CustomerRepository>()
+        val personAddressRepo = mockk<PersonAddressRepository>()
         val itemRepo = mockk<ItemRepository>()
         val personRepo = mockk<PersonRepository>()
         val scheduleRepo = mockk<ScheduleRepository>()
@@ -114,6 +115,9 @@ class UseCasesTest {
 
         val person = Person(id = 3, tenantId = 10, createdAt = now, updatedAt = now)
         every { personRepo.findByTenantId(10, pageable) } returns PageImpl(listOf(person))
+        every { personAddressRepo.findPrimaryAddressByPersonId(any()) } returns null
+        every { personAddressRepo.findPrimaryAddressesByPersonIds(any()) } returns emptyMap()
+        every { personAddressRepo.upsertPrimaryAddress(any(), any()) } answers { secondArg() }
         every { personRepo.findAll(pageable) } returns PageImpl(listOf(person))
         every { personRepo.findById(3) } returns person
         every { personRepo.save(any()) } answers { firstArg() }
@@ -159,11 +163,15 @@ class UseCasesTest {
         every { flowRepo.findById(9) } returns flow
         every { flowRepo.save(any()) } answers { firstArg() }
 
-        CustomerUseCaseImpl(customerRepo, personRepo).list(pageable, 10).content.first().id shouldBe 1
+        CustomerUseCaseImpl(
+            customerRepo,
+            personRepo,
+            personAddressRepo
+        ).list(pageable, 10).content.first().id shouldBe 1
         ItemUseCaseImpl(itemRepo).list(pageable, 10).content.first().id shouldBe 2
         PersonUseCaseImpl(personRepo).list(pageable, 10).content.first().id shouldBe 3
         ScheduleUseCaseImpl(scheduleRepo).list(pageable, 10).content.first().id shouldBe 4
-        WorkerUseCaseImpl(workerRepo, personRepo).list(pageable, 10).content.first().id shouldBe 5
+        WorkerUseCaseImpl(workerRepo, personRepo, personAddressRepo).list(pageable, 10).content.first().id shouldBe 5
 
         val userUseCase = UserUseCaseImpl(userRepo, personRepo)
         userUseCase.getByEmail("u@crm.com")?.id shouldBe 6
@@ -181,6 +189,8 @@ class UseCasesTest {
     @Test
     fun `it should execute remaining simple crud use cases`() {
         val tenantRepo = mockk<TenantRepository>()
+        val personRepo = mockk<PersonRepository>()
+        val personAddressRepo = mockk<PersonAddressRepository>()
         val roleRepo = mockk<RoleRepository>()
         val permissionRepo = mockk<PermissionRepository>()
         val itemCategoryRepo = mockk<ItemCategoryRepository>()
@@ -189,6 +199,9 @@ class UseCasesTest {
         every { tenantRepo.findAll(pageable) } returns PageImpl(listOf(tenant))
         every { tenantRepo.findById(1) } returns tenant
         every { tenantRepo.save(any()) } answers { firstArg() }
+        every { personRepo.findByTenantId(eq(1), any()) } returns PageImpl(emptyList())
+        every { personAddressRepo.findPrimaryAddressByPersonId(any()) } returns null
+        every { personAddressRepo.upsertPrimaryAddress(any(), any()) } answers { secondArg() }
 
         val role = Role(id = 2, name = "ADMIN", createdAt = now, updatedAt = now)
         every { roleRepo.findAll(pageable) } returns PageImpl(listOf(role))
@@ -207,7 +220,7 @@ class UseCasesTest {
         every { itemCategoryRepo.save(any()) } answers { firstArg() }
         every { itemCategoryRepo.deleteById(4) } just runs
 
-        TenantUseCaseImpl(tenantRepo).create(tenant).id shouldBe 1
+        TenantUseCaseImpl(tenantRepo, personRepo, personAddressRepo).create(tenant).id shouldBe 1
         RoleUseCaseImpl(roleRepo).update(2, role.copy(name = "USER")).name shouldBe "USER"
         PermissionUseCaseImpl(permissionRepo).delete(3)
         ItemCategoryUseCaseImpl(itemCategoryRepo).delete(4)
