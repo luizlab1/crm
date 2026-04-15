@@ -5,6 +5,12 @@ import com.example.crm.infrastructure.web.dto.request.*
 import com.example.crm.infrastructure.web.dto.response.*
 import org.springframework.stereotype.Component
 
+private fun toPersonAddressType(type: String): PersonAddressType =
+    when (type.trim().uppercase()) {
+        "COMMERCIAL" -> PersonAddressType.COMMERCIAL
+        else -> PersonAddressType.RESIDENTIAL
+    }
+
 @Component
 class PersonWebMapper {
     fun toDomain(request: PersonRequest) = Person(
@@ -47,17 +53,22 @@ class CustomerWebMapper {
             tenantId = request.tenantId, fullName = request.fullName,
             email = request.email, phone = request.phone, document = request.document,
             isActive = request.isActive, person = person,
-            address = request.address?.let {
-                Address(
-                    street = it.street,
-                    number = it.number,
-                    complement = it.complement,
-                    neighborhood = it.neighborhood,
-                    cityId = it.cityId,
-                    postalCode = it.postalCode,
-                    latitude = it.latitude,
-                    longitude = it.longitude,
-                    isActive = it.isActive
+            addresses = request.addresses.map {
+                PersonAddress(
+                    address = Address(
+                        id = it.id ?: 0L,
+                        street = it.street,
+                        number = it.number,
+                        complement = it.complement,
+                        neighborhood = it.neighborhood,
+                        cityId = it.cityId,
+                        postalCode = it.postalCode,
+                        latitude = it.latitude,
+                        longitude = it.longitude,
+                        isActive = it.isActive
+                    ),
+                    type = it.type.name,
+                    isPrimary = it.isPrimary
                 )
             }
         )
@@ -71,18 +82,20 @@ class CustomerWebMapper {
         contacts = d.person?.contacts?.map {
             ContactResponse(it.id, it.type, it.contactValue, it.isPrimary, it.isActive, it.createdAt, it.updatedAt)
         } ?: emptyList(),
-        address = d.address?.let {
-            AddressResponse(
-                id = it.id,
-                street = it.street,
-                number = it.number,
-                complement = it.complement,
-                neighborhood = it.neighborhood,
-                cityId = it.cityId,
-                postalCode = it.postalCode,
-                latitude = it.latitude,
-                longitude = it.longitude,
-                isActive = it.isActive,
+        addresses = d.addresses.map {
+            PersonAddressResponse(
+                id = it.address.id,
+                type = toPersonAddressType(it.type),
+                isPrimary = it.isPrimary,
+                street = it.address.street,
+                number = it.address.number,
+                complement = it.address.complement,
+                neighborhood = it.address.neighborhood,
+                cityId = it.address.cityId,
+                postalCode = it.address.postalCode,
+                latitude = it.address.latitude,
+                longitude = it.address.longitude,
+                isActive = it.address.isActive,
                 createdAt = it.createdAt,
                 updatedAt = it.updatedAt
             )
@@ -90,10 +103,10 @@ class CustomerWebMapper {
     )
 
     private fun hasPersonPayload(request: CustomerRequest): Boolean =
-        request.physical != null ||
+            request.physical != null ||
             request.legal != null ||
             request.contacts.isNotEmpty() ||
-            request.address != null
+            request.addresses.isNotEmpty()
 }
 
 @Component
@@ -178,17 +191,22 @@ class TenantWebMapper {
                 }
             )
         } else null,
-        address = request.address?.let {
-            Address(
-                street = it.street,
-                number = it.number,
-                complement = it.complement,
-                neighborhood = it.neighborhood,
-                cityId = it.cityId,
-                postalCode = it.postalCode,
-                latitude = it.latitude,
-                longitude = it.longitude,
-                isActive = it.isActive
+        addresses = request.addresses.map {
+            PersonAddress(
+                address = Address(
+                    id = it.id ?: 0L,
+                    street = it.street,
+                    number = it.number,
+                    complement = it.complement,
+                    neighborhood = it.neighborhood,
+                    cityId = it.cityId,
+                    postalCode = it.postalCode,
+                    latitude = it.latitude,
+                    longitude = it.longitude,
+                    isActive = it.isActive
+                ),
+                type = it.type.name,
+                isPrimary = it.isPrimary
             )
         }
     )
@@ -201,18 +219,20 @@ class TenantWebMapper {
         contacts = d.person?.contacts?.map {
             ContactResponse(it.id, it.type, it.contactValue, it.isPrimary, it.isActive, it.createdAt, it.updatedAt)
         } ?: emptyList(),
-        address = d.address?.let {
-            AddressResponse(
-                id = it.id,
-                street = it.street,
-                number = it.number,
-                complement = it.complement,
-                neighborhood = it.neighborhood,
-                cityId = it.cityId,
-                postalCode = it.postalCode,
-                latitude = it.latitude,
-                longitude = it.longitude,
-                isActive = it.isActive,
+        addresses = d.addresses.map {
+            PersonAddressResponse(
+                id = it.address.id,
+                type = toPersonAddressType(it.type),
+                isPrimary = it.isPrimary,
+                street = it.address.street,
+                number = it.address.number,
+                complement = it.address.complement,
+                neighborhood = it.address.neighborhood,
+                cityId = it.address.cityId,
+                postalCode = it.address.postalCode,
+                latitude = it.address.latitude,
+                longitude = it.address.longitude,
+                isActive = it.address.isActive,
                 createdAt = it.createdAt,
                 updatedAt = it.updatedAt
             )
@@ -220,16 +240,16 @@ class TenantWebMapper {
     )
 
     private fun hasPersonPayload(request: TenantRequest): Boolean =
-        request.physical != null ||
+            request.physical != null ||
             request.legal != null ||
             request.contacts.isNotEmpty() ||
-            request.address != null
+            request.addresses.isNotEmpty()
 }
 
 @Component
 class UserWebMapper {
     fun toDomain(request: UserRequest): User {
-        val person = if (request.physical != null || request.legal != null || request.contacts.isNotEmpty()) {
+        val person = if (hasPersonPayload(request)) {
             Person(
                 tenantId = request.tenantId,
                 physical = request.physical?.let { PersonPhysical(it.fullName, it.cpf, it.birthDate) },
@@ -246,7 +266,25 @@ class UserWebMapper {
         } else null
         return User(
             tenantId = request.tenantId, email = request.email,
-            passwordHash = request.passwordHash, isActive = request.isActive, person = person
+            passwordHash = request.passwordHash, isActive = request.isActive, person = person,
+            addresses = request.addresses.map {
+                PersonAddress(
+                    address = Address(
+                        id = it.id ?: 0L,
+                        street = it.street,
+                        number = it.number,
+                        complement = it.complement,
+                        neighborhood = it.neighborhood,
+                        cityId = it.cityId,
+                        postalCode = it.postalCode,
+                        latitude = it.latitude,
+                        longitude = it.longitude,
+                        isActive = it.isActive
+                    ),
+                    type = it.type.name,
+                    isPrimary = it.isPrimary
+                )
+            }
         )
     }
     fun toResponse(d: User) = UserResponse(
@@ -256,8 +294,32 @@ class UserWebMapper {
         legal = d.person?.legal?.let { PersonLegalResponse(it.corporateName, it.tradeName, it.cnpj) },
         contacts = d.person?.contacts?.map {
             ContactResponse(it.id, it.type, it.contactValue, it.isPrimary, it.isActive, it.createdAt, it.updatedAt)
-        } ?: emptyList()
+        } ?: emptyList(),
+        addresses = d.addresses.map {
+            PersonAddressResponse(
+                id = it.address.id,
+                type = toPersonAddressType(it.type),
+                isPrimary = it.isPrimary,
+                street = it.address.street,
+                number = it.address.number,
+                complement = it.address.complement,
+                neighborhood = it.address.neighborhood,
+                cityId = it.address.cityId,
+                postalCode = it.address.postalCode,
+                latitude = it.address.latitude,
+                longitude = it.address.longitude,
+                isActive = it.address.isActive,
+                createdAt = it.createdAt,
+                updatedAt = it.updatedAt
+            )
+        }
     )
+
+    private fun hasPersonPayload(request: UserRequest): Boolean =
+        request.physical != null ||
+            request.legal != null ||
+            request.contacts.isNotEmpty() ||
+            request.addresses.isNotEmpty()
 }
 
 @Component
@@ -282,17 +344,22 @@ class WorkerWebMapper {
         return Worker(
             tenantId = request.tenantId, personId = 0L,
             userId = request.userId, isActive = request.isActive, person = person,
-            address = request.address?.let {
-                Address(
-                    street = it.street,
-                    number = it.number,
-                    complement = it.complement,
-                    neighborhood = it.neighborhood,
-                    cityId = it.cityId,
-                    postalCode = it.postalCode,
-                    latitude = it.latitude,
-                    longitude = it.longitude,
-                    isActive = it.isActive
+            addresses = request.addresses.map {
+                PersonAddress(
+                    address = Address(
+                        id = it.id ?: 0L,
+                        street = it.street,
+                        number = it.number,
+                        complement = it.complement,
+                        neighborhood = it.neighborhood,
+                        cityId = it.cityId,
+                        postalCode = it.postalCode,
+                        latitude = it.latitude,
+                        longitude = it.longitude,
+                        isActive = it.isActive
+                    ),
+                    type = it.type.name,
+                    isPrimary = it.isPrimary
                 )
             }
         )
@@ -305,18 +372,20 @@ class WorkerWebMapper {
         contacts = d.person?.contacts?.map {
             ContactResponse(it.id, it.type, it.contactValue, it.isPrimary, it.isActive, it.createdAt, it.updatedAt)
         } ?: emptyList(),
-        address = d.address?.let {
-            AddressResponse(
-                id = it.id,
-                street = it.street,
-                number = it.number,
-                complement = it.complement,
-                neighborhood = it.neighborhood,
-                cityId = it.cityId,
-                postalCode = it.postalCode,
-                latitude = it.latitude,
-                longitude = it.longitude,
-                isActive = it.isActive,
+        addresses = d.addresses.map {
+            PersonAddressResponse(
+                id = it.address.id,
+                type = toPersonAddressType(it.type),
+                isPrimary = it.isPrimary,
+                street = it.address.street,
+                number = it.address.number,
+                complement = it.address.complement,
+                neighborhood = it.address.neighborhood,
+                cityId = it.address.cityId,
+                postalCode = it.address.postalCode,
+                latitude = it.address.latitude,
+                longitude = it.address.longitude,
+                isActive = it.address.isActive,
                 createdAt = it.createdAt,
                 updatedAt = it.updatedAt
             )
@@ -324,10 +393,10 @@ class WorkerWebMapper {
     )
 
     private fun hasPersonPayload(request: WorkerRequest): Boolean =
-        request.physical != null ||
+            request.physical != null ||
             request.legal != null ||
             request.contacts.isNotEmpty() ||
-            request.address != null
+            request.addresses.isNotEmpty()
 }
 
 @Component

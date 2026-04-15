@@ -4,6 +4,7 @@ import com.example.crm.application.port.input.UserUseCase
 import com.example.crm.domain.exception.EntityNotFoundException
 import com.example.crm.domain.model.Person
 import com.example.crm.domain.model.User
+import com.example.crm.domain.repository.PersonAddressRepository
 import com.example.crm.domain.repository.PersonRepository
 import com.example.crm.domain.repository.UserRepository
 import org.springframework.data.domain.Page
@@ -15,7 +16,8 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional
 class UserUseCaseImpl(
     private val userRepository: UserRepository,
-    private val personRepository: PersonRepository
+    private val personRepository: PersonRepository,
+    private val personAddressRepository: PersonAddressRepository
 ) : UserUseCase {
 
     @Transactional(readOnly = true)
@@ -32,7 +34,12 @@ class UserUseCaseImpl(
 
     override fun create(user: User): User {
         val personId = upsertPerson(null, user.person, user.tenantId)
-        return userRepository.save(user.copy(personId = personId ?: user.personId))
+        val finalPersonId = personId ?: user.personId
+        if (finalPersonId != null && user.addresses.isNotEmpty()) {
+            personAddressRepository.replaceAddresses(finalPersonId, user.addresses)
+        }
+        val saved = userRepository.save(user.copy(personId = finalPersonId))
+        return userRepository.findById(saved.id) ?: saved
     }
 
     override fun update(id: Long, user: User): User {
@@ -44,7 +51,12 @@ class UserUseCaseImpl(
             createdAt = existing.createdAt,
             personId = personId ?: existing.personId
         )
-        return userRepository.save(updated)
+        val finalPersonId = updated.personId
+        if (finalPersonId != null && user.addresses.isNotEmpty()) {
+            personAddressRepository.replaceAddresses(finalPersonId, user.addresses)
+        }
+        val saved = userRepository.save(updated)
+        return userRepository.findById(saved.id) ?: saved
     }
 
     override fun delete(id: Long) {

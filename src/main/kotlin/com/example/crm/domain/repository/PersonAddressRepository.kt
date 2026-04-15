@@ -1,9 +1,9 @@
 package com.example.crm.domain.repository
 
-import com.example.crm.domain.model.Address
+import com.example.crm.domain.model.PersonAddress
 
 interface PersonAddressRepository {
-    fun findPrimaryAddressByPersonId(personId: Long): Address?
-    fun findPrimaryAddressesByPersonIds(personIds: List<Long>): Map<Long, Address>
-    fun upsertPrimaryAddress(personId: Long, address: Address): Address
+    fun findAddressesByPersonId(personId: Long): List<PersonAddress>
+    fun findAddressesByPersonIds(personIds: List<Long>): Map<Long, List<PersonAddress>>
+    fun replaceAddresses(personId: Long, addresses: List<PersonAddress>): List<PersonAddress>
 }

@@ -32,8 +32,8 @@ class WorkerUseCaseImpl(
     override fun create(worker: Worker): Worker {
         val personId = upsertPerson(null, worker.person, worker.tenantId)
         val effectivePersonId = personId ?: worker.personId
-        if (worker.address != null) {
-            personAddressRepository.upsertPrimaryAddress(effectivePersonId, worker.address)
+        if (worker.addresses.isNotEmpty()) {
+            personAddressRepository.replaceAddresses(effectivePersonId, worker.addresses)
         }
 
         val saved = workerRepository.save(worker.copy(personId = effectivePersonId))
@@ -50,8 +50,8 @@ class WorkerUseCaseImpl(
             personId = personId ?: existing.personId
         )
         val finalPersonId = updated.personId
-        if (worker.address != null) {
-            personAddressRepository.upsertPrimaryAddress(finalPersonId, worker.address)
+        if (worker.addresses.isNotEmpty()) {
+            personAddressRepository.replaceAddresses(finalPersonId, worker.addresses)
         }
 
         val saved = workerRepository.save(updated)

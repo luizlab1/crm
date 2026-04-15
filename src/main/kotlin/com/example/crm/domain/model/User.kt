@@ -14,6 +14,7 @@ data class User(
     val createdAt: OffsetDateTime = OffsetDateTime.now(),
     val updatedAt: OffsetDateTime = OffsetDateTime.now(),
     // dados de pessoa embutidos (gerenciados internamente pelo use case)
-    val person: Person? = null
+    val person: Person? = null,
+    val addresses: List<PersonAddress> = emptyList()
 )
 

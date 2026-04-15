@@ -13,6 +13,6 @@ data class Tenant(
     val createdAt: OffsetDateTime = OffsetDateTime.now(),
     val updatedAt: OffsetDateTime = OffsetDateTime.now(),
     val person: Person? = null,
-    val address: Address? = null
+    val addresses: List<PersonAddress> = emptyList()
 )
 

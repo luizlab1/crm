@@ -115,9 +115,9 @@ class UseCasesTest {
 
         val person = Person(id = 3, tenantId = 10, createdAt = now, updatedAt = now)
         every { personRepo.findByTenantId(10, pageable) } returns PageImpl(listOf(person))
-        every { personAddressRepo.findPrimaryAddressByPersonId(any()) } returns null
-        every { personAddressRepo.findPrimaryAddressesByPersonIds(any()) } returns emptyMap()
-        every { personAddressRepo.upsertPrimaryAddress(any(), any()) } answers { secondArg() }
+        every { personAddressRepo.findAddressesByPersonId(any()) } returns emptyList()
+        every { personAddressRepo.findAddressesByPersonIds(any()) } returns emptyMap()
+        every { personAddressRepo.replaceAddresses(any(), any()) } answers { secondArg() }
         every { personRepo.findAll(pageable) } returns PageImpl(listOf(person))
         every { personRepo.findById(3) } returns person
         every { personRepo.save(any()) } answers { firstArg() }
@@ -137,7 +137,7 @@ class UseCasesTest {
         val user = User(id = 6, tenantId = 10, email = "u@crm.com", passwordHash = "hash", createdAt = now, updatedAt = now)
         every { userRepo.findByTenantId(10, pageable) } returns PageImpl(listOf(user))
         every { userRepo.findAll(pageable) } returns PageImpl(listOf(user))
-        every { userRepo.findById(6) } returns user
+        every { userRepo.findById(6) } returnsMany listOf(user, user.copy(email = "n@crm.com"))
         every { userRepo.findByEmail("u@crm.com") } returns user
         every { userRepo.save(any()) } answers { firstArg() }
 
@@ -173,7 +173,7 @@ class UseCasesTest {
         ScheduleUseCaseImpl(scheduleRepo).list(pageable, 10).content.first().id shouldBe 4
         WorkerUseCaseImpl(workerRepo, personRepo, personAddressRepo).list(pageable, 10).content.first().id shouldBe 5
 
-        val userUseCase = UserUseCaseImpl(userRepo, personRepo)
+        val userUseCase = UserUseCaseImpl(userRepo, personRepo, personAddressRepo)
         userUseCase.getByEmail("u@crm.com")?.id shouldBe 6
         userUseCase.update(6, user.copy(email = "n@crm.com")).email shouldBe "n@crm.com"
 
@@ -200,8 +200,8 @@ class UseCasesTest {
         every { tenantRepo.findById(1) } returns tenant
         every { tenantRepo.save(any()) } answers { firstArg() }
         every { personRepo.findByTenantId(eq(1), any()) } returns PageImpl(emptyList())
-        every { personAddressRepo.findPrimaryAddressByPersonId(any()) } returns null
-        every { personAddressRepo.upsertPrimaryAddress(any(), any()) } answers { secondArg() }
+        every { personAddressRepo.findAddressesByPersonId(any()) } returns emptyList()
+        every { personAddressRepo.replaceAddresses(any(), any()) } answers { secondArg() }
 
         val role = Role(id = 2, name = "ADMIN", createdAt = now, updatedAt = now)
         every { roleRepo.findAll(pageable) } returns PageImpl(listOf(role))

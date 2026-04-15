@@ -140,7 +140,7 @@ class RepositoryAdaptersTest {
         every { customerRepo.save(any()) } answers { firstArg() }
         // customer sem personId — enrich não busca person
         every { personJpaRepo.findById(any<Long>()) } returns Optional.empty()
-        every { personAddressRepo.findPrimaryAddressByPersonId(any()) } returns null
+        every { personAddressRepo.findAddressesByPersonId(any()) } returns emptyList()
 
         customerAdapter.findAll(pageable).content.first().fullName shouldBe "Maria"
         customerAdapter.findByTenantId(10, pageable).content.first().tenantId shouldBe 10

@@ -33,8 +33,8 @@ class TenantUseCaseImpl(
     override fun create(tenant: Tenant): Tenant {
         val savedTenant = tenantRepository.save(tenant)
         val personId = upsertTenantPerson(savedTenant.id, null, tenant.person)
-        if (personId != null && tenant.address != null) {
-            personAddressRepository.upsertPrimaryAddress(personId, tenant.address)
+        if (personId != null && tenant.addresses.isNotEmpty()) {
+            personAddressRepository.replaceAddresses(personId, tenant.addresses)
         }
         return enrichTenant(savedTenant)
     }
@@ -43,8 +43,8 @@ class TenantUseCaseImpl(
         val existing = tenantRepository.findById(id) ?: throw EntityNotFoundException("Tenant", id)
         val existingPersonId = findTenantProfilePerson(existing.id)?.id
         val personId = upsertTenantPerson(existing.id, existingPersonId, tenant.person)
-        if (personId != null && tenant.address != null) {
-            personAddressRepository.upsertPrimaryAddress(personId, tenant.address)
+        if (personId != null && tenant.addresses.isNotEmpty()) {
+            personAddressRepository.replaceAddresses(personId, tenant.addresses)
         }
 
         val updated = tenant.copy(id = existing.id, code = existing.code, createdAt = existing.createdAt)
@@ -58,8 +58,8 @@ class TenantUseCaseImpl(
 
     private fun enrichTenant(tenant: Tenant): Tenant {
         val profilePerson = findTenantProfilePerson(tenant.id)
-        val address = profilePerson?.let { personAddressRepository.findPrimaryAddressByPersonId(it.id) }
-        return tenant.copy(person = profilePerson, address = address)
+        val addresses = profilePerson?.let { personAddressRepository.findAddressesByPersonId(it.id) } ?: emptyList()
+        return tenant.copy(person = profilePerson, addresses = addresses)
     }
 
     private fun findTenantProfilePerson(tenantId: Long): Person? {

@@ -15,6 +15,6 @@ data class TenantResponse(
     val physical: PersonPhysicalResponse? = null,
     val legal: PersonLegalResponse? = null,
     val contacts: List<ContactResponse> = emptyList(),
-    val address: AddressResponse? = null
+    val addresses: List<PersonAddressResponse> = emptyList()
 )
 

@@ -48,7 +48,7 @@ class CustomerRepositoryAdapter(
                 domain.copy(contacts = contacts.map { personMapper.toDomain(it) })
             }.orElse(null)
         }
-        val address = entity.personId?.let { personAddressRepository.findPrimaryAddressByPersonId(it) }
-        return base.copy(person = person, address = address)
+        val addresses = entity.personId?.let { personAddressRepository.findAddressesByPersonId(it) } ?: emptyList()
+        return base.copy(person = person, addresses = addresses)
     }
 }

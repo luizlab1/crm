@@ -8,6 +8,6 @@ data class TenantRequest(
     val physical: PersonPhysicalRequest? = null,
     val legal: PersonLegalRequest? = null,
     val contacts: List<ContactRequest> = emptyList(),
-    val address: AddressRequest? = null
+    val addresses: List<PersonAddressRequest> = emptyList()
 )
 

@@ -1,6 +1,6 @@
 package com.example.crm.infrastructure.persistence.adapter
 
-import com.example.crm.domain.model.Address
+import com.example.crm.domain.model.PersonAddress
 import com.example.crm.domain.repository.PersonAddressRepository
 import com.example.crm.infrastructure.persistence.entity.PersonAddressJpaEntity
 import com.example.crm.infrastructure.persistence.mapper.AddressPersistenceMapper
@@ -15,17 +15,12 @@ class PersonAddressRepositoryAdapter(
     private val addressMapper: AddressPersistenceMapper
 ) : PersonAddressRepository {
 
-    override fun findPrimaryAddressByPersonId(personId: Long): Address? {
-        val link = personAddressJpaRepository
-            .findByPersonIdOrderByIsPrimaryDescIdAsc(personId)
-            .firstOrNull() ?: return null
-
-        return addressJpaRepository.findById(link.addressId)
-            .map { addressMapper.toDomain(it) }
-            .orElse(null)
+    override fun findAddressesByPersonId(personId: Long): List<PersonAddress> {
+        val links = personAddressJpaRepository.findByPersonIdOrderByIsPrimaryDescIdAsc(personId)
+        return toAddressList(links)
     }
 
-    override fun findPrimaryAddressesByPersonIds(personIds: List<Long>): Map<Long, Address> {
+    override fun findAddressesByPersonIds(personIds: List<Long>): Map<Long, List<PersonAddress>> {
         if (personIds.isEmpty()) return emptyMap()
 
         val linksByPerson = personAddressJpaRepository.findByPersonIdIn(personIds)
@@ -34,39 +29,75 @@ class PersonAddressRepositoryAdapter(
                 links.sortedWith(
                     compareByDescending<PersonAddressJpaEntity> { it.isPrimary }
                         .thenBy { it.id }
-                ).first()
+                )
             }
 
-        val addressesById = addressJpaRepository.findAllById(linksByPerson.values.map { it.addressId }.distinct())
-            .associateBy { it.id }
-
-        return linksByPerson.mapNotNull { (personId, link) ->
-            addressesById[link.addressId]?.let { personId to addressMapper.toDomain(it) }
-        }.toMap()
+        return linksByPerson.mapValues { (_, links) -> toAddressList(links) }
     }
 
-    override fun upsertPrimaryAddress(personId: Long, address: Address): Address {
-        val existingPrimaryLink = personAddressJpaRepository
-            .findByPersonIdOrderByIsPrimaryDescIdAsc(personId)
-            .firstOrNull()
-        val addressIdToUse = if (address.id != 0L) address.id else existingPrimaryLink?.addressId ?: 0L
-
-        val savedAddress = addressJpaRepository.save(addressMapper.toEntity(address.copy(id = addressIdToUse)))
+    override fun replaceAddresses(personId: Long, addresses: List<PersonAddress>): List<PersonAddress> {
+        if (addresses.isEmpty()) {
+            val existingLinks = personAddressJpaRepository.findByPersonIdOrderByIsPrimaryDescIdAsc(personId)
+            if (existingLinks.isNotEmpty()) {
+                personAddressJpaRepository.deleteAll(existingLinks)
+            }
+            return emptyList()
+        }
 
         val existingLinks = personAddressJpaRepository.findByPersonIdOrderByIsPrimaryDescIdAsc(personId)
+        val existingAddressIds = existingLinks.map { it.addressId }
+
+        val savedAddresses = addresses.mapIndexed { index, personAddress ->
+            val fallbackAddressId = existingAddressIds.getOrNull(index) ?: 0L
+            val addressIdToUse = if (personAddress.address.id != 0L) personAddress.address.id else fallbackAddressId
+            val entity = addressMapper.toEntity(personAddress.address.copy(id = addressIdToUse))
+            val saved = addressJpaRepository.save(entity)
+            personAddress.copy(address = addressMapper.toDomain(saved), type = normalizeType(personAddress.type))
+        }
+
         if (existingLinks.isNotEmpty()) {
             personAddressJpaRepository.deleteAll(existingLinks)
         }
 
-        personAddressJpaRepository.save(
-            PersonAddressJpaEntity(
-                personId = personId,
-                addressId = savedAddress.id,
-                type = "MAIN",
-                isPrimary = true
+        val hasPrimary = savedAddresses.any { it.isPrimary }
+        savedAddresses.forEachIndexed { index, savedAddress ->
+            personAddressJpaRepository.save(
+                PersonAddressJpaEntity(
+                    personId = personId,
+                    addressId = savedAddress.address.id,
+                    type = normalizeType(savedAddress.type),
+                    isPrimary = if (hasPrimary) savedAddress.isPrimary else index == 0
+                )
             )
-        )
+        }
 
-        return addressMapper.toDomain(savedAddress)
+        return findAddressesByPersonId(personId)
+    }
+
+    private fun toAddressList(links: List<PersonAddressJpaEntity>): List<PersonAddress> {
+        if (links.isEmpty()) return emptyList()
+
+        val addressesById = addressJpaRepository.findAllById(links.map { it.addressId }.distinct())
+            .associateBy { it.id }
+
+        return links.mapNotNull { link ->
+            addressesById[link.addressId]?.let {
+                PersonAddress(
+                    address = addressMapper.toDomain(it),
+                    type = normalizeType(link.type),
+                    isPrimary = link.isPrimary,
+                    createdAt = link.createdAt,
+                    updatedAt = link.updatedAt
+                )
+            }
+        }
+    }
+
+    private fun normalizeType(type: String): String {
+        val normalized = type.trim().uppercase()
+        return when (normalized) {
+            "COMMERCIAL" -> "COMMERCIAL"
+            else -> "RESIDENTIAL"
+        }
     }
 }

@@ -32,8 +32,8 @@ class CustomerUseCaseImpl(
     override fun create(customer: Customer): Customer {
         val personId = upsertPerson(null, customer.person, customer.tenantId)
         val finalPersonId = personId ?: customer.personId
-        if (finalPersonId != null && customer.address != null) {
-            personAddressRepository.upsertPrimaryAddress(finalPersonId, customer.address)
+        if (finalPersonId != null && customer.addresses.isNotEmpty()) {
+            personAddressRepository.replaceAddresses(finalPersonId, customer.addresses)
         }
 
         val saved = customerRepository.save(customer.copy(personId = finalPersonId))
@@ -50,8 +50,8 @@ class CustomerUseCaseImpl(
             personId = personId ?: existing.personId
         )
         val finalPersonId = updated.personId
-        if (finalPersonId != null && customer.address != null) {
-            personAddressRepository.upsertPrimaryAddress(finalPersonId, customer.address)
+        if (finalPersonId != null && customer.addresses.isNotEmpty()) {
+            personAddressRepository.replaceAddresses(finalPersonId, customer.addresses)
         }
 
         val saved = customerRepository.save(updated)
