@@ -4,6 +4,7 @@ import com.example.crm.application.port.input.TenantUseCase
 import com.example.crm.infrastructure.web.dto.request.TenantRequest
 import com.example.crm.infrastructure.web.dto.response.PageResponse
 import com.example.crm.infrastructure.web.dto.response.TenantResponse
+import com.example.crm.infrastructure.web.dto.response.TenantSummaryResponse
 import com.example.crm.infrastructure.web.mapper.TenantWebMapper
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
@@ -22,10 +23,10 @@ class TenantController(
     fun findAll(
         @RequestParam(defaultValue = "0") page: Int,
         @RequestParam(defaultValue = "20") size: Int
-    ): ResponseEntity<PageResponse<TenantResponse>> {
+    ): ResponseEntity<PageResponse<TenantSummaryResponse>> {
         val result = useCase.list(PageRequest.of(page, size, Sort.by("name")))
         return ResponseEntity.ok(PageResponse(
-            content = result.content.map { mapper.toResponse(it) },
+            content = result.content.map { mapper.toSummary(it) },
             page = result.number, size = result.size,
             totalElements = result.totalElements, totalPages = result.totalPages
         ))

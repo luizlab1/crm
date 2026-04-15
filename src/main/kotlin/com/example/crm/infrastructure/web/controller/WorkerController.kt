@@ -4,6 +4,7 @@ import com.example.crm.application.port.input.WorkerUseCase
 import com.example.crm.infrastructure.web.dto.request.WorkerRequest
 import com.example.crm.infrastructure.web.dto.response.PageResponse
 import com.example.crm.infrastructure.web.dto.response.WorkerResponse
+import com.example.crm.infrastructure.web.dto.response.WorkerSummaryResponse
 import com.example.crm.infrastructure.web.mapper.WorkerWebMapper
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
@@ -23,11 +24,11 @@ class WorkerController(
         @RequestParam(defaultValue = "0") page: Int,
         @RequestParam(defaultValue = "20") size: Int,
         @RequestParam(required = false) tenantId: Long?
-    ): ResponseEntity<PageResponse<WorkerResponse>> {
+    ): ResponseEntity<PageResponse<WorkerSummaryResponse>> {
         val pageable = PageRequest.of(page, size, Sort.by("id"))
         val result = useCase.list(pageable, tenantId)
         return ResponseEntity.ok(PageResponse(
-            content = result.content.map { mapper.toResponse(it) },
+            content = result.content.map { mapper.toSummary(it) },
             page = result.number, size = result.size,
             totalElements = result.totalElements, totalPages = result.totalPages
         ))

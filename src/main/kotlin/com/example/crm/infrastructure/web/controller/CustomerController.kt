@@ -3,6 +3,7 @@ package com.example.crm.infrastructure.web.controller
 import com.example.crm.application.port.input.CustomerUseCase
 import com.example.crm.infrastructure.web.dto.request.CustomerRequest
 import com.example.crm.infrastructure.web.dto.response.CustomerResponse
+import com.example.crm.infrastructure.web.dto.response.CustomerSummaryResponse
 import com.example.crm.infrastructure.web.dto.response.PageResponse
 import com.example.crm.infrastructure.web.mapper.CustomerWebMapper
 import org.springframework.data.domain.PageRequest
@@ -23,11 +24,11 @@ class CustomerController(
         @RequestParam(defaultValue = "0") page: Int,
         @RequestParam(defaultValue = "20") size: Int,
         @RequestParam(required = false) tenantId: Long?
-    ): ResponseEntity<PageResponse<CustomerResponse>> {
+    ): ResponseEntity<PageResponse<CustomerSummaryResponse>> {
         val pageable = PageRequest.of(page, size, Sort.by("fullName"))
         val result = useCase.list(pageable, tenantId)
         return ResponseEntity.ok(PageResponse(
-            content = result.content.map { mapper.toResponse(it) },
+            content = result.content.map { mapper.toSummary(it) },
             page = result.number, size = result.size,
             totalElements = result.totalElements, totalPages = result.totalPages
         ))

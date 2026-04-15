@@ -73,6 +73,12 @@ class CustomerWebMapper {
             }
         )
     }
+    fun toSummary(d: Customer) = CustomerSummaryResponse(
+        id = d.id, tenantId = d.tenantId,
+        fullName = d.fullName, email = d.email, phone = d.phone, document = d.document,
+        isActive = d.isActive, createdAt = d.createdAt
+    )
+
     fun toResponse(d: Customer) = CustomerResponse(
         id = d.id, code = d.code, tenantId = d.tenantId, personId = d.personId,
         fullName = d.fullName, email = d.email, phone = d.phone, document = d.document,
@@ -210,6 +216,13 @@ class TenantWebMapper {
             )
         }
     )
+    fun toSummary(d: Tenant) = TenantSummaryResponse(
+        id = d.id, parentTenantId = d.parentTenantId,
+        name = d.name, category = d.category,
+        document = d.person?.physical?.cpf ?: d.person?.legal?.cnpj,
+        isActive = d.isActive, createdAt = d.createdAt
+    )
+
     fun toResponse(d: Tenant) = TenantResponse(
         id = d.id, parentTenantId = d.parentTenantId, code = d.code,
         name = d.name, category = d.category, isActive = d.isActive,
@@ -287,6 +300,13 @@ class UserWebMapper {
             }
         )
     }
+    fun toSummary(d: User) = UserSummaryResponse(
+        id = d.id, tenantId = d.tenantId,
+        email = d.email,
+        name = d.person?.physical?.fullName ?: d.person?.legal?.corporateName,
+        isActive = d.isActive, createdAt = d.createdAt
+    )
+
     fun toResponse(d: User) = UserResponse(
         id = d.id, tenantId = d.tenantId, personId = d.personId, code = d.code,
         email = d.email, isActive = d.isActive, createdAt = d.createdAt, updatedAt = d.updatedAt,
@@ -364,6 +384,13 @@ class WorkerWebMapper {
             }
         )
     }
+    fun toSummary(d: Worker) = WorkerSummaryResponse(
+        id = d.id, tenantId = d.tenantId,
+        name = d.person?.physical?.fullName ?: d.person?.legal?.corporateName,
+        document = d.person?.physical?.cpf ?: d.person?.legal?.cnpj,
+        isActive = d.isActive, createdAt = d.createdAt
+    )
+
     fun toResponse(d: Worker) = WorkerResponse(
         id = d.id, code = d.code, tenantId = d.tenantId, personId = d.personId,
         userId = d.userId, isActive = d.isActive, createdAt = d.createdAt, updatedAt = d.updatedAt,

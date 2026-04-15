@@ -4,6 +4,7 @@ import com.example.crm.application.port.input.UserUseCase
 import com.example.crm.infrastructure.web.dto.request.UserRequest
 import com.example.crm.infrastructure.web.dto.response.PageResponse
 import com.example.crm.infrastructure.web.dto.response.UserResponse
+import com.example.crm.infrastructure.web.dto.response.UserSummaryResponse
 import com.example.crm.infrastructure.web.mapper.UserWebMapper
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
@@ -23,11 +24,11 @@ class UserController(
         @RequestParam(defaultValue = "0") page: Int,
         @RequestParam(defaultValue = "20") size: Int,
         @RequestParam(required = false) tenantId: Long?
-    ): ResponseEntity<PageResponse<UserResponse>> {
+    ): ResponseEntity<PageResponse<UserSummaryResponse>> {
         val pageable = PageRequest.of(page, size, Sort.by("id"))
         val result = useCase.list(pageable, tenantId)
         return ResponseEntity.ok(PageResponse(
-            content = result.content.map { mapper.toResponse(it) },
+            content = result.content.map { mapper.toSummary(it) },
             page = result.number, size = result.size,
             totalElements = result.totalElements, totalPages = result.totalPages
         ))
