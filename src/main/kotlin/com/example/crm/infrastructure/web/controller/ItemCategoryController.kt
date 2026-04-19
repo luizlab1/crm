@@ -29,9 +29,7 @@ class ItemCategoryController(
         val pageable = PageRequest.of(page, size, Sort.by("name"))
         val result = useCase.list(pageable, tenantId)
         return ResponseEntity.ok(PageResponse(
-            content = result.content.map {
-                mapper.toResponse(it).copy(photo = photoResolver.resolve(it.id))
-            },
+            content = result.content.map { mapper.toResponse(it) },
             page = result.number, size = result.size,
             totalElements = result.totalElements, totalPages = result.totalPages
         ))
@@ -39,7 +37,7 @@ class ItemCategoryController(
 
     @GetMapping("/{id}")
     fun findById(@PathVariable id: Long): ResponseEntity<ItemCategoryResponse> =
-        ResponseEntity.ok(mapper.toResponse(useCase.getById(id)).copy(photo = photoResolver.resolve(id)))
+        ResponseEntity.ok(mapper.toResponse(useCase.getById(id)))
 
     @PostMapping
     fun create(@RequestBody request: ItemCategoryRequest): ResponseEntity<ItemCategoryResponse> {

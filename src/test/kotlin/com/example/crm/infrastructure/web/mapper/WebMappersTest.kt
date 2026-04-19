@@ -4,6 +4,7 @@ import com.example.crm.domain.model.*
 import com.example.crm.support.shouldBe
 import com.example.crm.support.shouldBeNull
 import com.example.crm.infrastructure.web.dto.request.*
+import io.mockk.mockk
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -12,6 +13,7 @@ import java.time.OffsetDateTime
 class WebMappersTest {
 
     private val now: OffsetDateTime = OffsetDateTime.parse("2026-01-01T10:15:30+00:00")
+    private val photoResolver = mockk<EntityPhotoResolver>(relaxed = true)
 
     @Test
     fun `it should map person request and response`() {
@@ -95,24 +97,32 @@ class WebMappersTest {
 
     @Test
     fun `it should map simple request and response models`() {
-        val customer = CustomerWebMapper().toResponse(
+        val customer = CustomerWebMapper(photoResolver).toResponse(
             Customer(tenantId = 1, fullName = "Ana", createdAt = now, updatedAt = now)
         )
         customer.fullName shouldBe "Ana"
 
-        val tenant = TenantWebMapper().toDomain(TenantRequest(name = "Tenant A", category = "BUSINESS"))
+        val tenant = TenantWebMapper(photoResolver).toDomain(
+            TenantRequest(name = "Tenant A", category = "BUSINESS")
+        )
         tenant.name shouldBe "Tenant A"
 
-        val user = UserWebMapper().toDomain(UserRequest(tenantId = 1, email = "u@c.com", passwordHash = "hash"))
+        val user = UserWebMapper(photoResolver).toDomain(
+            UserRequest(tenantId = 1, email = "u@c.com", passwordHash = "hash")
+        )
         user.email shouldBe "u@c.com"
 
-        val worker = WorkerWebMapper().toDomain(WorkerRequest(tenantId = 1))
+        val worker = WorkerWebMapper(photoResolver).toDomain(WorkerRequest(tenantId = 1))
         worker.tenantId shouldBe 1
 
-        val item = ItemWebMapper().toDomain(ItemRequest(tenantId = 1, type = ItemType.SERVICE, name = "Consultoria"))
+        val item = ItemWebMapper().toDomain(
+            ItemRequest(tenantId = 1, type = ItemType.SERVICE, name = "Consultoria")
+        )
         item.type shouldBe ItemType.SERVICE
 
-        val itemCategory = ItemCategoryWebMapper().toDomain(ItemCategoryRequest(tenantId = 1, name = "Categoria"))
+        val itemCategory = ItemCategoryWebMapper(photoResolver).toDomain(
+            ItemCategoryRequest(tenantId = 1, name = "Categoria")
+        )
         itemCategory.name shouldBe "Categoria"
 
         val address = AddressWebMapper().toDomain(

@@ -28,9 +28,7 @@ class TenantController(
     ): ResponseEntity<PageResponse<TenantSummaryResponse>> {
         val result = useCase.list(PageRequest.of(page, size, Sort.by("name")))
         return ResponseEntity.ok(PageResponse(
-            content = result.content.map {
-                mapper.toSummary(it).copy(photo = photoResolver.resolve(it.id))
-            },
+            content = result.content.map { mapper.toSummary(it) },
             page = result.number, size = result.size,
             totalElements = result.totalElements, totalPages = result.totalPages
         ))
@@ -38,7 +36,7 @@ class TenantController(
 
     @GetMapping("/{id}")
     fun findById(@PathVariable id: Long): ResponseEntity<TenantResponse> =
-        ResponseEntity.ok(mapper.toResponse(useCase.getById(id)).copy(photo = photoResolver.resolve(id)))
+        ResponseEntity.ok(mapper.toResponse(useCase.getById(id)))
 
     @PostMapping
     fun create(@RequestBody request: TenantRequest): ResponseEntity<TenantResponse> {

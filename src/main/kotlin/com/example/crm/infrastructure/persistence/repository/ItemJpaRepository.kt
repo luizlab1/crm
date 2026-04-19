@@ -17,8 +17,8 @@ interface ItemJpaRepository : JpaRepository<ItemJpaEntity, Long> {
           and (:tenantId is null or i.tenantId = :tenantId)
           and (:categoryId is null or i.categoryId = :categoryId)
           and (:type is null or i.type = :type)
-          and (:name is null or lower(i.name) like lower(concat('%', :name, '%')))
-          and (:sku is null or lower(i.sku) like lower(concat('%', :sku, '%')))
+          and (:name is null or lower(i.name) like :name)
+          and (:sku is null or lower(i.sku) like :sku)
           and (:isActive is null or i.isActive = :isActive)
         """
     )

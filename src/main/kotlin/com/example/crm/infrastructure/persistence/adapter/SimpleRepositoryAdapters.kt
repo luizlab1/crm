@@ -81,12 +81,12 @@ class ItemRepositoryAdapter(
         tenantId: Long?,
         categoryId: Long?,
         type: ItemType?,
-        name: String?,
-        sku: String?,
+        namePattern: String?,
+        skuPattern: String?,
         isActive: Boolean?,
         pageable: Pageable
     ): Page<Item> =
-        jpa.findByFilters(code, tenantId, categoryId, type, name, sku, isActive, pageable)
+        jpa.findByFilters(code, tenantId, categoryId, type, namePattern, skuPattern, isActive, pageable)
             .map { mapper.toDomain(it) }
 
     override fun findAll(pageable: Pageable): Page<Item> = jpa.findAll(pageable).map { mapper.toDomain(it) }

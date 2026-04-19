@@ -1,6 +1,7 @@
 package com.example.crm.infrastructure.web.mapper
 
 import com.example.crm.application.port.input.UploadUseCase
+import com.example.crm.domain.model.FileType
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 
@@ -8,8 +9,8 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 class EntityPhotoResolver(
     private val uploadUseCase: UploadUseCase
 ) {
-    fun resolve(entityId: Long): String? =
-        uploadUseCase.list(fileType = null, entityId = entityId, page = 0, size = 100)
+    fun resolve(entityId: Long, fileType: FileType): String? =
+        uploadUseCase.list(fileType = fileType, entityId = entityId, page = 0, size = 100)
             .asSequence()
             .filter { it.filePath.startsWith("/uploads/") }
             .maxByOrNull { it.createdAt }

@@ -30,9 +30,7 @@ class CustomerController(
         val pageable = PageRequest.of(page, size, Sort.by("fullName"))
         val result = useCase.list(pageable, tenantId)
         return ResponseEntity.ok(PageResponse(
-            content = result.content.map {
-                mapper.toSummary(it).copy(photo = photoResolver.resolve(it.id))
-            },
+            content = result.content.map { mapper.toSummary(it) },
             page = result.number, size = result.size,
             totalElements = result.totalElements, totalPages = result.totalPages
         ))
@@ -40,7 +38,7 @@ class CustomerController(
 
     @GetMapping("/{id}")
     fun findById(@PathVariable id: Long): ResponseEntity<CustomerResponse> =
-        ResponseEntity.ok(mapper.toResponse(useCase.getById(id)).copy(photo = photoResolver.resolve(id)))
+        ResponseEntity.ok(mapper.toResponse(useCase.getById(id)))
 
     @PostMapping
     fun create(@RequestBody request: CustomerRequest): ResponseEntity<CustomerResponse> {

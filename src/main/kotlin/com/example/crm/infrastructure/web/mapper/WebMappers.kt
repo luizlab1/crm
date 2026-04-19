@@ -32,7 +32,9 @@ class PersonWebMapper {
 }
 
 @Component
-class CustomerWebMapper {
+class CustomerWebMapper(
+    private val photoResolver: EntityPhotoResolver
+) {
     fun toDomain(request: CustomerRequest): Customer {
         val person = if (hasPersonPayload(request)) {
             Person(
@@ -83,6 +85,7 @@ class CustomerWebMapper {
         id = d.id, code = d.code, tenantId = d.tenantId, personId = d.personId,
         fullName = d.fullName, email = d.email, phone = d.phone, document = d.document,
         isActive = d.isActive, createdAt = d.createdAt, updatedAt = d.updatedAt,
+        photo = photoResolver.resolve(d.id, FileType.CUSTOMER),
         physical = d.person?.physical?.let { PersonPhysicalResponse(it.fullName, it.cpf, it.birthDate) },
         legal = d.person?.legal?.let { PersonLegalResponse(it.corporateName, it.tradeName, it.cnpj) },
         contacts = d.person?.contacts?.map {
@@ -178,7 +181,9 @@ class PipelineFlowWebMapper {
 }
 
 @Component
-class TenantWebMapper {
+class TenantWebMapper(
+    private val photoResolver: EntityPhotoResolver
+) {
     fun toDomain(request: TenantRequest) = Tenant(
         parentTenantId = request.parentTenantId, name = request.name,
         category = request.category, isActive = request.isActive,
@@ -227,6 +232,7 @@ class TenantWebMapper {
         id = d.id, parentTenantId = d.parentTenantId, code = d.code,
         name = d.name, category = d.category, isActive = d.isActive,
         createdAt = d.createdAt, updatedAt = d.updatedAt,
+        photo = photoResolver.resolve(d.id, FileType.TENANT),
         physical = d.person?.physical?.let { PersonPhysicalResponse(it.fullName, it.cpf, it.birthDate) },
         legal = d.person?.legal?.let { PersonLegalResponse(it.corporateName, it.tradeName, it.cnpj) },
         contacts = d.person?.contacts?.map {
@@ -260,7 +266,9 @@ class TenantWebMapper {
 }
 
 @Component
-class UserWebMapper {
+class UserWebMapper(
+    private val photoResolver: EntityPhotoResolver
+) {
     fun toDomain(request: UserRequest): User {
         val person = if (hasPersonPayload(request)) {
             Person(
@@ -310,6 +318,7 @@ class UserWebMapper {
     fun toResponse(d: User) = UserResponse(
         id = d.id, tenantId = d.tenantId, personId = d.personId, code = d.code,
         email = d.email, isActive = d.isActive, createdAt = d.createdAt, updatedAt = d.updatedAt,
+        photo = photoResolver.resolve(d.id, FileType.USER),
         physical = d.person?.physical?.let { PersonPhysicalResponse(it.fullName, it.cpf, it.birthDate) },
         legal = d.person?.legal?.let { PersonLegalResponse(it.corporateName, it.tradeName, it.cnpj) },
         contacts = d.person?.contacts?.map {
@@ -343,7 +352,9 @@ class UserWebMapper {
 }
 
 @Component
-class WorkerWebMapper {
+class WorkerWebMapper(
+    private val photoResolver: EntityPhotoResolver
+) {
     fun toDomain(request: WorkerRequest): Worker {
         val person = if (hasPersonPayload(request)) {
             Person(
@@ -394,6 +405,7 @@ class WorkerWebMapper {
     fun toResponse(d: Worker) = WorkerResponse(
         id = d.id, code = d.code, tenantId = d.tenantId, personId = d.personId,
         userId = d.userId, isActive = d.isActive, createdAt = d.createdAt, updatedAt = d.updatedAt,
+        photo = photoResolver.resolve(d.id, FileType.WORKER),
         physical = d.person?.physical?.let { PersonPhysicalResponse(it.fullName, it.cpf, it.birthDate) },
         legal = d.person?.legal?.let { PersonLegalResponse(it.corporateName, it.tradeName, it.cnpj) },
         contacts = d.person?.contacts?.map {
@@ -440,13 +452,16 @@ class ItemWebMapper {
 }
 
 @Component
-class ItemCategoryWebMapper {
+class ItemCategoryWebMapper(
+    private val photoResolver: EntityPhotoResolver
+) {
     fun toDomain(request: ItemCategoryRequest) = ItemCategory(
         tenantId = request.tenantId, name = request.name, availableTypes = request.availableTypes
     )
     fun toResponse(d: ItemCategory) = ItemCategoryResponse(
         id = d.id, tenantId = d.tenantId, name = d.name, availableTypes = d.availableTypes,
-        createdAt = d.createdAt, updatedAt = d.updatedAt
+        createdAt = d.createdAt, updatedAt = d.updatedAt,
+        photo = photoResolver.resolve(d.id, FileType.CATEGORY)
     )
 }
 

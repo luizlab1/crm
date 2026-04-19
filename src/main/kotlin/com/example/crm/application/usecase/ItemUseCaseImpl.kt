@@ -27,17 +27,20 @@ class ItemUseCaseImpl(
         name: String?,
         sku: String?,
         isActive: Boolean?
-    ): Page<Item> =
-        itemRepository.findByFilters(
+    ): Page<Item> {
+        val namePattern = name?.let { "%${it.lowercase()}%" }
+        val skuPattern = sku?.let { "%${it.lowercase()}%" }
+        return itemRepository.findByFilters(
             code = code,
             tenantId = tenantId,
             categoryId = categoryId,
             type = type,
-            name = name,
-            sku = sku,
+            name = namePattern,
+            sku = skuPattern,
             isActive = isActive,
             pageable = pageable
         )
+    }
 
     @Transactional(readOnly = true)
     override fun getById(id: Long): Item =
