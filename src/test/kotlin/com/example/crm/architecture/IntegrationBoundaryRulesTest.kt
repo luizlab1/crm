@@ -30,7 +30,8 @@ class IntegrationBoundaryRulesTest {
                 "io.jsonwebtoken..",
                 "io.swagger.v3..",
                 "org.springdoc..",
-                "org.hibernate.."
+                "org.hibernate..",
+                "org.flywaydb.."
             )
         rule.check(importedClasses)
     }

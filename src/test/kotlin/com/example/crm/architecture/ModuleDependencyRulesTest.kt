@@ -30,7 +30,8 @@ class ModuleDependencyRulesTest {
                 "javax..",
                 "io.jsonwebtoken..",
                 "io.swagger.v3..",
-                "com.fasterxml.jackson.."
+                "com.fasterxml.jackson..",
+                "org.flywaydb.."
             )
         rule.check(importedClasses)
     }
