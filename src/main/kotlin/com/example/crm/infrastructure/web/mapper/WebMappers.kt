@@ -442,11 +442,72 @@ class WorkerWebMapper(
 class ItemWebMapper {
     fun toDomain(request: ItemRequest) = Item(
         tenantId = request.tenantId, categoryId = request.categoryId,
-        type = request.type, name = request.name, sku = request.sku, isActive = request.isActive
+        type = request.type, name = request.name, sku = request.sku, isActive = request.isActive,
+        productDatasheet = request.productDatasheet?.let {
+            ItemProductDatasheet(
+                description = it.description, unitPriceCents = it.unitPriceCents,
+                currencyCode = it.currencyCode, unitOfMeasureId = it.unitOfMeasureId,
+                weightKg = it.weightKg, volumeM3 = it.volumeM3, densityKgM3 = it.densityKgM3,
+                heightCm = it.heightCm, widthCm = it.widthCm, lengthCm = it.lengthCm
+            )
+        },
+        serviceDatasheet = request.serviceDatasheet?.let {
+            ItemServiceDatasheet(
+                description = it.description, unitPriceCents = it.unitPriceCents,
+                currencyCode = it.currencyCode, durationMinutes = it.durationMinutes,
+                requiresStaff = it.requiresStaff, bufferMinutes = it.bufferMinutes
+            )
+        },
+        images = request.images.map {
+            ItemImage(url = it.url, altText = it.altText, sortOrder = it.sortOrder, isActive = it.isActive)
+        },
+        tags = request.tags.map { ItemTag(tag = it) },
+        options = request.options.map {
+            ItemOption(name = it.name, priceDeltaCents = it.priceDeltaCents, isActive = it.isActive)
+        },
+        additionals = request.additionals.map {
+            ItemAdditional(name = it.name, priceCents = it.priceCents, isActive = it.isActive)
+        }
     )
     fun toResponse(d: Item) = ItemResponse(
         id = d.id, code = d.code, tenantId = d.tenantId, categoryId = d.categoryId,
         type = d.type, name = d.name, sku = d.sku, isActive = d.isActive,
+        productDatasheet = d.productDatasheet?.let {
+            ProductDatasheetResponse(
+                id = it.id, description = it.description, unitPriceCents = it.unitPriceCents,
+                currencyCode = it.currencyCode, unitOfMeasureId = it.unitOfMeasureId,
+                weightKg = it.weightKg, volumeM3 = it.volumeM3, densityKgM3 = it.densityKgM3,
+                heightCm = it.heightCm, widthCm = it.widthCm, lengthCm = it.lengthCm,
+                createdAt = it.createdAt, updatedAt = it.updatedAt
+            )
+        },
+        serviceDatasheet = d.serviceDatasheet?.let {
+            ServiceDatasheetResponse(
+                id = it.id, description = it.description, unitPriceCents = it.unitPriceCents,
+                currencyCode = it.currencyCode, durationMinutes = it.durationMinutes,
+                requiresStaff = it.requiresStaff, bufferMinutes = it.bufferMinutes,
+                createdAt = it.createdAt, updatedAt = it.updatedAt
+            )
+        },
+        images = d.images.map {
+            ImageResponse(
+                id = it.id, code = it.code, url = it.url, altText = it.altText,
+                sortOrder = it.sortOrder, isActive = it.isActive, createdAt = it.createdAt, updatedAt = it.updatedAt
+            )
+        },
+        tags = d.tags.map { it.tag },
+        options = d.options.map {
+            OptionResponse(
+                id = it.id, name = it.name, priceDeltaCents = it.priceDeltaCents,
+                isActive = it.isActive, createdAt = it.createdAt, updatedAt = it.updatedAt
+            )
+        },
+        additionals = d.additionals.map {
+            AdditionalResponse(
+                id = it.id, name = it.name, priceCents = it.priceCents,
+                isActive = it.isActive, createdAt = it.createdAt, updatedAt = it.updatedAt
+            )
+        },
         createdAt = d.createdAt, updatedAt = d.updatedAt
     )
 }

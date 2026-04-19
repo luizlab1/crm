@@ -74,7 +74,20 @@ class WorkerRepositoryAdapter(
 
 @Component
 class ItemRepositoryAdapter(
-    private val jpa: ItemJpaRepository, private val mapper: ItemPersistenceMapper
+    private val jpa: ItemJpaRepository,
+    private val mapper: ItemPersistenceMapper,
+    private val productDatasheetJpa: ItemProductDatasheetJpaRepository,
+    private val productDatasheetMapper: ItemProductDatasheetPersistenceMapper,
+    private val serviceDatasheetJpa: ItemServiceDatasheetJpaRepository,
+    private val serviceDatasheetMapper: ItemServiceDatasheetPersistenceMapper,
+    private val imageJpa: ItemImageJpaRepository,
+    private val imageMapper: ItemImagePersistenceMapper,
+    private val tagJpa: ItemTagJpaRepository,
+    private val tagMapper: ItemTagPersistenceMapper,
+    private val optionJpa: ItemOptionJpaRepository,
+    private val optionMapper: ItemOptionPersistenceMapper,
+    private val additionalJpa: ItemAdditionalJpaRepository,
+    private val additionalMapper: ItemAdditionalPersistenceMapper
 ) : ItemRepository {
     override fun findByFilters(
         code: java.util.UUID?,
@@ -91,8 +104,52 @@ class ItemRepositoryAdapter(
 
     override fun findAll(pageable: Pageable): Page<Item> = jpa.findAll(pageable).map { mapper.toDomain(it) }
     override fun findByTenantId(tenantId: Long, pageable: Pageable): Page<Item> = jpa.findByTenantId(tenantId, pageable).map { mapper.toDomain(it) }
-    override fun findById(id: Long): Item? = jpa.findById(id).map { mapper.toDomain(it) }.orElse(null)
-    override fun save(item: Item): Item = mapper.toDomain(jpa.save(mapper.toEntity(item)))
+    override fun findById(id: Long): Item? = jpa.findById(id).map { enrich(it) }.orElse(null)
+    override fun save(item: Item): Item {
+        val saved = mapper.toDomain(jpa.save(mapper.toEntity(item)))
+        saveRelationships(item)
+        return findById(saved.id)!!
+    }
+
+    private fun enrich(entity: com.example.crm.infrastructure.persistence.entity.ItemJpaEntity): Item {
+        val base = mapper.toDomain(entity)
+        val productDatasheet = productDatasheetJpa.findByItemId(entity.id)
+            .map { productDatasheetMapper.toDomain(it) }.orElse(null)
+        val serviceDatasheet = serviceDatasheetJpa.findByItemId(entity.id)
+            .map { serviceDatasheetMapper.toDomain(it) }.orElse(null)
+        val images = imageJpa.findByItemIdOrderBySortOrder(entity.id).map { imageMapper.toDomain(it) }
+        val tags = tagJpa.findByItemId(entity.id).map { tagMapper.toDomain(it) }
+        val options = optionJpa.findByItemId(entity.id).map { optionMapper.toDomain(it) }
+        val additionals = additionalJpa.findByItemId(entity.id).map { additionalMapper.toDomain(it) }
+        return base.copy(
+            productDatasheet = productDatasheet,
+            serviceDatasheet = serviceDatasheet,
+            images = images,
+            tags = tags,
+            options = options,
+            additionals = additionals
+        )
+    }
+
+    private fun saveRelationships(item: Item) {
+        val itemId = item.id
+        item.productDatasheet?.let {
+            val entity = productDatasheetMapper.toEntity(it.copy(itemId = itemId))
+            if (it.id == 0L) productDatasheetJpa.save(entity) else productDatasheetJpa.save(entity)
+        }
+        item.serviceDatasheet?.let {
+            val entity = serviceDatasheetMapper.toEntity(it.copy(itemId = itemId))
+            if (it.id == 0L) serviceDatasheetJpa.save(entity) else serviceDatasheetJpa.save(entity)
+        }
+        imageJpa.deleteByItemId(itemId)
+        item.images.forEach { imageJpa.save(imageMapper.toEntity(it.copy(itemId = itemId))) }
+        tagJpa.deleteByItemId(itemId)
+        item.tags.forEach { tagJpa.save(tagMapper.toEntity(it.copy(itemId = itemId))) }
+        optionJpa.deleteByItemId(itemId)
+        item.options.forEach { optionJpa.save(optionMapper.toEntity(it.copy(itemId = itemId))) }
+        additionalJpa.deleteByItemId(itemId)
+        item.additionals.forEach { additionalJpa.save(additionalMapper.toEntity(it.copy(itemId = itemId))) }
+    }
 }
 
 @Component
@@ -100,9 +157,30 @@ class ItemCategoryRepositoryAdapter(
     private val jpa: ItemCategoryJpaRepository, private val mapper: ItemCategoryPersistenceMapper
 ) : ItemCategoryRepository {
     override fun findAll(pageable: Pageable): Page<ItemCategory> = jpa.findAll(pageable).map { mapper.toDomain(it) }
-    override fun findByTenantId(tenantId: Long, pageable: Pageable): Page<ItemCategory> = jpa.findByTenantId(tenantId, pageable).map { mapper.toDomain(it) }
+    override fun findByTenantId(tenantId: Long, pageable: Pageable): Page<ItemCategory> =
+        jpa.findByTenantId(tenantId, pageable).map { mapper.toDomain(it) }
+    override fun findByFilters(
+        tenantId: Long?,
+        name: String?,
+        availableTypes: Set<ItemType>?,
+        pageable: Pageable
+    ): Page<ItemCategory> {
+        val namePattern = name?.let { "%${it.lowercase()}%" }
+        val jpaResult = jpa.findByFilters(tenantId, namePattern, pageable)
+        val filtered = if (availableTypes != null) {
+            jpaResult.content.filter { it.availableTypes.intersect(availableTypes).isNotEmpty() }
+        } else {
+            jpaResult.content
+        }
+        return org.springframework.data.domain.PageImpl(
+            filtered.map { mapper.toDomain(it) },
+            pageable,
+            jpaResult.totalElements
+        )
+    }
     override fun findById(id: Long): ItemCategory? = jpa.findById(id).map { mapper.toDomain(it) }.orElse(null)
-    override fun save(itemCategory: ItemCategory): ItemCategory = mapper.toDomain(jpa.save(mapper.toEntity(itemCategory)))
+    override fun save(itemCategory: ItemCategory): ItemCategory =
+        mapper.toDomain(jpa.save(mapper.toEntity(itemCategory)))
     override fun deleteById(id: Long) = jpa.deleteById(id)
 }
 

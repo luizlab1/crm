@@ -12,6 +12,12 @@ data class Item(
     val name: String,
     val sku: String? = null,
     val isActive: Boolean = true,
+    val productDatasheet: ItemProductDatasheet? = null,
+    val serviceDatasheet: ItemServiceDatasheet? = null,
+    val images: List<ItemImage> = emptyList(),
+    val tags: List<ItemTag> = emptyList(),
+    val options: List<ItemOption> = emptyList(),
+    val additionals: List<ItemAdditional> = emptyList(),
     val createdAt: OffsetDateTime = OffsetDateTime.now(),
     val updatedAt: OffsetDateTime = OffsetDateTime.now()
 )

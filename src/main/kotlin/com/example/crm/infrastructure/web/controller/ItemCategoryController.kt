@@ -1,6 +1,8 @@
 package com.example.crm.infrastructure.web.controller
 
 import com.example.crm.application.port.input.ItemCategoryUseCase
+import com.example.crm.domain.model.FileType
+import com.example.crm.domain.model.ItemType
 import com.example.crm.infrastructure.web.dto.request.ItemCategoryRequest
 import com.example.crm.infrastructure.web.dto.response.ItemCategoryResponse
 import com.example.crm.infrastructure.web.dto.response.PageResponse
@@ -24,20 +26,32 @@ class ItemCategoryController(
     fun findAll(
         @RequestParam(defaultValue = "0") page: Int,
         @RequestParam(defaultValue = "20") size: Int,
-        @RequestParam(required = false) tenantId: Long?
+        @RequestParam(required = false) tenantId: Long?,
+        @RequestParam(required = false) name: String?,
+        @RequestParam(required = false) availableTypes: Set<ItemType>?
     ): ResponseEntity<PageResponse<ItemCategoryResponse>> {
         val pageable = PageRequest.of(page, size, Sort.by("name"))
-        val result = useCase.list(pageable, tenantId)
+        val result = useCase.list(pageable, tenantId, name, availableTypes)
         return ResponseEntity.ok(PageResponse(
-            content = result.content.map { mapper.toResponse(it) },
+            content = result.content.map { category ->
+                mapper.toResponse(category).copy(
+                    photo = photoResolver.resolve(category.id, FileType.CATEGORY)
+                )
+            },
             page = result.number, size = result.size,
             totalElements = result.totalElements, totalPages = result.totalPages
         ))
     }
 
     @GetMapping("/{id}")
-    fun findById(@PathVariable id: Long): ResponseEntity<ItemCategoryResponse> =
-        ResponseEntity.ok(mapper.toResponse(useCase.getById(id)))
+    fun findById(@PathVariable id: Long): ResponseEntity<ItemCategoryResponse> {
+        val category = useCase.getById(id)
+        return ResponseEntity.ok(
+            mapper.toResponse(category).copy(
+                photo = photoResolver.resolve(category.id, FileType.CATEGORY)
+            )
+        )
+    }
 
     @PostMapping
     fun create(@RequestBody request: ItemCategoryRequest): ResponseEntity<ItemCategoryResponse> {

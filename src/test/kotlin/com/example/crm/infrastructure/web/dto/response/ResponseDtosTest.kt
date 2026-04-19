@@ -22,8 +22,10 @@ class ResponseDtosTest {
         CustomerResponse(1, uuid, 1, null, "Maria", "m@crm.com", null, null, true, now, now).fullName shouldBe "Maria"
         ItemCategoryResponse(1, 1, "Categoria", ItemType.entries.toSet(), now, now)
             .name shouldBe "Categoria"
-        ItemResponse(1, uuid, 1, null, ItemType.SERVICE, "Consultoria", null, true, emptyList(), now, now)
-            .type shouldBe ItemType.SERVICE
+        ItemResponse(
+            1, uuid, 1, null, ItemType.SERVICE, "Consultoria", null, true, emptyList(),
+            null, null, emptyList(), emptyList(), emptyList(), emptyList(), now, now
+        ).type shouldBe ItemType.SERVICE
 
         val orderItem = OrderItemResponse(1, 2, 1, 1000, 1000, now)
         OrderResponse(1, uuid, 1, 2, 3, "DRAFT", 1000, 0, 1000, "BRL", null, listOf(orderItem), now, now).items.size shouldBe 1

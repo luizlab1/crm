@@ -177,3 +177,98 @@ class UnitOfMeasurePersistenceMapper {
     )
 }
 
+@Component
+class ItemProductDatasheetPersistenceMapper {
+    fun toDomain(e: ItemProductDatasheetJpaEntity) = ItemProductDatasheet(
+        id = e.id, itemId = e.itemId, description = e.description,
+        unitPriceCents = e.unitPriceCents, currencyCode = e.currencyCode,
+        unitOfMeasureId = e.unitOfMeasureId, weightKg = e.weightKg, volumeM3 = e.volumeM3,
+        densityKgM3 = e.densityKgM3, heightCm = e.heightCm, widthCm = e.widthCm, lengthCm = e.lengthCm,
+        createdAt = e.createdAt, updatedAt = e.updatedAt
+    )
+    fun toEntity(d: ItemProductDatasheet): ItemProductDatasheetJpaEntity {
+        val e = ItemProductDatasheetJpaEntity(
+            id = d.id, itemId = d.itemId, description = d.description,
+            unitPriceCents = d.unitPriceCents, currencyCode = d.currencyCode,
+            unitOfMeasureId = d.unitOfMeasureId, weightKg = d.weightKg, volumeM3 = d.volumeM3,
+            densityKgM3 = d.densityKgM3, heightCm = d.heightCm, widthCm = d.widthCm, lengthCm = d.lengthCm
+        )
+        e.createdAt = d.createdAt; e.updatedAt = d.updatedAt; return e
+    }
+}
+
+@Component
+class ItemServiceDatasheetPersistenceMapper {
+    fun toDomain(e: ItemServiceDatasheetJpaEntity) = ItemServiceDatasheet(
+        id = e.id, itemId = e.itemId, description = e.description,
+        unitPriceCents = e.unitPriceCents, currencyCode = e.currencyCode,
+        durationMinutes = e.durationMinutes, requiresStaff = e.requiresStaff,
+        bufferMinutes = e.bufferMinutes, createdAt = e.createdAt, updatedAt = e.updatedAt
+    )
+    fun toEntity(d: ItemServiceDatasheet): ItemServiceDatasheetJpaEntity {
+        val e = ItemServiceDatasheetJpaEntity(
+            id = d.id, itemId = d.itemId, description = d.description,
+            unitPriceCents = d.unitPriceCents, currencyCode = d.currencyCode,
+            durationMinutes = d.durationMinutes, requiresStaff = d.requiresStaff,
+            bufferMinutes = d.bufferMinutes
+        )
+        e.createdAt = d.createdAt; e.updatedAt = d.updatedAt; return e
+    }
+}
+
+@Component
+class ItemImagePersistenceMapper {
+    fun toDomain(e: ItemImageJpaEntity) = ItemImage(
+        id = e.id, code = e.code, itemId = e.itemId, url = e.url, altText = e.altText,
+        sortOrder = e.sortOrder, isActive = e.isActive, createdAt = e.createdAt, updatedAt = e.updatedAt
+    )
+    fun toEntity(d: ItemImage): ItemImageJpaEntity {
+        val e = ItemImageJpaEntity(
+            id = d.id, code = d.code, itemId = d.itemId, url = d.url, altText = d.altText,
+            sortOrder = d.sortOrder, isActive = d.isActive
+        )
+        e.createdAt = d.createdAt; e.updatedAt = d.updatedAt; return e
+    }
+}
+
+@Component
+class ItemTagPersistenceMapper {
+    fun toDomain(e: ItemTagJpaEntity) = ItemTag(
+        id = e.id, itemId = e.itemId, tag = e.tag, createdAt = e.createdAt
+    )
+    fun toEntity(d: ItemTag): ItemTagJpaEntity {
+        val e = ItemTagJpaEntity(id = d.id, itemId = d.itemId, tag = d.tag)
+        e.createdAt = d.createdAt; return e
+    }
+}
+
+@Component
+class ItemOptionPersistenceMapper {
+    fun toDomain(e: ItemOptionJpaEntity) = ItemOption(
+        id = e.id, itemId = e.itemId, name = e.name, priceDeltaCents = e.priceDeltaCents,
+        isActive = e.isActive, createdAt = e.createdAt, updatedAt = e.updatedAt
+    )
+    fun toEntity(d: ItemOption): ItemOptionJpaEntity {
+        val e = ItemOptionJpaEntity(
+            id = d.id, itemId = d.itemId, name = d.name, priceDeltaCents = d.priceDeltaCents,
+            isActive = d.isActive
+        )
+        e.createdAt = d.createdAt; e.updatedAt = d.updatedAt; return e
+    }
+}
+
+@Component
+class ItemAdditionalPersistenceMapper {
+    fun toDomain(e: ItemAdditionalJpaEntity) = ItemAdditional(
+        id = e.id, itemId = e.itemId, name = e.name, priceCents = e.priceCents,
+        isActive = e.isActive, createdAt = e.createdAt, updatedAt = e.updatedAt
+    )
+    fun toEntity(d: ItemAdditional): ItemAdditionalJpaEntity {
+        val e = ItemAdditionalJpaEntity(
+            id = d.id, itemId = d.itemId, name = d.name, priceCents = d.priceCents,
+            isActive = d.isActive
+        )
+        e.createdAt = d.createdAt; e.updatedAt = d.updatedAt; return e
+    }
+}
+

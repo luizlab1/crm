@@ -3,6 +3,7 @@ package com.example.crm.application.usecase
 import com.example.crm.application.port.input.ItemCategoryUseCase
 import com.example.crm.domain.exception.EntityNotFoundException
 import com.example.crm.domain.model.ItemCategory
+import com.example.crm.domain.model.ItemType
 import com.example.crm.domain.repository.ItemCategoryRepository
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -16,9 +17,13 @@ class ItemCategoryUseCaseImpl(
 ) : ItemCategoryUseCase {
 
     @Transactional(readOnly = true)
-    override fun list(pageable: Pageable, tenantId: Long?): Page<ItemCategory> =
-        if (tenantId != null) itemCategoryRepository.findByTenantId(tenantId, pageable)
-        else itemCategoryRepository.findAll(pageable)
+    override fun list(
+        pageable: Pageable,
+        tenantId: Long?,
+        name: String?,
+        availableTypes: Set<ItemType>?
+    ): Page<ItemCategory> =
+        itemCategoryRepository.findByFilters(tenantId, name, availableTypes, pageable)
 
     @Transactional(readOnly = true)
     override fun getById(id: Long): ItemCategory =
