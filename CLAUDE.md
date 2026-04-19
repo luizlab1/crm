@@ -1,120 +1,99 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+> Responda em **pt-BR**. Curto e direto.
 
-> Responda sempre em **pt-BR**, respostas curtas e diretas.
+## Repositório
 
----
+Serviço **CRM** (clientes, conversas, registros) de plataforma WhatsApp bot. Inbound Webhook e Bot Engine ficam em outros repos.
 
-## O que é este repositório
+Stack: Kotlin 2.2.21 · Spring Boot 4.0.2 · PostgreSQL · JWT · JDK 21 (ignore README que cita Java 25).
 
-Serviço **CRM** — fonte da verdade de clientes, conversas e registros de negócio — dentro de uma plataforma maior de WhatsApp bot. Os outros serviços (Inbound Webhook, Bot Engine) **não estão neste repo**.
-
-Stack: Kotlin 2.2.21 · Spring Boot 4.0.2 · PostgreSQL · JWT · JVM 21.
-
-> README diz Java 25 — ignore. O build usa JDK 21 (`build.gradle.kts`). Confie no build.
-
----
-
-## Comandos principais
+## Comandos
 
 ```bash
-# 1. Subir infraestrutura (obrigatório antes de bootRun ou testes de integração)
-cd infra-crm && docker compose up -d
-
-# 2. Rodar a aplicação
-./gradlew bootRun          # Linux/Mac
-.\gradlew.bat bootRun      # Windows
-
-# 3. Todos os testes (JaCoCo gerado automaticamente ao final)
-./gradlew test
-
-# 4. Classe de teste específica
-./gradlew test --tests "com.example.crm.application.usecase.UseCasesTest"
-
-# 5. Lint (Detekt)
-./gradlew detekt
+cd infra-crm && docker compose up -d        # infra (obrigatória p/ bootRun e testes de integração)
+./gradlew bootRun                           # app (.\gradlew.bat no Windows)
+./gradlew test                              # suite + JaCoCo
+./gradlew test --tests "FQCN"               # teste específico
+./gradlew detekt                            # lint
+docker compose down -v && docker compose up -d  # reset DB (dentro de infra-crm)
 ```
 
-**Gate obrigatório antes de concluir qualquer tarefa com alteração de código:** executar `detekt` e `test`. Se houver falha, corrigir e rodar novamente até passar.
+## Estrutura do projeto
 
-**Ordem recomendada:** implementar → lint → testes do escopo → suite completa.
+- `domain/model` → data classes puras, sem infra
+- `domain/repository` → contratos de repositório
+- `application/port/input` → interfaces de use case
+- `application/usecase` → implementações `@Service`
+- `infrastructure/web/controller` → endpoints REST
+- `infrastructure/web/dto` → request/response
+- `infrastructure/web/mapper` → DTO ↔ domínio (`WebMappers.kt`)
+- `infrastructure/persistence/entity` → `@Entity` JPA
+- `infrastructure/persistence/repository` → Spring Data
+- `infrastructure/persistence/adapter` → implementações dos repositórios de domínio
+- `infrastructure/persistence/mapper` → entidade ↔ domínio
+- `infrastructure/security` → JWT, filtros, seeders
+- `architecture/` → testes ArchUnit
 
----
+**Novo recurso `Foo`:** criar nessa ordem — model → repo (domain) → useCase (port + impl) → entity → jpaRepo → persistenceMapper → adapter → request/response DTOs → estender `WebMappers` → controller.
 
-## Arquitetura
+## Regras ArchUnit (quebram build)
 
-Arquitetura **Hexagonal + DDD** em três camadas principais:
+- `domain` não depende de `infrastructure`
+- `application.usecase` não depende de `infrastructure`
+- Controllers só dependem de `application`, `domain`, `infrastructure.web.*`
+- `*UseCaseImpl` deve ter `@Service`
+- `*Controller` deve estar em `..infrastructure.web.controller..`
 
-```
-domain/           → modelos puros (data classes sem anotações de infra)
-application/      → use cases (portas + implementações)
-infrastructure/   → web (controllers/DTOs), persistence (JPA/adapters), security
-```
+## Banco
 
-**Fluxo para cada recurso:**
-
-1. `domain/model/Foo.kt` — data class pura
-2. `domain/repository/FooRepository.kt` — interface
-3. `application/port/input/FooUseCase.kt` — interface
-4. `application/usecase/FooUseCaseImpl.kt` — `@Service`
-5. `infrastructure/persistence/entity/FooJpaEntity.kt` — `@Entity`
-6. `infrastructure/persistence/repository/FooJpaRepository.kt` — Spring Data
-7. `infrastructure/persistence/mapper/FooPersistenceMapper.kt`
-8. `infrastructure/persistence/adapter/FooRepositoryAdapter.kt` — `@Component`
-9. `infrastructure/web/dto/request/FooRequest.kt`
-10. `infrastructure/web/dto/response/FooResponse.kt`
-11. `infrastructure/web/mapper/WebMappers.kt` — estender com mapeamentos do Foo
-12. `infrastructure/web/controller/FooController.kt`
-
-**Regras ArchUnit (violações quebram o build):**
-
-| Regra |
-|---|
-| `domain` não depende de `infrastructure` (nem indiretamente) |
-| `application.usecase` não depende de `infrastructure` |
-| Controllers só dependem de `application`, `domain`, `infrastructure.web.*` |
-| Classes `*UseCaseImpl` devem ter `@Service` |
-| Classes `*Controller` devem estar em `..infrastructure.web.controller..` |
-
----
-
-## Schema do banco
-
-- `ddl-auto: none` — Hibernate **não** cria nem altera tabelas.
-- Schema gerenciado pelos scripts em `infra-crm/postgres/init/` (ordem alfabética).
-  - `a*.sql` = DDL de schema · `b*.sql` = seed/dados iniciais
-- Migrações pós-criação: `src/main/resources/db/migration/V*__*.sql` (Flyway).
-- Tabela `user` usa aspas (`"user"`) por ser palavra reservada no PostgreSQL.
-- Resetar banco: `docker compose down -v && docker compose up -d` (dentro de `infra-crm`).
-
----
+- `ddl-auto: none` — Hibernate não altera schema
+- DDL/seed: `infra-crm/postgres/init/` (`a*.sql` schema · `b*.sql` dados), ordem alfabética
+- Migrações pós-criação: Flyway em `src/main/resources/db/migration/V*__*.sql`
+- Tabela `"user"` exige aspas (palavra reservada)
 
 ## Testes
 
-- **Mocking:** MockK (`io.mockk`). Não usar Mockito.
-- `UseCasesTest` — unitários sem Spring, todos os use cases em um arquivo.
-- `CrmApplicationTests` — `@SpringBootTest`, requer `docker compose up -d`.
-- Testes de arquitetura em `architecture/` rodam junto com `./gradlew test`.
-- JaCoCo é gerado automaticamente; não é necessário chamar tarefa separada.
-
----
+- Mock: **MockK** (`io.mockk`). Nunca Mockito.
+- `UseCasesTest` → unitários sem Spring, todos use cases num arquivo
+- `CrmApplicationTests` → `@SpringBootTest` (requer docker up)
+- ArchUnit em `architecture/` roda junto com `./gradlew test`
 
 ## Segurança
 
-- JWT stateless. Todos os endpoints requerem `Authorization: Bearer <token>` exceto `/api/v1/auth/**`, Swagger e actuator.
-- Obter token: `POST /api/v1/auth/token` com `{"email": "admin@saas.com", "password": "string"}`.
-- `AdminSeeder` garante o usuário admin no startup (tenant_id=1).
-- BCrypt: prefixo `$2b$` é normalizado para `$2a$` automaticamente.
-
----
+- JWT stateless. Auth obrigatório exceto `/api/v1/auth/**`, Swagger, actuator
+- Token: `POST /api/v1/auth/token` `{"email":"admin@saas.com","password":"string"}`
+- `AdminSeeder` cria admin no startup (tenant_id=1)
+- BCrypt: `$2b$` é normalizado para `$2a$`
 
 ## URLs locais
 
-| URL | Descrição |
+| URL | Uso |
 |---|---|
-| `http://localhost:8080/swagger-ui/index.html` | Swagger UI |
+| `http://localhost:8080/swagger-ui/index.html` | Swagger |
 | `http://localhost:8080/v3/api-docs` | OpenAPI JSON |
-| `http://localhost:8080/health/live` | Health check |
-| `http://localhost:5050` | pgAdmin (`admin@crm.com` / `admin`) |
-| `localhost:5432` | PostgreSQL (`crm`/`crm`/`crm`) |
+| `http://localhost:8080/health/live` | Health |
+| `http://localhost:5050` | pgAdmin (`admin@crm.com`/`admin`) |
+| `localhost:5432` | Postgres (`crm`/`crm`/`crm`) |
+
+## Fluxo de trabalho
+
+- **API/contrato:** consultar `/v3/api-docs` antes de inferir rota ou payload
+- **Bug:** ir direto ao controller → use case → adapter; não varrer o repo
+- **Nova feature:** seguir ordem da seção Estrutura; reutilizar padrões existentes
+- **Mudança mínima:** alterar só o necessário; sem refactor fora de escopo
+- **Validação:** scoped tests primeiro → `detekt` → suite completa só no fim
+- **Gate final obrigatório:** `./gradlew detekt` + `./gradlew test` verdes antes de concluir
+
+## Regras de economia de tokens
+
+- Ler apenas arquivos estritamente necessários
+- Sempre usar Grep/Glob antes de Read
+- Nunca ler diretórios inteiros sem necessidade
+- Não resumir arquivos sem pedido explícito
+- Não repetir o pedido do usuário
+- Não gerar planos longos antes de agir
+- Não propor alternativas múltiplas sem pedido
+- Não explorar amplamente sem direção clara
+- Não refatorar fora do escopo
+- Não criar abstrações desnecessárias
