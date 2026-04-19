@@ -6,6 +6,7 @@ import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Table
+import java.time.OffsetDateTime
 
 @Entity
 @Table(name = "item_tag")
@@ -18,8 +19,8 @@ class ItemTagJpaEntity(
     var itemId: Long = 0,
 
     @Column(nullable = false, length = 100)
-    var tag: String = ""
-) : BaseJpaEntity() {
-    override var createdAt = super.createdAt
-    override var updatedAt = super.updatedAt
-}
+    var tag: String = "",
+
+    @Column(name = "created_at", nullable = false, updatable = false)
+    var createdAt: OffsetDateTime = OffsetDateTime.now()
+)
