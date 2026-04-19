@@ -10,5 +10,6 @@ data class CustomerSummaryResponse(
     val phone: String?,
     val document: String?,
     val isActive: Boolean,
-    val createdAt: OffsetDateTime
+    val createdAt: OffsetDateTime,
+    val photo: String? = null
 )

@@ -6,6 +6,7 @@ import com.example.crm.infrastructure.web.dto.response.CustomerResponse
 import com.example.crm.infrastructure.web.dto.response.CustomerSummaryResponse
 import com.example.crm.infrastructure.web.dto.response.PageResponse
 import com.example.crm.infrastructure.web.mapper.CustomerWebMapper
+import com.example.crm.infrastructure.web.mapper.EntityPhotoResolver
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.http.ResponseEntity
@@ -16,7 +17,8 @@ import java.net.URI
 @RequestMapping("/api/v1/customers")
 class CustomerController(
     private val useCase: CustomerUseCase,
-    private val mapper: CustomerWebMapper
+    private val mapper: CustomerWebMapper,
+    private val photoResolver: EntityPhotoResolver
 ) {
 
     @GetMapping
@@ -28,7 +30,9 @@ class CustomerController(
         val pageable = PageRequest.of(page, size, Sort.by("fullName"))
         val result = useCase.list(pageable, tenantId)
         return ResponseEntity.ok(PageResponse(
-            content = result.content.map { mapper.toSummary(it) },
+            content = result.content.map {
+                mapper.toSummary(it).copy(photo = photoResolver.resolve(it.id))
+            },
             page = result.number, size = result.size,
             totalElements = result.totalElements, totalPages = result.totalPages
         ))
@@ -36,7 +40,7 @@ class CustomerController(
 
     @GetMapping("/{id}")
     fun findById(@PathVariable id: Long): ResponseEntity<CustomerResponse> =
-        ResponseEntity.ok(mapper.toResponse(useCase.getById(id)))
+        ResponseEntity.ok(mapper.toResponse(useCase.getById(id)).copy(photo = photoResolver.resolve(id)))
 
     @PostMapping
     fun create(@RequestBody request: CustomerRequest): ResponseEntity<CustomerResponse> {

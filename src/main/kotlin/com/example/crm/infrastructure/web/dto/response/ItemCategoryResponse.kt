@@ -9,6 +9,7 @@ data class ItemCategoryResponse(
     val name: String,
     val availableTypes: Set<ItemType>,
     val createdAt: OffsetDateTime,
-    val updatedAt: OffsetDateTime
+    val updatedAt: OffsetDateTime,
+    val photo: String? = null
 )
 

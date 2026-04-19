@@ -5,6 +5,7 @@ import com.example.crm.infrastructure.web.dto.request.TenantRequest
 import com.example.crm.infrastructure.web.dto.response.PageResponse
 import com.example.crm.infrastructure.web.dto.response.TenantResponse
 import com.example.crm.infrastructure.web.dto.response.TenantSummaryResponse
+import com.example.crm.infrastructure.web.mapper.EntityPhotoResolver
 import com.example.crm.infrastructure.web.mapper.TenantWebMapper
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
@@ -16,7 +17,8 @@ import java.net.URI
 @RequestMapping("/api/v1/tenants")
 class TenantController(
     private val useCase: TenantUseCase,
-    private val mapper: TenantWebMapper
+    private val mapper: TenantWebMapper,
+    private val photoResolver: EntityPhotoResolver
 ) {
 
     @GetMapping
@@ -26,7 +28,9 @@ class TenantController(
     ): ResponseEntity<PageResponse<TenantSummaryResponse>> {
         val result = useCase.list(PageRequest.of(page, size, Sort.by("name")))
         return ResponseEntity.ok(PageResponse(
-            content = result.content.map { mapper.toSummary(it) },
+            content = result.content.map {
+                mapper.toSummary(it).copy(photo = photoResolver.resolve(it.id))
+            },
             page = result.number, size = result.size,
             totalElements = result.totalElements, totalPages = result.totalPages
         ))
@@ -34,7 +38,7 @@ class TenantController(
 
     @GetMapping("/{id}")
     fun findById(@PathVariable id: Long): ResponseEntity<TenantResponse> =
-        ResponseEntity.ok(mapper.toResponse(useCase.getById(id)))
+        ResponseEntity.ok(mapper.toResponse(useCase.getById(id)).copy(photo = photoResolver.resolve(id)))
 
     @PostMapping
     fun create(@RequestBody request: TenantRequest): ResponseEntity<TenantResponse> {

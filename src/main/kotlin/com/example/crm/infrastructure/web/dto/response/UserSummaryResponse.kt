@@ -8,5 +8,6 @@ data class UserSummaryResponse(
     val email: String,
     val name: String?,
     val isActive: Boolean,
-    val createdAt: OffsetDateTime
+    val createdAt: OffsetDateTime,
+    val photo: String? = null
 )

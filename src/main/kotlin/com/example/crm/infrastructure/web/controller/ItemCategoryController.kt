@@ -4,6 +4,7 @@ import com.example.crm.application.port.input.ItemCategoryUseCase
 import com.example.crm.infrastructure.web.dto.request.ItemCategoryRequest
 import com.example.crm.infrastructure.web.dto.response.ItemCategoryResponse
 import com.example.crm.infrastructure.web.dto.response.PageResponse
+import com.example.crm.infrastructure.web.mapper.EntityPhotoResolver
 import com.example.crm.infrastructure.web.mapper.ItemCategoryWebMapper
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
@@ -15,7 +16,8 @@ import java.net.URI
 @RequestMapping("/api/v1/item-categories")
 class ItemCategoryController(
     private val useCase: ItemCategoryUseCase,
-    private val mapper: ItemCategoryWebMapper
+    private val mapper: ItemCategoryWebMapper,
+    private val photoResolver: EntityPhotoResolver
 ) {
 
     @GetMapping
@@ -27,7 +29,9 @@ class ItemCategoryController(
         val pageable = PageRequest.of(page, size, Sort.by("name"))
         val result = useCase.list(pageable, tenantId)
         return ResponseEntity.ok(PageResponse(
-            content = result.content.map { mapper.toResponse(it) },
+            content = result.content.map {
+                mapper.toResponse(it).copy(photo = photoResolver.resolve(it.id))
+            },
             page = result.number, size = result.size,
             totalElements = result.totalElements, totalPages = result.totalPages
         ))
@@ -35,7 +39,7 @@ class ItemCategoryController(
 
     @GetMapping("/{id}")
     fun findById(@PathVariable id: Long): ResponseEntity<ItemCategoryResponse> =
-        ResponseEntity.ok(mapper.toResponse(useCase.getById(id)))
+        ResponseEntity.ok(mapper.toResponse(useCase.getById(id)).copy(photo = photoResolver.resolve(id)))
 
     @PostMapping
     fun create(@RequestBody request: ItemCategoryRequest): ResponseEntity<ItemCategoryResponse> {

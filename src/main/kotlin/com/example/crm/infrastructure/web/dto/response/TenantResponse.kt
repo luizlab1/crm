@@ -12,6 +12,7 @@ data class TenantResponse(
     val isActive: Boolean,
     val createdAt: OffsetDateTime,
     val updatedAt: OffsetDateTime,
+    val photo: String? = null,
     val physical: PersonPhysicalResponse? = null,
     val legal: PersonLegalResponse? = null,
     val contacts: List<ContactResponse> = emptyList(),

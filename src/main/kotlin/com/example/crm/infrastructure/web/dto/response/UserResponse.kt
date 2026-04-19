@@ -12,6 +12,7 @@ data class UserResponse(
     val isActive: Boolean,
     val createdAt: OffsetDateTime,
     val updatedAt: OffsetDateTime,
+    val photo: String? = null,
     // dados de pessoa embutidos
     val physical: PersonPhysicalResponse? = null,
     val legal: PersonLegalResponse? = null,
