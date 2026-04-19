@@ -6,6 +6,7 @@ import com.example.crm.domain.repository.UploadRepository
 import com.example.crm.infrastructure.persistence.mapper.UploadPersistenceMapper
 import com.example.crm.infrastructure.persistence.repository.UploadJpaRepository
 import org.springframework.stereotype.Component
+import org.springframework.data.domain.PageRequest
 import java.util.UUID
 
 @Component
@@ -22,4 +23,17 @@ class UploadRepositoryAdapter(
 
     override fun findByFileTypeAndEntityId(fileType: FileType, entityId: Long): List<Upload> =
         jpa.findByFileTypeAndEntityId(fileType, entityId).map { mapper.toDomain(it) }
+
+    // implementation of domain repository method for optional filters and pagination
+    override fun find(fileType: FileType?, entityId: Long?, page: Int, size: Int): List<Upload> {
+        val pageable = PageRequest.of(page, size)
+        val pageResult = when {
+            fileType != null && entityId != null ->
+                jpa.findByFileTypeAndEntityId(fileType, entityId).let { org.springframework.data.domain.PageImpl(it) }
+            fileType != null -> jpa.findByFileType(fileType, pageable)
+            entityId != null -> jpa.findByEntityId(entityId, pageable)
+            else -> jpa.findAll(pageable)
+        }
+        return pageResult.map { mapper.toDomain(it) }.toList()
+    }
 }

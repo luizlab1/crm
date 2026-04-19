@@ -8,7 +8,8 @@ import java.util.UUID
 interface UploadUseCase {
     fun upload(command: UploadCommand): Upload
     fun getById(id: UUID): Upload
-    fun listByEntity(fileType: FileType, entityId: Long): List<Upload>
+    // list uploads with optional filters and pagination
+    fun list(fileType: FileType?, entityId: Long?, page: Int, size: Int): List<Upload>
     fun getRules(): UploadSettings
 }
 

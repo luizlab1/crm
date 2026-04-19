@@ -61,8 +61,8 @@ class UploadUseCaseImpl(
         uploadRepository.findById(id) ?: throw EntityNotFoundException("Upload", id)
 
     @Transactional(readOnly = true)
-    override fun listByEntity(fileType: FileType, entityId: Long): List<Upload> =
-        uploadRepository.findByFileTypeAndEntityId(fileType, entityId)
+    override fun list(fileType: FileType?, entityId: Long?, page: Int, size: Int): List<Upload> =
+        uploadRepository.find(fileType, entityId, page, size)
 
     override fun getRules(): UploadSettings = settings
 

@@ -83,8 +83,10 @@ class UploadController(
 
     @GetMapping
     fun listByEntity(
-        @RequestParam fileType: FileType,
-        @RequestParam entityId: Long
+        @RequestParam(required = false) fileType: FileType?,
+        @RequestParam(required = false) entityId: Long?,
+        @RequestParam(required = false, defaultValue = "0") page: Int,
+        @RequestParam(required = false, defaultValue = "20") size: Int
     ): ResponseEntity<List<UploadResponse>> =
-        ResponseEntity.ok(useCase.listByEntity(fileType, entityId).map { mapper.toResponse(it) })
+        ResponseEntity.ok(useCase.list(fileType, entityId, page, size).map { mapper.toResponse(it) })
 }
