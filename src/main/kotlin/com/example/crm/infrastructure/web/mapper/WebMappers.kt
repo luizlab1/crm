@@ -441,9 +441,12 @@ class ItemWebMapper {
 
 @Component
 class ItemCategoryWebMapper {
-    fun toDomain(request: ItemCategoryRequest) = ItemCategory(tenantId = request.tenantId, name = request.name)
+    fun toDomain(request: ItemCategoryRequest) = ItemCategory(
+        tenantId = request.tenantId, name = request.name, availableTypes = request.availableTypes
+    )
     fun toResponse(d: ItemCategory) = ItemCategoryResponse(
-        id = d.id, tenantId = d.tenantId, name = d.name, createdAt = d.createdAt, updatedAt = d.updatedAt
+        id = d.id, tenantId = d.tenantId, name = d.name, availableTypes = d.availableTypes,
+        createdAt = d.createdAt, updatedAt = d.updatedAt
     )
 }
 

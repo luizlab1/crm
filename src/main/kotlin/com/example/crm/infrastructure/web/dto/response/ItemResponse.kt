@@ -1,5 +1,6 @@
 package com.example.crm.infrastructure.web.dto.response
 
+import com.example.crm.domain.model.ItemType
 import java.time.OffsetDateTime
 import java.util.UUID
 
@@ -8,7 +9,7 @@ data class ItemResponse(
     val code: UUID,
     val tenantId: Long,
     val categoryId: Long?,
-    val type: String,
+    val type: ItemType,
     val name: String,
     val sku: String?,
     val isActive: Boolean,

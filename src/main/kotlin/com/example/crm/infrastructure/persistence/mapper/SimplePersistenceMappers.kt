@@ -62,11 +62,14 @@ class ItemPersistenceMapper {
 @Component
 class ItemCategoryPersistenceMapper {
     fun toDomain(e: ItemCategoryJpaEntity) = ItemCategory(
-        id = e.id, tenantId = e.tenantId, name = e.name,
+        id = e.id, tenantId = e.tenantId, name = e.name, availableTypes = e.availableTypes,
         createdAt = e.createdAt, updatedAt = e.updatedAt
     )
     fun toEntity(d: ItemCategory): ItemCategoryJpaEntity {
-        val e = ItemCategoryJpaEntity(id = d.id, tenantId = d.tenantId, name = d.name)
+        val e = ItemCategoryJpaEntity(
+            id = d.id, tenantId = d.tenantId, name = d.name,
+            availableTypes = d.availableTypes.toMutableSet()
+        )
         e.createdAt = d.createdAt; e.updatedAt = d.updatedAt; return e
     }
 }

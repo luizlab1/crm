@@ -1,5 +1,6 @@
 package com.example.crm.infrastructure.persistence.entity
 
+import com.example.crm.domain.model.ItemType
 import jakarta.persistence.*
 import java.util.UUID
 
@@ -20,7 +21,8 @@ class ItemJpaEntity(
     var categoryId: Long? = null,
 
     @Column(nullable = false, length = 60)
-    var type: String = "",
+    @Enumerated(EnumType.STRING)
+    var type: ItemType = ItemType.PRODUCT,
 
     @Column(nullable = false, length = 150)
     var name: String = "",

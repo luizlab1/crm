@@ -8,7 +8,7 @@ data class Item(
     val code: UUID = UUID.randomUUID(),
     val tenantId: Long,
     val categoryId: Long? = null,
-    val type: String,
+    val type: ItemType,
     val name: String,
     val sku: String? = null,
     val isActive: Boolean = true,

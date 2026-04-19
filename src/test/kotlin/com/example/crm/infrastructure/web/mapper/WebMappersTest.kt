@@ -109,8 +109,8 @@ class WebMappersTest {
         val worker = WorkerWebMapper().toDomain(WorkerRequest(tenantId = 1))
         worker.tenantId shouldBe 1
 
-        val item = ItemWebMapper().toDomain(ItemRequest(tenantId = 1, type = "SERVICE", name = "Consultoria"))
-        item.type shouldBe "SERVICE"
+        val item = ItemWebMapper().toDomain(ItemRequest(tenantId = 1, type = ItemType.SERVICE, name = "Consultoria"))
+        item.type shouldBe ItemType.SERVICE
 
         val itemCategory = ItemCategoryWebMapper().toDomain(ItemCategoryRequest(tenantId = 1, name = "Categoria"))
         itemCategory.name shouldBe "Categoria"

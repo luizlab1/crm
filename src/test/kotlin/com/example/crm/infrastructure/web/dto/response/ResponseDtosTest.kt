@@ -1,5 +1,6 @@
 package com.example.crm.infrastructure.web.dto.response
 
+import com.example.crm.domain.model.ItemType
 import com.example.crm.support.shouldBe
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
@@ -19,8 +20,10 @@ class ResponseDtosTest {
         CityResponse(1, 1, "Campinas", 3509502, now, now).city shouldBe "Campinas"
         CountryResponse(1, "BR", "BRA", "Brasil", now, now).iso2 shouldBe "BR"
         CustomerResponse(1, uuid, 1, null, "Maria", "m@crm.com", null, null, true, now, now).fullName shouldBe "Maria"
-        ItemCategoryResponse(1, 1, "Categoria", now, now).name shouldBe "Categoria"
-        ItemResponse(1, uuid, 1, null, "SERVICE", "Consultoria", null, true, now, now).type shouldBe "SERVICE"
+        ItemCategoryResponse(1, 1, "Categoria", ItemType.entries.toSet(), now, now)
+            .name shouldBe "Categoria"
+        ItemResponse(1, uuid, 1, null, ItemType.SERVICE, "Consultoria", null, true, now, now)
+            .type shouldBe ItemType.SERVICE
 
         val orderItem = OrderItemResponse(1, 2, 1, 1000, 1000, now)
         OrderResponse(1, uuid, 1, 2, 3, "DRAFT", 1000, 0, 1000, "BRL", null, listOf(orderItem), now, now).items.size shouldBe 1

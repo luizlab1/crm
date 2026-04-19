@@ -107,7 +107,10 @@ class UseCasesTest {
         every { customerRepo.findById(1) } returns customer
         every { customerRepo.save(any()) } answers { firstArg() }
 
-        val item = Item(id = 2, tenantId = 10, type = "SERVICE", name = "Consultoria", createdAt = now, updatedAt = now)
+        val item = Item(
+            id = 2, tenantId = 10, type = ItemType.SERVICE, name = "Consultoria",
+            createdAt = now, updatedAt = now
+        )
         every { itemRepo.findByTenantId(10, pageable) } returns PageImpl(listOf(item))
         every { itemRepo.findAll(pageable) } returns PageImpl(listOf(item))
         every { itemRepo.findById(2) } returns item

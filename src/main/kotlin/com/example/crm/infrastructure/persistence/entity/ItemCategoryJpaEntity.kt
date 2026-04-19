@@ -1,5 +1,6 @@
 package com.example.crm.infrastructure.persistence.entity
 
+import com.example.crm.domain.model.ItemType
 import jakarta.persistence.*
 
 @Entity
@@ -13,6 +14,12 @@ class ItemCategoryJpaEntity(
     var tenantId: Long = 0,
 
     @Column(nullable = false, length = 150)
-    var name: String = ""
+    var name: String = "",
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "item_category_available_types", joinColumns = [JoinColumn(name = "category_id")])
+    @Column(name = "type")
+    @Enumerated(EnumType.STRING)
+    var availableTypes: MutableSet<ItemType> = ItemType.entries.toMutableSet()
 ) : BaseJpaEntity()
 

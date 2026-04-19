@@ -38,7 +38,10 @@ class PersistenceMappersTest {
         val worker = Worker(id = 3, tenantId = 1, personId = 9, userId = 2, createdAt = now, updatedAt = now)
         workerMapper.toDomain(workerMapper.toEntity(worker)).personId shouldBe worker.personId
 
-        val item = Item(id = 4, tenantId = 1, categoryId = 5, type = "SERVICE", name = "Item", sku = "SKU-1", createdAt = now, updatedAt = now)
+        val item = Item(
+            id = 4, tenantId = 1, categoryId = 5, type = ItemType.SERVICE,
+            name = "Item", sku = "SKU-1", createdAt = now, updatedAt = now
+        )
         itemMapper.toDomain(itemMapper.toEntity(item)).name shouldBe item.name
 
         val itemCategory = ItemCategory(id = 5, tenantId = 1, name = "Cat", createdAt = now, updatedAt = now)
