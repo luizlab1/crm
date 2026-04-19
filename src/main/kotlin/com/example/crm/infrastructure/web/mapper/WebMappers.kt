@@ -543,3 +543,15 @@ class UnitOfMeasureWebMapper {
     )
 }
 
+@Component
+class UploadWebMapper {
+    fun toResponse(d: Upload) = UploadResponse(
+        id = d.id, fileType = d.fileType, entityId = d.entityId, tenantId = d.tenantId,
+        itemId = d.itemId, categoryId = d.categoryId,
+        customerId = d.customerId, workerId = d.workerId,
+        fileName = d.fileName, filePath = d.filePath, contentType = d.contentType,
+        size = d.size, width = d.width, height = d.height,
+        legend = d.legend, createdAt = d.createdAt
+    )
+}
+
