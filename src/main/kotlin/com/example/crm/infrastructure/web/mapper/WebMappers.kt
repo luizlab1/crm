@@ -458,9 +458,6 @@ class ItemWebMapper {
                 requiresStaff = it.requiresStaff, bufferMinutes = it.bufferMinutes
             )
         },
-        images = request.images.map {
-            ItemImage(url = it.url, altText = it.altText, sortOrder = it.sortOrder, isActive = it.isActive)
-        },
         tags = request.tags.map { ItemTag(tag = it) },
         options = request.options.map {
             ItemOption(name = it.name, priceDeltaCents = it.priceDeltaCents, isActive = it.isActive)
@@ -468,6 +465,11 @@ class ItemWebMapper {
         additionals = request.additionals.map {
             ItemAdditional(name = it.name, priceCents = it.priceCents, isActive = it.isActive)
         }
+    )
+    fun toListResponse(d: Item) = ItemListResponse(
+        id = d.id, code = d.code, tenantId = d.tenantId, categoryId = d.categoryId,
+        type = d.type, name = d.name, sku = d.sku, isActive = d.isActive,
+        createdAt = d.createdAt, updatedAt = d.updatedAt
     )
     fun toResponse(d: Item) = ItemResponse(
         id = d.id, code = d.code, tenantId = d.tenantId, categoryId = d.categoryId,
@@ -487,12 +489,6 @@ class ItemWebMapper {
                 currencyCode = it.currencyCode, durationMinutes = it.durationMinutes,
                 requiresStaff = it.requiresStaff, bufferMinutes = it.bufferMinutes,
                 createdAt = it.createdAt, updatedAt = it.updatedAt
-            )
-        },
-        images = d.images.map {
-            ImageResponse(
-                id = it.id, code = it.code, url = it.url, altText = it.altText,
-                sortOrder = it.sortOrder, isActive = it.isActive, createdAt = it.createdAt, updatedAt = it.updatedAt
             )
         },
         tags = d.tags.map { it.tag },

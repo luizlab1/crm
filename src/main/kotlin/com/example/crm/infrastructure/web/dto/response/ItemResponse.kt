@@ -5,6 +5,19 @@ import java.math.BigDecimal
 import java.time.OffsetDateTime
 import java.util.UUID
 
+data class ItemListResponse(
+    val id: Long,
+    val code: UUID,
+    val tenantId: Long,
+    val categoryId: Long?,
+    val type: ItemType,
+    val name: String,
+    val sku: String?,
+    val isActive: Boolean,
+    val createdAt: OffsetDateTime,
+    val updatedAt: OffsetDateTime
+)
+
 data class ItemResponse(
     val id: Long,
     val code: UUID,
@@ -17,7 +30,6 @@ data class ItemResponse(
     val photos: List<String> = emptyList(),
     val productDatasheet: ProductDatasheetResponse? = null,
     val serviceDatasheet: ServiceDatasheetResponse? = null,
-    val images: List<ImageResponse> = emptyList(),
     val tags: List<String> = emptyList(),
     val options: List<OptionResponse> = emptyList(),
     val additionals: List<AdditionalResponse> = emptyList(),
@@ -53,17 +65,6 @@ data class ServiceDatasheetResponse(
     val updatedAt: OffsetDateTime
 )
 
-data class ImageResponse(
-    val id: Long,
-    val code: UUID,
-    val url: String,
-    val altText: String? = null,
-    val sortOrder: Int = 0,
-    val isActive: Boolean = true,
-    val createdAt: OffsetDateTime,
-    val updatedAt: OffsetDateTime
-)
-
 data class OptionResponse(
     val id: Long,
     val name: String,
@@ -81,4 +82,3 @@ data class AdditionalResponse(
     val createdAt: OffsetDateTime,
     val updatedAt: OffsetDateTime
 )
-

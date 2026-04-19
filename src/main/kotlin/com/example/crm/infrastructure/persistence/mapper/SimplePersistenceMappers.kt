@@ -217,21 +217,6 @@ class ItemServiceDatasheetPersistenceMapper {
 }
 
 @Component
-class ItemImagePersistenceMapper {
-    fun toDomain(e: ItemImageJpaEntity) = ItemImage(
-        id = e.id, code = e.code, itemId = e.itemId, url = e.url, altText = e.altText,
-        sortOrder = e.sortOrder, isActive = e.isActive, createdAt = e.createdAt, updatedAt = e.updatedAt
-    )
-    fun toEntity(d: ItemImage): ItemImageJpaEntity {
-        val e = ItemImageJpaEntity(
-            id = d.id, code = d.code, itemId = d.itemId, url = d.url, altText = d.altText,
-            sortOrder = d.sortOrder, isActive = d.isActive
-        )
-        e.createdAt = d.createdAt; e.updatedAt = d.updatedAt; return e
-    }
-}
-
-@Component
 class ItemTagPersistenceMapper {
     fun toDomain(e: ItemTagJpaEntity) = ItemTag(
         id = e.id, itemId = e.itemId, tag = e.tag, createdAt = e.createdAt

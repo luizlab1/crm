@@ -12,7 +12,6 @@ data class ItemRequest(
     val isActive: Boolean = true,
     val productDatasheet: ProductDatasheetRequest? = null,
     val serviceDatasheet: ServiceDatasheetRequest? = null,
-    val images: List<ImageRequest> = emptyList(),
     val tags: List<String> = emptyList(),
     val options: List<OptionRequest> = emptyList(),
     val additionals: List<AdditionalRequest> = emptyList()
@@ -38,13 +37,6 @@ data class ServiceDatasheetRequest(
     val durationMinutes: Int? = null,
     val requiresStaff: Boolean = false,
     val bufferMinutes: Int? = null
-)
-
-data class ImageRequest(
-    val url: String,
-    val altText: String? = null,
-    val sortOrder: Int = 0,
-    val isActive: Boolean = true
 )
 
 data class OptionRequest(

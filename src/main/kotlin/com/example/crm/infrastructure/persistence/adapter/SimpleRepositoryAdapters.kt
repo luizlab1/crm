@@ -80,8 +80,6 @@ class ItemRepositoryAdapter(
     private val productDatasheetMapper: ItemProductDatasheetPersistenceMapper,
     private val serviceDatasheetJpa: ItemServiceDatasheetJpaRepository,
     private val serviceDatasheetMapper: ItemServiceDatasheetPersistenceMapper,
-    private val imageJpa: ItemImageJpaRepository,
-    private val imageMapper: ItemImagePersistenceMapper,
     private val tagJpa: ItemTagJpaRepository,
     private val tagMapper: ItemTagPersistenceMapper,
     private val optionJpa: ItemOptionJpaRepository,
@@ -117,14 +115,12 @@ class ItemRepositoryAdapter(
             .map { productDatasheetMapper.toDomain(it) }.orElse(null)
         val serviceDatasheet = serviceDatasheetJpa.findByItemId(entity.id)
             .map { serviceDatasheetMapper.toDomain(it) }.orElse(null)
-        val images = imageJpa.findByItemIdOrderBySortOrder(entity.id).map { imageMapper.toDomain(it) }
         val tags = tagJpa.findByItemId(entity.id).map { tagMapper.toDomain(it) }
         val options = optionJpa.findByItemId(entity.id).map { optionMapper.toDomain(it) }
         val additionals = additionalJpa.findByItemId(entity.id).map { additionalMapper.toDomain(it) }
         return base.copy(
             productDatasheet = productDatasheet,
             serviceDatasheet = serviceDatasheet,
-            images = images,
             tags = tags,
             options = options,
             additionals = additionals
@@ -141,8 +137,6 @@ class ItemRepositoryAdapter(
             val entity = serviceDatasheetMapper.toEntity(it.copy(itemId = itemId))
             if (it.id == 0L) serviceDatasheetJpa.save(entity) else serviceDatasheetJpa.save(entity)
         }
-        imageJpa.deleteByItemId(itemId)
-        item.images.forEach { imageJpa.save(imageMapper.toEntity(it.copy(itemId = itemId))) }
         tagJpa.deleteByItemId(itemId)
         item.tags.forEach { tagJpa.save(tagMapper.toEntity(it.copy(itemId = itemId))) }
         optionJpa.deleteByItemId(itemId)
@@ -263,4 +257,32 @@ class UnitOfMeasureRepositoryAdapter(
 ) : UnitOfMeasureRepository {
     override fun findAll(pageable: Pageable): Page<UnitOfMeasure> = jpa.findAll(pageable).map { mapper.toDomain(it) }
     override fun findById(id: Long): UnitOfMeasure? = jpa.findById(id).map { mapper.toDomain(it) }.orElse(null)
+}
+
+@Component
+class ItemOptionRepositoryAdapter(
+    private val jpa: ItemOptionJpaRepository,
+    private val mapper: ItemOptionPersistenceMapper
+) : ItemOptionRepository {
+    override fun findByItemId(itemId: Long): List<ItemOption> =
+        jpa.findByItemId(itemId).map { mapper.toDomain(it) }
+    override fun findById(id: Long): ItemOption? =
+        jpa.findById(id).map { mapper.toDomain(it) }.orElse(null)
+    override fun save(option: ItemOption): ItemOption =
+        mapper.toDomain(jpa.save(mapper.toEntity(option)))
+    override fun deleteById(id: Long) = jpa.deleteById(id)
+}
+
+@Component
+class ItemAdditionalRepositoryAdapter(
+    private val jpa: ItemAdditionalJpaRepository,
+    private val mapper: ItemAdditionalPersistenceMapper
+) : ItemAdditionalRepository {
+    override fun findByItemId(itemId: Long): List<ItemAdditional> =
+        jpa.findByItemId(itemId).map { mapper.toDomain(it) }
+    override fun findById(id: Long): ItemAdditional? =
+        jpa.findById(id).map { mapper.toDomain(it) }.orElse(null)
+    override fun save(additional: ItemAdditional): ItemAdditional =
+        mapper.toDomain(jpa.save(mapper.toEntity(additional)))
+    override fun deleteById(id: Long) = jpa.deleteById(id)
 }

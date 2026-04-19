@@ -24,7 +24,7 @@ class ResponseDtosTest {
             .name shouldBe "Categoria"
         ItemResponse(
             1, uuid, 1, null, ItemType.SERVICE, "Consultoria", null, true, emptyList(),
-            null, null, emptyList(), emptyList(), emptyList(), emptyList(), now, now
+            null, null, emptyList(), emptyList(), emptyList(), now, now
         ).type shouldBe ItemType.SERVICE
 
         val orderItem = OrderItemResponse(1, 2, 1, 1000, 1000, now)

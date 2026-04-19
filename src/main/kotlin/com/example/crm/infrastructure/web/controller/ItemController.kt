@@ -3,6 +3,7 @@ package com.example.crm.infrastructure.web.controller
 import com.example.crm.application.port.input.ItemUseCase
 import com.example.crm.domain.model.ItemType
 import com.example.crm.infrastructure.web.dto.request.ItemRequest
+import com.example.crm.infrastructure.web.dto.response.ItemListResponse
 import com.example.crm.infrastructure.web.dto.response.ItemResponse
 import com.example.crm.infrastructure.web.dto.response.PageResponse
 import com.example.crm.infrastructure.web.mapper.ItemWebMapper
@@ -33,13 +34,11 @@ class ItemController(
         @RequestParam(required = false) name: String?,
         @RequestParam(required = false) sku: String?,
         @RequestParam(name = "active", required = false) isActive: Boolean?
-    ): ResponseEntity<PageResponse<ItemResponse>> {
+    ): ResponseEntity<PageResponse<ItemListResponse>> {
         val pageable = PageRequest.of(page, size, Sort.by("name"))
         val result = useCase.list(pageable, code, tenantId, categoryId, type, name, sku, isActive)
         return ResponseEntity.ok(PageResponse(
-            content = result.content.map {
-                mapper.toResponse(it).copy(photos = itemPhotosResolver.resolve(it.type, it.id))
-            },
+            content = result.content.map { mapper.toListResponse(it) },
             page = result.number, size = result.size,
             totalElements = result.totalElements, totalPages = result.totalPages
         ))
@@ -49,7 +48,9 @@ class ItemController(
     fun findById(@PathVariable id: Long): ResponseEntity<ItemResponse> =
         useCase.getById(id).let { item ->
             ResponseEntity.ok(
-                mapper.toResponse(item).copy(photos = itemPhotosResolver.resolve(item.type, item.id))
+                mapper.toResponse(item).copy(
+                    photos = itemPhotosResolver.resolve(item.type, item.id)
+                )
             )
         }
 

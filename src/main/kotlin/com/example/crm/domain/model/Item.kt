@@ -14,7 +14,6 @@ data class Item(
     val isActive: Boolean = true,
     val productDatasheet: ItemProductDatasheet? = null,
     val serviceDatasheet: ItemServiceDatasheet? = null,
-    val images: List<ItemImage> = emptyList(),
     val tags: List<ItemTag> = emptyList(),
     val options: List<ItemOption> = emptyList(),
     val additionals: List<ItemAdditional> = emptyList(),
