@@ -6,7 +6,11 @@ import com.example.crm.domain.model.FileType
 import com.example.crm.infrastructure.web.dto.response.FileTypeRuleResponse
 import com.example.crm.infrastructure.web.dto.response.UploadResponse
 import com.example.crm.infrastructure.web.dto.response.UploadRulesResponse
+import com.example.crm.infrastructure.web.mapper.UploadFileResourceResolver
 import com.example.crm.infrastructure.web.mapper.UploadWebMapper
+import org.springframework.core.io.Resource
+import org.springframework.http.ContentDisposition
+import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -15,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 import org.springframework.web.multipart.MultipartFile
 import java.net.URI
 import java.util.UUID
@@ -23,7 +28,8 @@ import java.util.UUID
 @RequestMapping("/api/v1/uploads")
 class UploadController(
     private val useCase: UploadUseCase,
-    private val mapper: UploadWebMapper
+    private val mapper: UploadWebMapper,
+    private val fileResolver: UploadFileResourceResolver
 ) {
 
     @PostMapping(consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
@@ -79,7 +85,35 @@ class UploadController(
 
     @GetMapping("/{id}")
     fun findById(@PathVariable id: UUID): ResponseEntity<UploadResponse> =
-        ResponseEntity.ok(mapper.toResponse(useCase.getById(id)))
+        ResponseEntity.ok(withLinks(mapper.toResponse(useCase.getById(id))))
+
+    @GetMapping("/{id}/download")
+    fun download(@PathVariable id: UUID): ResponseEntity<Resource> {
+        val upload = useCase.getById(id)
+        val resource = fileResolver.resolveResource(upload.filePath)
+        return ResponseEntity.ok()
+            .contentType(fileResolver.resolveMediaType(upload.contentType))
+            .header(
+                HttpHeaders.CONTENT_DISPOSITION,
+                ContentDisposition.attachment().filename(upload.fileName).build().toString()
+            )
+            .contentLength(resource.contentLength())
+            .body(resource)
+    }
+
+    @GetMapping("/{id}/view")
+    fun view(@PathVariable id: UUID): ResponseEntity<Resource> {
+        val upload = useCase.getById(id)
+        val resource = fileResolver.resolveResource(upload.filePath)
+        return ResponseEntity.ok()
+            .contentType(fileResolver.resolveMediaType(upload.contentType))
+            .header(
+                HttpHeaders.CONTENT_DISPOSITION,
+                ContentDisposition.inline().filename(upload.fileName).build().toString()
+            )
+            .contentLength(resource.contentLength())
+            .body(resource)
+    }
 
     @GetMapping
     fun listByEntity(
@@ -88,5 +122,16 @@ class UploadController(
         @RequestParam(required = false, defaultValue = "0") page: Int,
         @RequestParam(required = false, defaultValue = "20") size: Int
     ): ResponseEntity<List<UploadResponse>> =
-        ResponseEntity.ok(useCase.list(fileType, entityId, page, size).map { mapper.toResponse(it) })
+        ResponseEntity.ok(
+            useCase.list(fileType, entityId, page, size).map { withLinks(mapper.toResponse(it)) }
+        )
+
+    private fun withLinks(response: UploadResponse): UploadResponse {
+        val base = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString().removeSuffix("/")
+        val root = "$base/api/v1/uploads/${response.id}"
+        return response.copy(
+            viewUrl = "$root/view",
+            downloadUrl = "$root/download"
+        )
+    }
 }

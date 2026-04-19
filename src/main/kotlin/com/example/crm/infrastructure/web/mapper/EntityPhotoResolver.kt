@@ -2,6 +2,7 @@ package com.example.crm.infrastructure.web.mapper
 
 import com.example.crm.application.port.input.UploadUseCase
 import org.springframework.stereotype.Component
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 
 @Component
 class EntityPhotoResolver(
@@ -12,5 +13,9 @@ class EntityPhotoResolver(
             .asSequence()
             .filter { it.filePath.startsWith("/uploads/") }
             .maxByOrNull { it.createdAt }
-            ?.filePath
+            ?.id
+            ?.let { uploadId ->
+                val base = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString().removeSuffix("/")
+                "$base/api/v1/uploads/$uploadId/view"
+            }
 }

@@ -20,5 +20,7 @@ data class UploadResponse(
     val width: Int?,
     val height: Int?,
     val legend: String?,
-    val createdAt: OffsetDateTime
+    val createdAt: OffsetDateTime,
+    val viewUrl: String? = null,
+    val downloadUrl: String? = null
 )
