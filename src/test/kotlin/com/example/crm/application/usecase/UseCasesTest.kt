@@ -111,7 +111,18 @@ class UseCasesTest {
             id = 2, tenantId = 10, type = ItemType.SERVICE, name = "Consultoria",
             createdAt = now, updatedAt = now
         )
-        every { itemRepo.findByTenantId(10, pageable) } returns PageImpl(listOf(item))
+        every {
+            itemRepo.findByFilters(
+                code = null,
+                tenantId = 10,
+                categoryId = null,
+                type = null,
+                name = null,
+                sku = null,
+                isActive = null,
+                pageable = pageable
+            )
+        } returns PageImpl(listOf(item))
         every { itemRepo.findAll(pageable) } returns PageImpl(listOf(item))
         every { itemRepo.findById(2) } returns item
         every { itemRepo.save(any()) } answers { firstArg() }
@@ -171,7 +182,16 @@ class UseCasesTest {
             personRepo,
             personAddressRepo
         ).list(pageable, 10).content.first().id shouldBe 1
-        ItemUseCaseImpl(itemRepo).list(pageable, 10).content.first().id shouldBe 2
+        ItemUseCaseImpl(itemRepo).list(
+            pageable = pageable,
+            code = null,
+            tenantId = 10,
+            categoryId = null,
+            type = null,
+            name = null,
+            sku = null,
+            isActive = null
+        ).content.first().id shouldBe 2
         PersonUseCaseImpl(personRepo).list(pageable, 10).content.first().id shouldBe 3
         ScheduleUseCaseImpl(scheduleRepo).list(pageable, 10).content.first().id shouldBe 4
         WorkerUseCaseImpl(workerRepo, personRepo, personAddressRepo).list(pageable, 10).content.first().id shouldBe 5

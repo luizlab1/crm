@@ -76,6 +76,19 @@ class WorkerRepositoryAdapter(
 class ItemRepositoryAdapter(
     private val jpa: ItemJpaRepository, private val mapper: ItemPersistenceMapper
 ) : ItemRepository {
+    override fun findByFilters(
+        code: java.util.UUID?,
+        tenantId: Long?,
+        categoryId: Long?,
+        type: ItemType?,
+        name: String?,
+        sku: String?,
+        isActive: Boolean?,
+        pageable: Pageable
+    ): Page<Item> =
+        jpa.findByFilters(code, tenantId, categoryId, type, name, sku, isActive, pageable)
+            .map { mapper.toDomain(it) }
+
     override fun findAll(pageable: Pageable): Page<Item> = jpa.findAll(pageable).map { mapper.toDomain(it) }
     override fun findByTenantId(tenantId: Long, pageable: Pageable): Page<Item> = jpa.findByTenantId(tenantId, pageable).map { mapper.toDomain(it) }
     override fun findById(id: Long): Item? = jpa.findById(id).map { mapper.toDomain(it) }.orElse(null)

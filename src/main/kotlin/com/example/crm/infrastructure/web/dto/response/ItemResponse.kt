@@ -13,6 +13,7 @@ data class ItemResponse(
     val name: String,
     val sku: String?,
     val isActive: Boolean,
+    val photos: List<String> = emptyList(),
     val createdAt: OffsetDateTime,
     val updatedAt: OffsetDateTime
 )

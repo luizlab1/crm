@@ -1,33 +1,45 @@
 package com.example.crm.infrastructure.web.controller
 
 import com.example.crm.application.port.input.ItemUseCase
+import com.example.crm.domain.model.ItemType
 import com.example.crm.infrastructure.web.dto.request.ItemRequest
 import com.example.crm.infrastructure.web.dto.response.ItemResponse
 import com.example.crm.infrastructure.web.dto.response.PageResponse
 import com.example.crm.infrastructure.web.mapper.ItemWebMapper
+import com.example.crm.infrastructure.web.mapper.ItemPhotosResolver
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.net.URI
+import java.util.UUID
 
 @RestController
 @RequestMapping("/api/v1/items")
 class ItemController(
     private val useCase: ItemUseCase,
-    private val mapper: ItemWebMapper
+    private val mapper: ItemWebMapper,
+    private val itemPhotosResolver: ItemPhotosResolver
 ) {
 
     @GetMapping
     fun findAll(
         @RequestParam(defaultValue = "0") page: Int,
         @RequestParam(defaultValue = "20") size: Int,
-        @RequestParam(required = false) tenantId: Long?
+        @RequestParam(required = false) code: UUID?,
+        @RequestParam(required = false) tenantId: Long?,
+        @RequestParam(required = false) categoryId: Long?,
+        @RequestParam(required = false) type: ItemType?,
+        @RequestParam(required = false) name: String?,
+        @RequestParam(required = false) sku: String?,
+        @RequestParam(name = "active", required = false) isActive: Boolean?
     ): ResponseEntity<PageResponse<ItemResponse>> {
         val pageable = PageRequest.of(page, size, Sort.by("name"))
-        val result = useCase.list(pageable, tenantId)
+        val result = useCase.list(pageable, code, tenantId, categoryId, type, name, sku, isActive)
         return ResponseEntity.ok(PageResponse(
-            content = result.content.map { mapper.toResponse(it) },
+            content = result.content.map {
+                mapper.toResponse(it).copy(photos = itemPhotosResolver.resolve(it.type, it.id))
+            },
             page = result.number, size = result.size,
             totalElements = result.totalElements, totalPages = result.totalPages
         ))
@@ -35,7 +47,11 @@ class ItemController(
 
     @GetMapping("/{id}")
     fun findById(@PathVariable id: Long): ResponseEntity<ItemResponse> =
-        ResponseEntity.ok(mapper.toResponse(useCase.getById(id)))
+        useCase.getById(id).let { item ->
+            ResponseEntity.ok(
+                mapper.toResponse(item).copy(photos = itemPhotosResolver.resolve(item.type, item.id))
+            )
+        }
 
     @PostMapping
     fun create(@RequestBody request: ItemRequest): ResponseEntity<ItemResponse> {
