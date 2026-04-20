@@ -11,7 +11,8 @@ class UploadPersistenceMapper {
         itemId = e.itemId, categoryId = e.categoryId,
         customerId = e.customerId, workerId = e.workerId,
         fileName = e.fileName, filePath = e.filePath, contentType = e.contentType,
-        size = e.size, width = e.width, height = e.height, sortOrder = e.sortOrder, legend = e.legend,
+        size = e.size, width = e.width, height = e.height, sortOrder = e.sortOrder,
+        title = e.title, subtitle = e.subtitle, legend = e.legend,
         createdAt = e.createdAt
     )
 
@@ -20,7 +21,8 @@ class UploadPersistenceMapper {
         itemId = d.itemId, categoryId = d.categoryId,
         customerId = d.customerId, workerId = d.workerId,
         fileName = d.fileName, filePath = d.filePath, contentType = d.contentType,
-        size = d.size, width = d.width, height = d.height, sortOrder = d.sortOrder, legend = d.legend,
+        size = d.size, width = d.width, height = d.height, sortOrder = d.sortOrder,
+        title = d.title, subtitle = d.subtitle, legend = d.legend,
         createdAt = d.createdAt
     )
 }

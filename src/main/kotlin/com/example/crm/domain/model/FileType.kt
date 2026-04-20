@@ -8,7 +8,8 @@ enum class FileType(val displayName: String) {
     TENANT("Tenant"),
     USER("Usuário"),
     CATEGORY("Categoria"),
-    SLIDE("Slide"),
+    SLIDE_SAAS("Slide SaaS"),
+    SLIDE_OWN("Slide Próprio"),
     BANNER("Banner"),
     OTHERS("Outros")
 }

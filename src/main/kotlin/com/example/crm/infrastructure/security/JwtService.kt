@@ -2,6 +2,7 @@ package com.example.crm.infrastructure.security
 
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
+import io.jsonwebtoken.Claims
 import io.jsonwebtoken.security.Keys
 import org.springframework.stereotype.Service
 import java.security.Key
@@ -23,9 +24,11 @@ class JwtService(private val config: JwtConfig) {
             .compact()
     }
 
-    fun parseSubject(token: String): String = Jwts.parserBuilder()
+    fun parseSubject(token: String): String = parseClaims(token).subject
+
+    fun parseClaims(token: String): Claims = Jwts.parserBuilder()
         .setSigningKey(key)
         .build()
         .parseClaimsJws(token)
-        .body.subject
+        .body
 }

@@ -41,7 +41,10 @@ class AuthController(private val jwtService: JwtService, private val userUseCase
             return ResponseEntity.status(401).build()
         }
 
-        val token = jwtService.generateToken(user.email, mapOf("email" to user.email, "userId" to user.id))
+        val token = jwtService.generateToken(
+            user.email,
+            mapOf("email" to user.email, "userId" to user.id, "tenantId" to user.tenantId)
+        )
         return ResponseEntity.ok(AuthResponse(token))
     }
 }

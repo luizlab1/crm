@@ -60,6 +60,12 @@ class UploadJpaEntity(
     @Column(name = "sort_order", nullable = false)
     var sortOrder: Int = 0,
 
+    @Column(name = "title", length = 200)
+    var title: String? = null,
+
+    @Column(name = "subtitle", length = 300)
+    var subtitle: String? = null,
+
     @Column(name = "legend", length = 500)
     var legend: String? = null,
 

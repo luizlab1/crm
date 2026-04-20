@@ -23,6 +23,8 @@ data class UploadCommand(
     val width: Int? = null,
     val height: Int? = null,
     val sortOrder: Int = 0,
+    val title: String? = null,
+    val subtitle: String? = null,
     val quality: Int? = null,
     val legend: String? = null
 ) {

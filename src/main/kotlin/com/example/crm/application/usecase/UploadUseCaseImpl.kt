@@ -52,6 +52,8 @@ class UploadUseCaseImpl(
             width = stored.width,
             height = stored.height,
             sortOrder = command.sortOrder,
+            title = command.title?.trim()?.takeIf { it.isNotBlank() },
+            subtitle = command.subtitle?.trim()?.takeIf { it.isNotBlank() },
             legend = command.legend?.takeIf { it.isNotBlank() }
         )
         return uploadRepository.save(upload)

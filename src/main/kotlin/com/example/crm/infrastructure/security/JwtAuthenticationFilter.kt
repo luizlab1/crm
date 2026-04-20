@@ -16,9 +16,14 @@ class JwtAuthenticationFilter(private val jwtService: JwtService) : OncePerReque
         if (header != null && header.startsWith("Bearer ")) {
             try {
                 val token = header.substringAfter("Bearer ").trim()
-                val subject = jwtService.parseSubject(token)
+                val claims = jwtService.parseClaims(token)
+                val subject = claims.subject
                 // For now, no roles: grant a basic user authority
                 val auth = UsernamePasswordAuthenticationToken(subject, null, listOf(SimpleGrantedAuthority("ROLE_USER")))
+                auth.details = mapOf(
+                    "userId" to claims["userId"],
+                    "tenantId" to claims["tenantId"]
+                )
                 SecurityContextHolder.getContext().authentication = auth
             } catch (ex: Exception) {
                 // invalid token -> clear context

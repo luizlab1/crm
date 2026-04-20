@@ -13,6 +13,7 @@ import org.springframework.http.ContentDisposition
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -36,15 +37,18 @@ class UploadController(
     fun upload(
         @RequestParam("file") file: MultipartFile,
         @RequestParam("fileType") fileType: FileType,
-        @RequestParam("tenantId") tenantId: Long,
         @RequestParam("entityId") entityId: Long,
         @RequestParam("sortOrder", required = false, defaultValue = "0") sortOrder: Int,
+        @RequestParam("title", required = false) title: String?,
+        @RequestParam("subtitle", required = false) subtitle: String?,
         @RequestParam("width", required = false) width: Int?,
         @RequestParam("height", required = false) height: Int?,
         @RequestParam("quality", required = false) quality: Int?,
-        @RequestParam("legend", required = false) legend: String?
+        @RequestParam("legend", required = false) legend: String?,
+        authentication: Authentication
     ): ResponseEntity<UploadResponse> {
         require(!file.isEmpty) { "Arquivo obrigatório" }
+        val tenantId = resolveTenantId(authentication)
         val command = UploadCommand(
             content = file.bytes,
             originalFileName = file.originalFilename,
@@ -53,6 +57,8 @@ class UploadController(
             tenantId = tenantId,
             entityId = entityId,
             sortOrder = sortOrder,
+            title = title,
+            subtitle = subtitle,
             width = width,
             height = height,
             quality = quality,
@@ -61,6 +67,17 @@ class UploadController(
         val created = useCase.upload(command)
         return ResponseEntity.created(URI.create("/api/v1/uploads/${created.id}"))
             .body(mapper.toResponse(created))
+    }
+
+    private fun resolveTenantId(authentication: Authentication): Long {
+        val details = authentication.details
+        require(details is Map<*, *>) { "Token inválido: tenantId ausente" }
+        val tenantClaim = details["tenantId"]
+        return when (tenantClaim) {
+            is Number -> tenantClaim.toLong()
+            is String -> tenantClaim.toLongOrNull() ?: error("Token inválido: tenantId ausente")
+            else -> error("Token inválido: tenantId ausente")
+        }
     }
 
     @GetMapping("/rules")
