@@ -524,6 +524,7 @@ class ItemCategoryWebMapper(
         tenantId = d.tenantId,
         name = d.name,
         description = d.description,
+        showOnSite = d.showOnSite,
         availableTypes = d.availableTypes,
         createdAt = d.createdAt,
         updatedAt = d.updatedAt,
