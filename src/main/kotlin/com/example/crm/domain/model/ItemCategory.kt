@@ -8,6 +8,7 @@ data class ItemCategory(
     val name: String,
     val description: String? = null,
     val showOnSite: Boolean = true,
+    val sortOrder: Int = 0,
     val availableTypes: Set<ItemType> = ItemType.entries.toSet(),
     val createdAt: OffsetDateTime = OffsetDateTime.now(),
     val updatedAt: OffsetDateTime = OffsetDateTime.now()

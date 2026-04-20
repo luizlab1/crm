@@ -50,12 +50,14 @@ class PersistenceMappersTest {
             name = "Cat",
             description = "Categoria de teste",
             showOnSite = false,
+            sortOrder = 7,
             createdAt = now,
             updatedAt = now
         )
         val mappedItemCategory = itemCategoryMapper.toDomain(itemCategoryMapper.toEntity(itemCategory))
         mappedItemCategory.showOnSite shouldBe itemCategory.showOnSite
         mappedItemCategory.description shouldBe itemCategory.description
+        mappedItemCategory.sortOrder shouldBe itemCategory.sortOrder
 
         val address = Address(
             id = 6,

@@ -22,6 +22,9 @@ class ItemCategoryJpaEntity(
     @Column(name = "show_on_site", nullable = false)
     var showOnSite: Boolean = true,
 
+    @Column(name = "sort_order", nullable = false)
+    var sortOrder: Int = 0,
+
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "item_category_available_types", joinColumns = [JoinColumn(name = "category_id")])
     @Column(name = "type")

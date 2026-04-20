@@ -517,6 +517,7 @@ class ItemCategoryWebMapper(
         name = request.name,
         description = request.description,
         showOnSite = request.showOnSite,
+        sortOrder = request.sortOrder,
         availableTypes = request.availableTypes
     )
     fun toListResponse(d: ItemCategory) = ItemCategoryListResponse(
@@ -525,6 +526,7 @@ class ItemCategoryWebMapper(
         name = d.name,
         description = d.description,
         showOnSite = d.showOnSite,
+        sortOrder = d.sortOrder,
         availableTypes = d.availableTypes,
         createdAt = d.createdAt,
         updatedAt = d.updatedAt,
@@ -536,6 +538,7 @@ class ItemCategoryWebMapper(
         name = d.name,
         description = d.description,
         showOnSite = d.showOnSite,
+        sortOrder = d.sortOrder,
         availableTypes = d.availableTypes,
         createdAt = d.createdAt, updatedAt = d.updatedAt,
         photo = photoResolver.resolve(d.id, FileType.CATEGORY)

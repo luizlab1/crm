@@ -9,6 +9,7 @@ data class ItemCategoryListResponse(
     val name: String,
     val description: String?,
     val showOnSite: Boolean,
+    val sortOrder: Int,
     val availableTypes: Set<ItemType>,
     val createdAt: OffsetDateTime,
     val updatedAt: OffsetDateTime,

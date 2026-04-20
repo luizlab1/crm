@@ -125,12 +125,14 @@ class WebMappersTest {
                 tenantId = 1,
                 name = "Categoria",
                 description = "Categoria para serviços",
-                showOnSite = false
+                showOnSite = false,
+                sortOrder = 3
             )
         )
         itemCategory.name shouldBe "Categoria"
         itemCategory.description shouldBe "Categoria para serviços"
         itemCategory.showOnSite shouldBe false
+        itemCategory.sortOrder shouldBe 3
 
         val address = AddressWebMapper().toDomain(
             AddressRequest("Rua A", "10", null, "Centro", 1, "12345-000", BigDecimal("-10.5"), BigDecimal("20.1"))

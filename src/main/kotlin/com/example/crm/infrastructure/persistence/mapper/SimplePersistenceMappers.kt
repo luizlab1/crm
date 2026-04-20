@@ -67,6 +67,7 @@ class ItemCategoryPersistenceMapper {
         name = e.name,
         description = e.description,
         showOnSite = e.showOnSite,
+        sortOrder = e.sortOrder,
         availableTypes = e.availableTypes,
         createdAt = e.createdAt, updatedAt = e.updatedAt
     )
@@ -76,7 +77,9 @@ class ItemCategoryPersistenceMapper {
             tenantId = d.tenantId,
             name = d.name,
             description = d.description,
-            showOnSite = d.showOnSite, availableTypes = d.availableTypes.toMutableSet()
+            showOnSite = d.showOnSite,
+            sortOrder = d.sortOrder,
+            availableTypes = d.availableTypes.toMutableSet()
         )
         e.createdAt = d.createdAt; e.updatedAt = d.updatedAt; return e
     }
