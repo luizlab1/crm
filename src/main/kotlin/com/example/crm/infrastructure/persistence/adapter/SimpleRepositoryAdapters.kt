@@ -104,8 +104,9 @@ class ItemRepositoryAdapter(
     override fun findByTenantId(tenantId: Long, pageable: Pageable): Page<Item> = jpa.findByTenantId(tenantId, pageable).map { mapper.toDomain(it) }
     override fun findById(id: Long): Item? = jpa.findById(id).map { enrich(it) }.orElse(null)
     override fun save(item: Item): Item {
-        val saved = mapper.toDomain(jpa.save(mapper.toEntity(item)))
-        saveRelationships(item)
+        val savedEntity = jpa.save(mapper.toEntity(item))
+        val saved = mapper.toDomain(savedEntity)
+        saveRelationships(item.copy(id = saved.id))
         return findById(saved.id)!!
     }
 

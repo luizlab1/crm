@@ -18,6 +18,7 @@ data class Upload(
     val size: Long,
     val width: Int? = null,
     val height: Int? = null,
+    val sortOrder: Int = 0,
     val legend: String? = null,
     val createdAt: OffsetDateTime = OffsetDateTime.now()
 )

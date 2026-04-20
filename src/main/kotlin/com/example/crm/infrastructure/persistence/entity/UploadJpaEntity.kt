@@ -57,6 +57,9 @@ class UploadJpaEntity(
     @Column(name = "height")
     var height: Int? = null,
 
+    @Column(name = "sort_order", nullable = false)
+    var sortOrder: Int = 0,
+
     @Column(name = "legend", length = 500)
     var legend: String? = null,
 

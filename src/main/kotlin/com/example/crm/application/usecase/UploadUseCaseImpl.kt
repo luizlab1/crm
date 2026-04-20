@@ -51,6 +51,7 @@ class UploadUseCaseImpl(
             size = stored.size,
             width = stored.width,
             height = stored.height,
+            sortOrder = command.sortOrder,
             legend = command.legend?.takeIf { it.isNotBlank() }
         )
         return uploadRepository.save(upload)
@@ -82,6 +83,7 @@ class UploadUseCaseImpl(
         command.height?.let {
             require(it in MIN_DIMENSION..rule.maxHeight) { "Altura inválida ($MIN_DIMENSION..${rule.maxHeight})" }
         }
+        require(command.sortOrder >= 0) { "sortOrder inválido (mínimo: 0)" }
         command.quality?.let {
             require(it in settings.minQuality..settings.maxQuality) {
                 "Quality inválido (${settings.minQuality}..${settings.maxQuality})"

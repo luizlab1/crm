@@ -19,6 +19,7 @@ data class UploadResponse(
     val size: Long,
     val width: Int?,
     val height: Int?,
+    val sortOrder: Int,
     val legend: String?,
     val createdAt: OffsetDateTime,
     val viewUrl: String? = null,

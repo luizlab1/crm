@@ -10,12 +10,16 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 class ItemPhotosResolver(
     private val uploadUseCase: UploadUseCase
 ) {
+    fun resolveMain(itemType: ItemType, itemId: Long): String? =
+        resolve(itemType, itemId).firstOrNull()
+
     fun resolve(itemType: ItemType, itemId: Long): List<String> {
         val fileType = itemType.toFileType() ?: return emptyList()
         val base = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString().removeSuffix("/")
         return uploadUseCase.list(fileType = fileType, entityId = itemId, page = 0, size = 100)
             .asSequence()
             .filter { it.filePath.startsWith("/uploads/") }
+            .sortedWith(compareBy({ it.sortOrder }, { it.createdAt }))
             .map { "$base/api/v1/uploads/${it.id}/view" }
             .distinct()
             .toList()

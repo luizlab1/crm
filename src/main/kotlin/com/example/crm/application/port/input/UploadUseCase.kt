@@ -22,6 +22,7 @@ data class UploadCommand(
     val entityId: Long,
     val width: Int? = null,
     val height: Int? = null,
+    val sortOrder: Int = 0,
     val quality: Int? = null,
     val legend: String? = null
 ) {

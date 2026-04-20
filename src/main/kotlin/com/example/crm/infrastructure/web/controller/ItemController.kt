@@ -38,7 +38,11 @@ class ItemController(
         val pageable = PageRequest.of(page, size, Sort.by("name"))
         val result = useCase.list(pageable, code, tenantId, categoryId, type, name, sku, isActive)
         return ResponseEntity.ok(PageResponse(
-            content = result.content.map { mapper.toListResponse(it) },
+            content = result.content.map { item ->
+                mapper.toListResponse(item).copy(
+                    photos = listOfNotNull(itemPhotosResolver.resolveMain(item.type, item.id))
+                )
+            },
             page = result.number, size = result.size,
             totalElements = result.totalElements, totalPages = result.totalPages
         ))

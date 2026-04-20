@@ -13,7 +13,8 @@ class EntityPhotoResolver(
         uploadUseCase.list(fileType = fileType, entityId = entityId, page = 0, size = 100)
             .asSequence()
             .filter { it.filePath.startsWith("/uploads/") }
-            .maxByOrNull { it.createdAt }
+            .sortedWith(compareBy({ it.sortOrder }, { it.createdAt }))
+            .firstOrNull()
             ?.id
             ?.let { uploadId ->
                 val base = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString().removeSuffix("/")
