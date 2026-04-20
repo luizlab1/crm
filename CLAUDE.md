@@ -89,9 +89,11 @@ Evite por padrão: `./gradlew clean build`.
 - **Bug:** ir direto ao controller → use case → adapter; não varrer o repo
 - **Nova feature:** seguir ordem da seção Estrutura; reutilizar padrões existentes
 - **Mudança mínima:** alterar só o necessário; sem refactor fora de escopo
-- **Validação local:** `detektFast` + `test` sem `clean`
+- **Validação automática:** hook em `.claude/settings.json` roda `detektFast` + `test` (apenas arquivos `.kt` alterados) após cada Edit/Write, em background
+- **Validação local:** `detektFast` + `test` sem `clean` (ou aguarde feedback automático do hook)
 - **Validação CI/PR:** `detekt` + `build` (inclui integração)
 - **Gate final obrigatório:** `./gradlew detekt` + `./gradlew test` verdes antes de concluir
+- **Commit/Push/PR:** **NUNCA** fazer sem solicitação explícita — aguarde comando do usuário
 
 ## Regras de economia de tokens
 

@@ -53,6 +53,12 @@ docker compose up -d
 - Se houve mudança em código-fonte, o agente deve executar `./gradlew.bat detekt` e `./gradlew.bat test` (ou `\.\gradlew.bat` no PowerShell).
 - Se algum dos comandos ainda não foi executado na sessão após as mudanças, deve executar antes de marcar como pronto.
 - Se houver falha, o agente deve corrigir o problema e rodar novamente até passar.
+- **Validação automática:** hook em `.claude/settings.json` roda `detektFast` + `test` (apenas arquivos `.kt` alterados) após cada Edit/Write, em background — aguarde seu resultado antes de marcar como pronto.
+
+**Sobre commit, push e pull requests:**
+- **NUNCA** fazer commit, push ou criar PR sem solicitação explícita do usuário.
+- Alterações devem ficar em staged/uncommitted até o usuário solicitar.
+- Se o usuário pedir "pronto", "concluído" ou similar, apenas confirmar que o código está pronto — não faça commit automaticamente.
 
 > README diz Java 25 — ignore. O build usa JDK 21 (`build.gradle.kts:26`). Confie no build.
 

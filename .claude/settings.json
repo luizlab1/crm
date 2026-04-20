@@ -1,0 +1,17 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "set -e; FILE=$(jq -r '.tool_input.file_path // .tool_response.filePath' 2>/dev/null || echo ''); if [ -z \"$FILE\" ]; then exit 0; fi; CHANGED=$(git diff --name-only --diff-filter=d 2>/dev/null | grep '\\.kt$' || echo ''); if [ -z \"$CHANGED\" ]; then exit 0; fi; echo \"$CHANGED\" | head -1 | { read -r F; PACKAGE=$(echo \"$F\" | sed 's|/| |g' | sed 's|\\.kt||' | awk '{print $(NF-1)}'); if [ -z \"$PACKAGE\" ]; then ./gradlew detektFast 2>&1 | tail -5; ./gradlew test 2>&1 | tail -10; else ./gradlew detektFast 2>&1 | tail -5; ./gradlew test --tests \"*$PACKAGE*\" 2>&1 | tail -10; fi; }",
+            "async": true,
+            "statusMessage": "Validando arquivos alterados com detekt e test..."
+          }
+        ]
+      }
+    ]
+  }
+}
