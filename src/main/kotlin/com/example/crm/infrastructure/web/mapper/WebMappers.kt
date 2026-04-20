@@ -517,6 +517,14 @@ class ItemCategoryWebMapper(
         name = request.name,
         description = request.description,
         showOnSite = request.showOnSite,
+        sortOrder = request.sortOrder ?: 0,
+        availableTypes = request.availableTypes
+    )
+    fun toPatchDomain(request: ItemCategoryPatchRequest) = ItemCategoryPatch(
+        tenantId = request.tenantId,
+        name = request.name,
+        description = request.description,
+        showOnSite = request.showOnSite,
         sortOrder = request.sortOrder,
         availableTypes = request.availableTypes
     )

@@ -6,6 +6,7 @@ enum class FileType(val displayName: String) {
     CUSTOMER("Cliente"),
     WORKER("Colaborador"),
     TENANT("Tenant"),
+    LOGO("Logo"),
     USER("Usuário"),
     CATEGORY("Categoria"),
     SLIDE_SAAS("Slide SaaS"),

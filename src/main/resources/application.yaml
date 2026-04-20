@@ -102,6 +102,11 @@ app:
         max-size-bytes: 2097152
         max-width: 1024
         max-height: 1024
+      LOGO:
+        allowed-extensions: jpg,jpeg,png,webp
+        max-size-bytes: 2097152
+        max-width: 512
+        max-height: 512
       SLIDE_SAAS:
         allowed-extensions: jpg,jpeg,png,webp
         max-size-bytes: 10485760

@@ -246,7 +246,9 @@ class UseCasesTest {
         TenantUseCaseImpl(tenantRepo, personRepo, personAddressRepo).create(tenant).id shouldBe 1
         RoleUseCaseImpl(roleRepo).update(2, role.copy(name = "USER")).name shouldBe "USER"
         PermissionUseCaseImpl(permissionRepo).delete(3)
-        ItemCategoryUseCaseImpl(itemCategoryRepo).delete(4)
+        val itemCategoryUseCase = ItemCategoryUseCaseImpl(itemCategoryRepo)
+        itemCategoryUseCase.patch(4, ItemCategoryPatch(name = "Categoria Nova")).name shouldBe "Categoria Nova"
+        itemCategoryUseCase.delete(4)
 
         verify { permissionRepo.save(match { !it.isActive }) }
         verify { itemCategoryRepo.deleteById(4) }

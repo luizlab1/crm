@@ -2,6 +2,7 @@ package com.example.crm.infrastructure.web.controller
 
 import com.example.crm.application.port.input.ItemCategoryUseCase
 import com.example.crm.domain.model.ItemType
+import com.example.crm.infrastructure.web.dto.request.ItemCategoryPatchRequest
 import com.example.crm.infrastructure.web.dto.request.ItemCategoryRequest
 import com.example.crm.infrastructure.web.dto.response.ItemCategoryListResponse
 import com.example.crm.infrastructure.web.dto.response.ItemCategoryResponse
@@ -54,6 +55,10 @@ class ItemCategoryController(
     @PutMapping("/{id}")
     fun update(@PathVariable id: Long, @RequestBody request: ItemCategoryRequest): ResponseEntity<ItemCategoryResponse> =
         ResponseEntity.ok(mapper.toResponse(useCase.update(id, mapper.toDomain(request))))
+
+    @PatchMapping("/{id}")
+    fun patch(@PathVariable id: Long, @RequestBody request: ItemCategoryPatchRequest): ResponseEntity<ItemCategoryResponse> =
+        ResponseEntity.ok(mapper.toResponse(useCase.patch(id, mapper.toPatchDomain(request))))
 
     @DeleteMapping("/{id}")
     fun delete(@PathVariable id: Long): ResponseEntity<Void> {

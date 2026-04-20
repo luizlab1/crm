@@ -3,6 +3,7 @@ package com.example.crm.application.usecase
 import com.example.crm.application.port.input.ItemCategoryUseCase
 import com.example.crm.domain.exception.EntityNotFoundException
 import com.example.crm.domain.model.ItemCategory
+import com.example.crm.domain.model.ItemCategoryPatch
 import com.example.crm.domain.model.ItemType
 import com.example.crm.domain.repository.ItemCategoryRepository
 import org.springframework.data.domain.Page
@@ -36,6 +37,19 @@ class ItemCategoryUseCaseImpl(
     override fun update(id: Long, itemCategory: ItemCategory): ItemCategory {
         val existing = itemCategoryRepository.findById(id) ?: throw EntityNotFoundException("ItemCategory", id)
         val updated = itemCategory.copy(id = existing.id, createdAt = existing.createdAt)
+        return itemCategoryRepository.save(updated)
+    }
+
+    override fun patch(id: Long, patch: ItemCategoryPatch): ItemCategory {
+        val existing = itemCategoryRepository.findById(id) ?: throw EntityNotFoundException("ItemCategory", id)
+        val updated = existing.copy(
+            tenantId = patch.tenantId ?: existing.tenantId,
+            name = patch.name ?: existing.name,
+            description = patch.description ?: existing.description,
+            showOnSite = patch.showOnSite ?: existing.showOnSite,
+            sortOrder = patch.sortOrder ?: existing.sortOrder,
+            availableTypes = patch.availableTypes ?: existing.availableTypes
+        )
         return itemCategoryRepository.save(updated)
     }
 

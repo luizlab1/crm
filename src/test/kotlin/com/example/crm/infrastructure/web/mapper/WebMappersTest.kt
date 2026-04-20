@@ -134,6 +134,13 @@ class WebMappersTest {
         itemCategory.showOnSite shouldBe false
         itemCategory.sortOrder shouldBe 3
 
+        val itemCategoryPatch = ItemCategoryWebMapper(photoResolver).toPatchDomain(
+            ItemCategoryPatchRequest(name = "Categoria Ajustada", showOnSite = true)
+        )
+        itemCategoryPatch.name shouldBe "Categoria Ajustada"
+        itemCategoryPatch.showOnSite shouldBe true
+        itemCategoryPatch.tenantId.shouldBeNull()
+
         val address = AddressWebMapper().toDomain(
             AddressRequest("Rua A", "10", null, "Centro", 1, "12345-000", BigDecimal("-10.5"), BigDecimal("20.1"))
         )
