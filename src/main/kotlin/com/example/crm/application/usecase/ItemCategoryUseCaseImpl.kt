@@ -21,9 +21,10 @@ class ItemCategoryUseCaseImpl(
         pageable: Pageable,
         tenantId: Long?,
         name: String?,
-        availableTypes: Set<ItemType>?
+        availableTypes: Set<ItemType>?,
+        showOnSite: Boolean?
     ): Page<ItemCategory> =
-        itemCategoryRepository.findByFilters(tenantId, name, availableTypes, pageable)
+        itemCategoryRepository.findByFilters(tenantId, name, availableTypes, showOnSite, pageable)
 
     @Transactional(readOnly = true)
     override fun getById(id: Long): ItemCategory =

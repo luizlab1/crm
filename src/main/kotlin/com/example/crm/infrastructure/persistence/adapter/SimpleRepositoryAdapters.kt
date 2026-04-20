@@ -158,10 +158,11 @@ class ItemCategoryRepositoryAdapter(
         tenantId: Long?,
         name: String?,
         availableTypes: Set<ItemType>?,
+        showOnSite: Boolean?,
         pageable: Pageable
     ): Page<ItemCategory> {
         val namePattern = name?.let { "%${it.lowercase()}%" }
-        val jpaResult = jpa.findByFilters(tenantId, namePattern, pageable)
+        val jpaResult = jpa.findByFilters(tenantId, namePattern, showOnSite, pageable)
         val filtered = if (availableTypes != null) {
             jpaResult.content.filter { it.availableTypes.intersect(availableTypes).isNotEmpty() }
         } else {

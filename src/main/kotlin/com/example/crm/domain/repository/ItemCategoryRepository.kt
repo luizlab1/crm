@@ -12,6 +12,7 @@ interface ItemCategoryRepository {
         tenantId: Long?,
         name: String?,
         availableTypes: Set<ItemType>?,
+        showOnSite: Boolean?,
         pageable: Pageable
     ): Page<ItemCategory>
     fun findById(id: Long): ItemCategory?

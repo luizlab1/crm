@@ -10,7 +10,8 @@ interface ItemCategoryUseCase {
         pageable: Pageable,
         tenantId: Long? = null,
         name: String? = null,
-        availableTypes: Set<ItemType>? = null
+        availableTypes: Set<ItemType>? = null,
+        showOnSite: Boolean? = null
     ): Page<ItemCategory>
     fun getById(id: Long): ItemCategory
     fun create(itemCategory: ItemCategory): ItemCategory

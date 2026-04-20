@@ -16,11 +16,13 @@ interface ItemCategoryJpaRepository : JpaRepository<ItemCategoryJpaEntity, Long>
         select i from ItemCategoryJpaEntity i
         where (:tenantId is null or i.tenantId = :tenantId)
           and (:name is null or lower(i.name) like :name)
+          and (:showOnSite is null or i.showOnSite = :showOnSite)
         """
     )
     fun findByFilters(
         @Param("tenantId") tenantId: Long?,
         @Param("name") name: String?,
+        @Param("showOnSite") showOnSite: Boolean?,
         pageable: Pageable
     ): Page<ItemCategoryJpaEntity>
 }

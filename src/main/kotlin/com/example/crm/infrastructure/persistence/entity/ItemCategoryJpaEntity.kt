@@ -16,6 +16,9 @@ class ItemCategoryJpaEntity(
     @Column(nullable = false, length = 150)
     var name: String = "",
 
+    @Column(name = "show_on_site", nullable = false)
+    var showOnSite: Boolean = true,
+
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "item_category_available_types", joinColumns = [JoinColumn(name = "category_id")])
     @Column(name = "type")

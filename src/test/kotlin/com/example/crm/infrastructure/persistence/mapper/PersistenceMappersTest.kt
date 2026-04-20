@@ -44,8 +44,16 @@ class PersistenceMappersTest {
         )
         itemMapper.toDomain(itemMapper.toEntity(item)).name shouldBe item.name
 
-        val itemCategory = ItemCategory(id = 5, tenantId = 1, name = "Cat", createdAt = now, updatedAt = now)
-        itemCategoryMapper.toDomain(itemCategoryMapper.toEntity(itemCategory)).name shouldBe itemCategory.name
+        val itemCategory = ItemCategory(
+            id = 5,
+            tenantId = 1,
+            name = "Cat",
+            showOnSite = false,
+            createdAt = now,
+            updatedAt = now
+        )
+        itemCategoryMapper.toDomain(itemCategoryMapper.toEntity(itemCategory)).showOnSite shouldBe
+            itemCategory.showOnSite
 
         val address = Address(
             id = 6,

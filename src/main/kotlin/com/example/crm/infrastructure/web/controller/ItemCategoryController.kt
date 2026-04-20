@@ -1,12 +1,11 @@
 package com.example.crm.infrastructure.web.controller
 
 import com.example.crm.application.port.input.ItemCategoryUseCase
-import com.example.crm.domain.model.FileType
 import com.example.crm.domain.model.ItemType
 import com.example.crm.infrastructure.web.dto.request.ItemCategoryRequest
+import com.example.crm.infrastructure.web.dto.response.ItemCategoryListResponse
 import com.example.crm.infrastructure.web.dto.response.ItemCategoryResponse
 import com.example.crm.infrastructure.web.dto.response.PageResponse
-import com.example.crm.infrastructure.web.mapper.EntityPhotoResolver
 import com.example.crm.infrastructure.web.mapper.ItemCategoryWebMapper
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
@@ -18,8 +17,7 @@ import java.net.URI
 @RequestMapping("/api/v1/item-categories")
 class ItemCategoryController(
     private val useCase: ItemCategoryUseCase,
-    private val mapper: ItemCategoryWebMapper,
-    private val photoResolver: EntityPhotoResolver
+    private val mapper: ItemCategoryWebMapper
 ) {
 
     @GetMapping
@@ -28,16 +26,13 @@ class ItemCategoryController(
         @RequestParam(defaultValue = "20") size: Int,
         @RequestParam(required = false) tenantId: Long?,
         @RequestParam(required = false) name: String?,
-        @RequestParam(required = false) availableTypes: Set<ItemType>?
-    ): ResponseEntity<PageResponse<ItemCategoryResponse>> {
+        @RequestParam(required = false) availableTypes: Set<ItemType>?,
+        @RequestParam(required = false) showOnSite: Boolean?
+    ): ResponseEntity<PageResponse<ItemCategoryListResponse>> {
         val pageable = PageRequest.of(page, size, Sort.by("name"))
-        val result = useCase.list(pageable, tenantId, name, availableTypes)
+        val result = useCase.list(pageable, tenantId, name, availableTypes, showOnSite)
         return ResponseEntity.ok(PageResponse(
-            content = result.content.map { category ->
-                mapper.toResponse(category).copy(
-                    photo = photoResolver.resolve(category.id, FileType.CATEGORY)
-                )
-            },
+            content = result.content.map(mapper::toListResponse),
             page = result.number, size = result.size,
             totalElements = result.totalElements, totalPages = result.totalPages
         ))
@@ -46,11 +41,7 @@ class ItemCategoryController(
     @GetMapping("/{id}")
     fun findById(@PathVariable id: Long): ResponseEntity<ItemCategoryResponse> {
         val category = useCase.getById(id)
-        return ResponseEntity.ok(
-            mapper.toResponse(category).copy(
-                photo = photoResolver.resolve(category.id, FileType.CATEGORY)
-            )
-        )
+        return ResponseEntity.ok(mapper.toResponse(category))
     }
 
     @PostMapping

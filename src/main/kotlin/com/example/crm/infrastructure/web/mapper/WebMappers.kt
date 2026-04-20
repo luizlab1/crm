@@ -513,10 +513,26 @@ class ItemCategoryWebMapper(
     private val photoResolver: EntityPhotoResolver
 ) {
     fun toDomain(request: ItemCategoryRequest) = ItemCategory(
-        tenantId = request.tenantId, name = request.name, availableTypes = request.availableTypes
+        tenantId = request.tenantId,
+        name = request.name,
+        showOnSite = request.showOnSite,
+        availableTypes = request.availableTypes
+    )
+    fun toListResponse(d: ItemCategory) = ItemCategoryListResponse(
+        id = d.id,
+        tenantId = d.tenantId,
+        name = d.name,
+        availableTypes = d.availableTypes,
+        createdAt = d.createdAt,
+        updatedAt = d.updatedAt,
+        photo = photoResolver.resolve(d.id, FileType.CATEGORY)
     )
     fun toResponse(d: ItemCategory) = ItemCategoryResponse(
-        id = d.id, tenantId = d.tenantId, name = d.name, availableTypes = d.availableTypes,
+        id = d.id,
+        tenantId = d.tenantId,
+        name = d.name,
+        showOnSite = d.showOnSite,
+        availableTypes = d.availableTypes,
         createdAt = d.createdAt, updatedAt = d.updatedAt,
         photo = photoResolver.resolve(d.id, FileType.CATEGORY)
     )

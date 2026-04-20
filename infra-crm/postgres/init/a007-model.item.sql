@@ -38,6 +38,7 @@ CREATE TABLE IF NOT EXISTS public.item_category (
   id          bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   tenant_id   bigint        NOT NULL,
   name        varchar(150)  NOT NULL,
+  show_on_site boolean      NOT NULL DEFAULT true,
   created_at  timestamptz   NOT NULL DEFAULT now(),
   updated_at  timestamptz   NOT NULL DEFAULT now(),
   CONSTRAINT fk_item_category_tenant
