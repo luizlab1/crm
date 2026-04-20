@@ -2,7 +2,9 @@ package com.example.crm.infrastructure.web.controller
 
 import com.example.crm.application.port.input.UploadCommand
 import com.example.crm.application.port.input.UploadUseCase
+import com.example.crm.application.port.input.UpdateUploadCommand
 import com.example.crm.domain.model.FileType
+import com.example.crm.infrastructure.web.dto.request.UploadPatchRequest
 import com.example.crm.infrastructure.web.dto.response.FileTypeRuleResponse
 import com.example.crm.infrastructure.web.dto.response.UploadResponse
 import com.example.crm.infrastructure.web.dto.response.UploadRulesResponse
@@ -14,9 +16,12 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
@@ -44,7 +49,6 @@ class UploadController(
         @RequestParam("width", required = false) width: Int?,
         @RequestParam("height", required = false) height: Int?,
         @RequestParam("quality", required = false) quality: Int?,
-        @RequestParam("legend", required = false) legend: String?,
         authentication: Authentication
     ): ResponseEntity<UploadResponse> {
         require(!file.isEmpty) { "Arquivo obrigatório" }
@@ -61,12 +65,35 @@ class UploadController(
             subtitle = subtitle,
             width = width,
             height = height,
-            quality = quality,
-            legend = legend
+            quality = quality
         )
         val created = useCase.upload(command)
         return ResponseEntity.created(URI.create("/api/v1/uploads/${created.id}"))
             .body(mapper.toResponse(created))
+    }
+
+    @PatchMapping("/{id}")
+    fun update(
+        @PathVariable id: UUID,
+        @RequestBody request: UploadPatchRequest
+    ): ResponseEntity<UploadResponse> {
+        val updated = useCase.update(
+            id,
+            UpdateUploadCommand(
+                fileType = request.fileType,
+                entityId = request.entityId,
+                sortOrder = request.sortOrder,
+                title = request.title,
+                subtitle = request.subtitle
+            )
+        )
+        return ResponseEntity.ok(withLinks(mapper.toResponse(updated)))
+    }
+
+    @DeleteMapping("/{id}")
+    fun delete(@PathVariable id: UUID): ResponseEntity<Void> {
+        useCase.delete(id)
+        return ResponseEntity.noContent().build()
     }
 
     private fun resolveTenantId(authentication: Authentication): Long {

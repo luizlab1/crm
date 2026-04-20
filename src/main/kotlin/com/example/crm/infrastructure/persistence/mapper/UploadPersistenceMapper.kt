@@ -12,7 +12,7 @@ class UploadPersistenceMapper {
         customerId = e.customerId, workerId = e.workerId,
         fileName = e.fileName, filePath = e.filePath, contentType = e.contentType,
         size = e.size, width = e.width, height = e.height, sortOrder = e.sortOrder,
-        title = e.title, subtitle = e.subtitle, legend = e.legend,
+        title = e.title, subtitle = e.subtitle,
         createdAt = e.createdAt
     )
 
@@ -22,7 +22,7 @@ class UploadPersistenceMapper {
         customerId = d.customerId, workerId = d.workerId,
         fileName = d.fileName, filePath = d.filePath, contentType = d.contentType,
         size = d.size, width = d.width, height = d.height, sortOrder = d.sortOrder,
-        title = d.title, subtitle = d.subtitle, legend = d.legend,
+        title = d.title, subtitle = d.subtitle,
         createdAt = d.createdAt
     )
 }

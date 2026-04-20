@@ -22,7 +22,6 @@ data class UploadResponse(
     val sortOrder: Int,
     val title: String?,
     val subtitle: String?,
-    val legend: String?,
     val createdAt: OffsetDateTime,
     val viewUrl: String? = null,
     val downloadUrl: String? = null

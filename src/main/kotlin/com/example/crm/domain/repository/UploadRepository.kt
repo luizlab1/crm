@@ -7,6 +7,7 @@ import java.util.UUID
 interface UploadRepository {
     fun save(upload: Upload): Upload
     fun findById(id: UUID): Upload?
+    fun deleteById(id: UUID)
     fun findByFileTypeAndEntityId(fileType: FileType, entityId: Long): List<Upload>
     // find with optional filters and pagination
     fun find(fileType: FileType?, entityId: Long?, page: Int, size: Int): List<Upload>

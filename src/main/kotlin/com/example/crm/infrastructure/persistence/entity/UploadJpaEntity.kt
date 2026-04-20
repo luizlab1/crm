@@ -66,9 +66,6 @@ class UploadJpaEntity(
     @Column(name = "subtitle", length = 300)
     var subtitle: String? = null,
 
-    @Column(name = "legend", length = 500)
-    var legend: String? = null,
-
     @Column(name = "created_at", nullable = false, updatable = false)
     var createdAt: OffsetDateTime = OffsetDateTime.now()
 )

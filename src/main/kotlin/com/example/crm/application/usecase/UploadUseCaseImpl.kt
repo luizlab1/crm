@@ -1,6 +1,7 @@
 package com.example.crm.application.usecase
 
 import com.example.crm.application.port.input.UploadCommand
+import com.example.crm.application.port.input.UpdateUploadCommand
 import com.example.crm.application.port.input.UploadUseCase
 import com.example.crm.application.port.output.FileStorage
 import com.example.crm.application.port.output.StoreFileCommand
@@ -53,8 +54,7 @@ class UploadUseCaseImpl(
             height = stored.height,
             sortOrder = command.sortOrder,
             title = command.title?.trim()?.takeIf { it.isNotBlank() },
-            subtitle = command.subtitle?.trim()?.takeIf { it.isNotBlank() },
-            legend = command.legend?.takeIf { it.isNotBlank() }
+            subtitle = command.subtitle?.trim()?.takeIf { it.isNotBlank() }
         )
         return uploadRepository.save(upload)
     }
@@ -62,6 +62,28 @@ class UploadUseCaseImpl(
     @Transactional(readOnly = true)
     override fun getById(id: UUID): Upload =
         uploadRepository.findById(id) ?: throw EntityNotFoundException("Upload", id)
+
+    override fun update(id: UUID, command: UpdateUploadCommand): Upload {
+        require(command.sortOrder >= 0) { "sortOrder inválido (mínimo: 0)" }
+        val current = uploadRepository.findById(id) ?: throw EntityNotFoundException("Upload", id)
+        val updated = current.copy(
+            fileType = command.fileType,
+            entityId = command.entityId,
+            itemId = if (command.fileType.isItem()) command.entityId else null,
+            categoryId = if (command.fileType == FileType.CATEGORY) command.entityId else null,
+            customerId = if (command.fileType == FileType.CUSTOMER) command.entityId else null,
+            workerId = if (command.fileType == FileType.WORKER) command.entityId else null,
+            sortOrder = command.sortOrder,
+            title = command.title?.trim()?.takeIf { it.isNotBlank() },
+            subtitle = command.subtitle?.trim()?.takeIf { it.isNotBlank() }
+        )
+        return uploadRepository.save(updated)
+    }
+
+    override fun delete(id: UUID) {
+        uploadRepository.findById(id) ?: throw EntityNotFoundException("Upload", id)
+        uploadRepository.deleteById(id)
+    }
 
     @Transactional(readOnly = true)
     override fun list(fileType: FileType?, entityId: Long?, page: Int, size: Int): List<Upload> =

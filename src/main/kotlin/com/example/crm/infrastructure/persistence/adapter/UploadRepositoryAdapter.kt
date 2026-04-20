@@ -23,6 +23,10 @@ class UploadRepositoryAdapter(
     override fun findById(id: UUID): Upload? =
         jpa.findById(id).map { mapper.toDomain(it) }.orElse(null)
 
+    override fun deleteById(id: UUID) {
+        jpa.deleteById(id)
+    }
+
     override fun findByFileTypeAndEntityId(fileType: FileType, entityId: Long): List<Upload> =
         jpa.findOrderedByFileTypeAndEntityId(fileType, entityId).map { mapper.toDomain(it) }
 
