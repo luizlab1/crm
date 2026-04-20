@@ -15,19 +15,24 @@ Stack: Kotlin 2.2.21 · Spring Boot 4.0.2 · PostgreSQL · JWT · JVM 21.
 ## Comandos principais
 
 ```powershell
-# 1. Subir infraestrutura (obrigatório antes de bootRun ou testes de integração)
+# 1. Subir infraestrutura (obrigatório antes de bootRun ou integrationTest)
 cd infra-crm
 docker compose up -d
 
 # 2. Rodar a aplicação
 .\gradlew.bat bootRun
 
-# 3. Todos os testes (JaCoCo gerado automaticamente ao final)
-.\gradlew.bat test
+# 3. Fluxo local rápido (sem clean)
+.\gradlew.bat detektFast test
 
-# 4. Lint
+# 4. Lint completo
 .\gradlew.bat detekt
-make.cmd lint   # alternativa Windows sem GNU make
+
+# 5. Testes de integração (mais lentos)
+.\gradlew.bat integrationTest
+
+# 6. Validação completa (CI/PR-like)
+.\gradlew.bat build
 ```
 
 **Rodar uma classe de teste específica:**
@@ -35,7 +40,14 @@ make.cmd lint   # alternativa Windows sem GNU make
 .\gradlew.bat test --tests "com.example.crm.application.usecase.UseCasesTest"
 ```
 
-**Ordem recomendada:** implementar → lint → testes do escopo → suite completa.
+**Rodar pacote específico:**
+```powershell
+.\gradlew.bat test --tests "com.example.crm.application.usecase.*"
+```
+
+**Evite por padrão:** `clean build` (quebra incremental/caches locais).
+
+**Ordem recomendada:** implementar → `detektFast` + testes do escopo → integração quando necessário → `build` antes de PR.
 
 **Gate obrigatório antes de concluir qualquer tarefa com alteração de código:**
 - Se houve mudança em código-fonte, o agente deve executar `./gradlew.bat detekt` e `./gradlew.bat test` (ou `\.\gradlew.bat` no PowerShell).
@@ -150,10 +162,11 @@ Todos os modelos usam `OffsetDateTime` para timestamps e `bigint GENERATED ALWAY
 ## Testes
 
 - **Mocking:** MockK (`io.mockk`). Não usar Mockito.
-- `UseCasesTest` — testes unitários sem Spring, todos os use cases em um arquivo.
-- `CrmApplicationTests` — `@SpringBootTest`, carrega contexto completo. Requer `docker compose up -d`.
-- Testes de arquitetura (`architecture/`) rodam junto com `.\gradlew.bat test` e falham se regras forem violadas.
-- JaCoCo é gerado automaticamente ao final de cada `.\gradlew.bat test` (não precisa chamar separado).
+- `test` — unitários + arquitetura (rápido, sem integração).
+- `integrationTest` — apenas testes com `@Tag("integration")` (mais lento, requer Docker up).
+- `UseCasesTest` — unitários sem Spring, todos os use cases em um arquivo.
+- `CrmApplicationTests` — `@SpringBootTest` e marcado como integração.
+- Testes de arquitetura (`architecture/`) rodam no `test` e falham se regras forem violadas.
 
 ---
 

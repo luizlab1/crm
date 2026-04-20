@@ -91,9 +91,27 @@ jacoco {
     toolVersion = "0.8.12"
 }
 
-tasks.withType<Test> {
+tasks.withType<Test>().configureEach {
     useJUnitPlatform()
-    finalizedBy(tasks.named("jacocoTestReport"))
+    maxParallelForks = maxOf(1, Runtime.getRuntime().availableProcessors() / 2)
+}
+
+tasks.named<Test>("test") {
+    description = "Runs fast local checks (unit + architecture), excludes integration tests"
+    useJUnitPlatform {
+        excludeTags("integration")
+    }
+}
+
+val integrationTest by tasks.registering(Test::class) {
+    description = "Runs integration tests only"
+    group = "verification"
+    testClassesDirs = tasks.named<Test>("test").get().testClassesDirs
+    classpath = tasks.named<Test>("test").get().classpath
+    shouldRunAfter(tasks.named("test"))
+    useJUnitPlatform {
+        includeTags("integration")
+    }
 }
 
 tasks.named<JacocoReport>("jacocoTestReport") {
@@ -106,8 +124,28 @@ tasks.named<JacocoReport>("jacocoTestReport") {
     }
 }
 
+tasks.named("check") {
+    dependsOn(integrationTest)
+}
+
+tasks.matching { task -> task.name in setOf("detekt", "detektMain", "detektTest") }.configureEach {
+    if (this is org.gradle.api.tasks.SourceTask) {
+        if (name == "detekt") {
+            setSource(files("src/main/kotlin", "src/test/kotlin"))
+        }
+        include("**/*.kt", "**/*.kts")
+        exclude("**/build/**", "**/generated/**")
+    }
+}
+
+tasks.register("detektFast") {
+    group = "verification"
+    description = "Runs a faster Detekt for local feedback"
+    dependsOn("detektMain")
+}
+
 tasks.register("lint") {
     group = "verification"
-    description = "Runs lint checks via detekt"
+    description = "Runs lint checks via full detekt"
     dependsOn("detekt")
 }

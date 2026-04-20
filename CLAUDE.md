@@ -13,11 +13,16 @@ Stack: Kotlin 2.2.21 · Spring Boot 4.0.2 · PostgreSQL · JWT · JDK 21 (ignore
 ```bash
 cd infra-crm && docker compose up -d        # infra (obrigatória p/ bootRun e testes de integração)
 ./gradlew bootRun                           # app (.\gradlew.bat no Windows)
-./gradlew test                              # suite + JaCoCo
+./gradlew detektFast test                   # fluxo local rápido (sem clean)
 ./gradlew test --tests "FQCN"               # teste específico
-./gradlew detekt                            # lint
+./gradlew test --tests "com.example.crm.application.usecase.*"  # pacote específico
+./gradlew detekt                            # lint completo
+./gradlew integrationTest                   # integração
+./gradlew build                             # completo (CI/PR-like)
 docker compose down -v && docker compose up -d  # reset DB (dentro de infra-crm)
 ```
+
+Evite por padrão: `./gradlew clean build`.
 
 ## Estrutura do projeto
 
@@ -55,8 +60,10 @@ docker compose down -v && docker compose up -d  # reset DB (dentro de infra-crm)
 ## Testes
 
 - Mock: **MockK** (`io.mockk`). Nunca Mockito.
+- `test` → unitários + arquitetura (rápido)
+- `integrationTest` → somente `@Tag("integration")` (mais lento, requer docker up)
 - `UseCasesTest` → unitários sem Spring, todos use cases num arquivo
-- `CrmApplicationTests` → `@SpringBootTest` (requer docker up)
+- `CrmApplicationTests` → `@SpringBootTest` marcado como integração
 - ArchUnit em `architecture/` roda junto com `./gradlew test`
 
 ## Segurança
@@ -82,7 +89,8 @@ docker compose down -v && docker compose up -d  # reset DB (dentro de infra-crm)
 - **Bug:** ir direto ao controller → use case → adapter; não varrer o repo
 - **Nova feature:** seguir ordem da seção Estrutura; reutilizar padrões existentes
 - **Mudança mínima:** alterar só o necessário; sem refactor fora de escopo
-- **Validação:** scoped tests primeiro → `detekt` → suite completa só no fim
+- **Validação local:** `detektFast` + `test` sem `clean`
+- **Validação CI/PR:** `detekt` + `build` (inclui integração)
 - **Gate final obrigatório:** `./gradlew detekt` + `./gradlew test` verdes antes de concluir
 
 ## Regras de economia de tokens
