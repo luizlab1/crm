@@ -19,6 +19,9 @@ import javax.imageio.IIOImage
 import javax.imageio.ImageIO
 import javax.imageio.ImageWriteParam
 import javax.imageio.stream.MemoryCacheImageOutputStream
+import kotlin.math.max
+import kotlin.math.min
+import kotlin.math.roundToInt
 
 @Component
 class FileStorageService(
@@ -70,19 +73,27 @@ class FileStorageService(
 
     private fun resizeIfNeeded(src: BufferedImage, targetWidth: Int?, targetHeight: Int?): BufferedImage {
         if (targetWidth == null && targetHeight == null) return src
-        val ratio = src.width.toDouble() / src.height.toDouble()
-        val newWidth = targetWidth ?: ((targetHeight ?: src.height) * ratio).toInt()
-        val newHeight = targetHeight ?: ((targetWidth ?: src.width) / ratio).toInt()
-        val out = BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_ARGB)
-        val g: Graphics2D = out.createGraphics()
-        try {
-            g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR)
-            g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY)
-            g.drawImage(src, 0, 0, newWidth, newHeight, null)
-        } finally {
-            g.dispose()
+
+        val widthScale = targetWidth?.toDouble()?.div(src.width) ?: Double.POSITIVE_INFINITY
+        val heightScale = targetHeight?.toDouble()?.div(src.height) ?: Double.POSITIVE_INFINITY
+        val scale = min(widthScale, heightScale)
+        val newWidth = max(1, (src.width * scale).roundToInt())
+        val newHeight = max(1, (src.height * scale).roundToInt())
+
+        return if (newWidth == src.width && newHeight == src.height) {
+            src
+        } else {
+            val out = BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_ARGB)
+            val g: Graphics2D = out.createGraphics()
+            try {
+                g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR)
+                g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY)
+                g.drawImage(src, 0, 0, newWidth, newHeight, null)
+            } finally {
+                g.dispose()
+            }
+            out
         }
-        return out
     }
 
     private fun encode(image: BufferedImage, extension: String, quality: Int?): ByteArray {
