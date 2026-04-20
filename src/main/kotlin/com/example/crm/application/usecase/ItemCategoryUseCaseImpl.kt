@@ -53,6 +53,12 @@ class ItemCategoryUseCaseImpl(
         return itemCategoryRepository.save(updated)
     }
 
+    override fun updateSortOrders(sortOrders: Map<Long, Int>): List<ItemCategory> =
+        sortOrders.map { (id, sortOrder) ->
+            val existing = itemCategoryRepository.findById(id) ?: throw EntityNotFoundException("ItemCategory", id)
+            itemCategoryRepository.save(existing.copy(sortOrder = sortOrder))
+        }
+
     override fun delete(id: Long) {
         itemCategoryRepository.findById(id) ?: throw EntityNotFoundException("ItemCategory", id)
         itemCategoryRepository.deleteById(id)

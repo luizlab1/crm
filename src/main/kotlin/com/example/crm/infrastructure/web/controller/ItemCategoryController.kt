@@ -4,6 +4,7 @@ import com.example.crm.application.port.input.ItemCategoryUseCase
 import com.example.crm.domain.model.ItemType
 import com.example.crm.infrastructure.web.dto.request.ItemCategoryPatchRequest
 import com.example.crm.infrastructure.web.dto.request.ItemCategoryRequest
+import com.example.crm.infrastructure.web.dto.request.ItemCategorySortOrderRequest
 import com.example.crm.infrastructure.web.dto.response.ItemCategoryListResponse
 import com.example.crm.infrastructure.web.dto.response.ItemCategoryResponse
 import com.example.crm.infrastructure.web.dto.response.PageResponse
@@ -59,6 +60,13 @@ class ItemCategoryController(
     @PatchMapping("/{id}")
     fun patch(@PathVariable id: Long, @RequestBody request: ItemCategoryPatchRequest): ResponseEntity<ItemCategoryResponse> =
         ResponseEntity.ok(mapper.toResponse(useCase.patch(id, mapper.toPatchDomain(request))))
+
+    @PatchMapping("/sort-order")
+    fun updateSortOrders(@RequestBody request: ItemCategorySortOrderRequest): ResponseEntity<List<ItemCategoryResponse>> {
+        val sortOrders = request.items.associate { it.id to it.sortOrder }
+        val updated = useCase.updateSortOrders(sortOrders)
+        return ResponseEntity.ok(updated.map(mapper::toResponse))
+    }
 
     @DeleteMapping("/{id}")
     fun delete(@PathVariable id: Long): ResponseEntity<Void> {

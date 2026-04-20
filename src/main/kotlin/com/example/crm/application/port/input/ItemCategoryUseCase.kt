@@ -18,6 +18,7 @@ interface ItemCategoryUseCase {
     fun create(itemCategory: ItemCategory): ItemCategory
     fun update(id: Long, itemCategory: ItemCategory): ItemCategory
     fun patch(id: Long, patch: ItemCategoryPatch): ItemCategory
+    fun updateSortOrders(sortOrders: Map<Long, Int>): List<ItemCategory>
     fun delete(id: Long)
 }
 
