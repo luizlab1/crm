@@ -20,7 +20,7 @@ class ResponseDtosTest {
         CityResponse(1, 1, "Campinas", 3509502, now, now).city shouldBe "Campinas"
         CountryResponse(1, "BR", "BRA", "Brasil", now, now).iso2 shouldBe "BR"
         CustomerResponse(1, uuid, 1, null, "Maria", "m@crm.com", null, null, true, now, now).fullName shouldBe "Maria"
-        ItemCategoryResponse(1, 1, "Categoria", true, ItemType.entries.toSet(), now, now)
+        ItemCategoryResponse(1, 1, "Categoria", "Descrição", true, ItemType.entries.toSet(), now, now)
             .name shouldBe "Categoria"
         ItemResponse(
             1, uuid, 1, null, ItemType.SERVICE, "Consultoria", null, true, emptyList(),

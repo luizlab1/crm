@@ -7,6 +7,7 @@ data class ItemCategoryListResponse(
     val id: Long,
     val tenantId: Long,
     val name: String,
+    val description: String?,
     val availableTypes: Set<ItemType>,
     val createdAt: OffsetDateTime,
     val updatedAt: OffsetDateTime,

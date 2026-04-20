@@ -121,9 +121,15 @@ class WebMappersTest {
         item.type shouldBe ItemType.SERVICE
 
         val itemCategory = ItemCategoryWebMapper(photoResolver).toDomain(
-            ItemCategoryRequest(tenantId = 1, name = "Categoria", showOnSite = false)
+            ItemCategoryRequest(
+                tenantId = 1,
+                name = "Categoria",
+                description = "Categoria para serviços",
+                showOnSite = false
+            )
         )
         itemCategory.name shouldBe "Categoria"
+        itemCategory.description shouldBe "Categoria para serviços"
         itemCategory.showOnSite shouldBe false
 
         val address = AddressWebMapper().toDomain(

@@ -515,6 +515,7 @@ class ItemCategoryWebMapper(
     fun toDomain(request: ItemCategoryRequest) = ItemCategory(
         tenantId = request.tenantId,
         name = request.name,
+        description = request.description,
         showOnSite = request.showOnSite,
         availableTypes = request.availableTypes
     )
@@ -522,6 +523,7 @@ class ItemCategoryWebMapper(
         id = d.id,
         tenantId = d.tenantId,
         name = d.name,
+        description = d.description,
         availableTypes = d.availableTypes,
         createdAt = d.createdAt,
         updatedAt = d.updatedAt,
@@ -531,6 +533,7 @@ class ItemCategoryWebMapper(
         id = d.id,
         tenantId = d.tenantId,
         name = d.name,
+        description = d.description,
         showOnSite = d.showOnSite,
         availableTypes = d.availableTypes,
         createdAt = d.createdAt, updatedAt = d.updatedAt,

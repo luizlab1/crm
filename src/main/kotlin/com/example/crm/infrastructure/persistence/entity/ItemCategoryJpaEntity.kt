@@ -16,6 +16,9 @@ class ItemCategoryJpaEntity(
     @Column(nullable = false, length = 150)
     var name: String = "",
 
+    @Column(length = 500)
+    var description: String? = null,
+
     @Column(name = "show_on_site", nullable = false)
     var showOnSite: Boolean = true,
 
