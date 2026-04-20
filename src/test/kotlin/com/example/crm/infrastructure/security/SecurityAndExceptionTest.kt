@@ -7,6 +7,7 @@ import com.example.crm.support.shouldBeNull
 import com.example.crm.support.shouldNotBeNull
 import com.example.crm.support.shouldThrow
 import com.example.crm.infrastructure.web.config.GlobalExceptionHandler
+import io.jsonwebtoken.Claims
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.Test
@@ -29,7 +30,11 @@ class SecurityAndExceptionTest {
     @Test
     fun `it should authenticate when bearer token is valid`() {
         val jwtService = mockk<JwtService>()
-        every { jwtService.parseSubject("valid-token") } returns "user@crm.com"
+        val claims = mockk<Claims>()
+        every { claims.subject } returns "user@crm.com"
+        every { claims["userId"] } returns 1L
+        every { claims["tenantId"] } returns 1L
+        every { jwtService.parseClaims("valid-token") } returns claims
 
         val request = MockHttpServletRequest().apply {
             addHeader("Authorization", "Bearer valid-token")
@@ -47,7 +52,7 @@ class SecurityAndExceptionTest {
     @Test
     fun `it should clear authentication when bearer token is invalid`() {
         val jwtService = mockk<JwtService>()
-        every { jwtService.parseSubject(any()) } throws IllegalArgumentException("invalid")
+        every { jwtService.parseClaims(any()) } throws IllegalArgumentException("invalid")
 
         val request = MockHttpServletRequest().apply {
             addHeader("Authorization", "Bearer invalid-token")
