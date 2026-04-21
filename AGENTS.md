@@ -68,6 +68,27 @@ cd infra-crm && docker compose up -d  # primeira vez
 ./gradlew build  # inclui integrationTest
 ```
 
+## Commit e Push
+
+**Regra importante:**
+- ✅ **Se o último prompt pediu explicitamente:** fazer commit/push **sem pedir permissão**
+- ❌ **Se não pediu:** **NUNCA** fazer sem confirmação — aguarde comando do usuário
+
+Exemplos:
+```bash
+# ✅ Último prompt: "faça commit dessa feature"
+git commit -m "feat: ..."  # fazer direto, sem pedir permissão
+
+# ❌ Último prompt: não mencionou commit/push
+# Resultado: propor commit, aguardar confirmação do usuário antes de fazer
+```
+
+**Outras regras mantidas:**
+- Sempre usar `./gradlew detekt` + `./gradlew test` verdes antes de commit
+- Criar NEW commits (não amend) se hook falhar
+- Verificar git status, git diff antes de propor commit
+- Nunca fazer `--force push` para main/master
+
 ## Hooks automáticos
 
 O projeto tem hook em `.claude/settings.json` que roda `detektFast` + `test` **em background** após cada Edit/Write de `.kt`. Não precisa rodar manualmente se aguardar feedback automático do hook (mais lento, mas não bloqueia).

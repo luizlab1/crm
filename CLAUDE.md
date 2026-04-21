@@ -93,7 +93,9 @@ Evite por padrão: `./gradlew clean build`.
 - **Validação local:** `detektFast` + `test` sem `clean` (ou aguarde feedback automático do hook)
 - **Validação CI/PR:** `detekt` + `build` (inclui integração)
 - **Gate final obrigatório:** `./gradlew detekt` + `./gradlew test` verdes antes de concluir
-- **Commit/Push/PR:** **NUNCA** fazer sem solicitação explícita — aguarde comando do usuário
+- **Commit/Push/PR:** Só fazer se **último prompt pediu explicitamente**. Caso contrário, **NUNCA** fazer sem confirmação — aguarde comando do usuário
+  - Se pedido explícito: executar sem pedir permissão
+  - Se não pedido: sempre pedir confirmação antes
 
 ## Build otimizado (arquivos alterados apenas)
 
