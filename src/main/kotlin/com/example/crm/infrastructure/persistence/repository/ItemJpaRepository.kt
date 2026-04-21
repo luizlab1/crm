@@ -34,5 +34,6 @@ interface ItemJpaRepository : JpaRepository<ItemJpaEntity, Long> {
     ): Page<ItemJpaEntity>
 
     fun findByTenantId(tenantId: Long, pageable: Pageable): Page<ItemJpaEntity>
+    fun countByCategoryId(categoryId: Long): Long
 }
 

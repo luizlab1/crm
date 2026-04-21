@@ -103,6 +103,7 @@ class ItemRepositoryAdapter(
     override fun findAll(pageable: Pageable): Page<Item> = jpa.findAll(pageable).map { mapper.toDomain(it) }
     override fun findByTenantId(tenantId: Long, pageable: Pageable): Page<Item> = jpa.findByTenantId(tenantId, pageable).map { mapper.toDomain(it) }
     override fun findById(id: Long): Item? = jpa.findById(id).map { enrich(it) }.orElse(null)
+    override fun countByCategoryId(categoryId: Long): Long = jpa.countByCategoryId(categoryId)
     override fun save(item: Item): Item {
         val savedEntity = jpa.save(mapper.toEntity(item))
         val saved = mapper.toDomain(savedEntity)
@@ -159,10 +160,11 @@ class ItemCategoryRepositoryAdapter(
         name: String?,
         availableTypes: Set<ItemType>?,
         showOnSite: Boolean?,
+        isActive: Boolean?,
         pageable: Pageable
     ): Page<ItemCategory> {
         val namePattern = name?.let { "%${it.lowercase()}%" }
-        val jpaResult = jpa.findByFilters(tenantId, namePattern, showOnSite, pageable)
+        val jpaResult = jpa.findByFilters(tenantId, namePattern, showOnSite, isActive, pageable)
         val filtered = if (availableTypes != null) {
             jpaResult.content.filter { it.availableTypes.intersect(availableTypes).isNotEmpty() }
         } else {

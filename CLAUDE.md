@@ -95,6 +95,25 @@ Evite por padrão: `./gradlew clean build`.
 - **Gate final obrigatório:** `./gradlew detekt` + `./gradlew test` verdes antes de concluir
 - **Commit/Push/PR:** **NUNCA** fazer sem solicitação explícita — aguarde comando do usuário
 
+## Build otimizado (arquivos alterados apenas)
+
+```bash
+# Compilação rápida de arquivos alterados (sem clean)
+./gradlew detektFast test --no-build-cache -x detektMain
+
+# Lint + testes apenas de arquivos modificados (mais rápido)
+./gradlew detektFast test
+
+# Para build completo (CI/PR, inclui integração)
+./gradlew build
+```
+
+**Dicas:**
+- Evitar `./gradlew clean build` (recompila tudo)
+- `--no-build-cache` força recompilação do Kotlin (útil se cache ficou inconsistente)
+- `-x detektMain` pula lint do main (usa `detektFast` em background)
+- Hook automático já roda `detektFast` + `test` em background após edições
+
 ## Regras de economia de tokens
 
 - Ler apenas arquivos estritamente necessários

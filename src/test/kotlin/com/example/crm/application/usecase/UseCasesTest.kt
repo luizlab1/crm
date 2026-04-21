@@ -217,6 +217,7 @@ class UseCasesTest {
         val roleRepo = mockk<RoleRepository>()
         val permissionRepo = mockk<PermissionRepository>()
         val itemCategoryRepo = mockk<ItemCategoryRepository>()
+        val itemRepo = mockk<ItemRepository>()
 
         val tenant = Tenant(id = 1, name = "Tenant", category = "BUSINESS", createdAt = now, updatedAt = now)
         every { tenantRepo.findAll(pageable) } returns PageImpl(listOf(tenant))
@@ -242,11 +243,12 @@ class UseCasesTest {
         every { itemCategoryRepo.findById(4) } returns category
         every { itemCategoryRepo.save(any()) } answers { firstArg() }
         every { itemCategoryRepo.deleteById(4) } just runs
+        every { itemRepo.countByCategoryId(4) } returns 0
 
         TenantUseCaseImpl(tenantRepo, personRepo, personAddressRepo).create(tenant).id shouldBe 1
         RoleUseCaseImpl(roleRepo).update(2, role.copy(name = "USER")).name shouldBe "USER"
         PermissionUseCaseImpl(permissionRepo).delete(3)
-        val itemCategoryUseCase = ItemCategoryUseCaseImpl(itemCategoryRepo)
+        val itemCategoryUseCase = ItemCategoryUseCaseImpl(itemCategoryRepo, itemRepo)
         itemCategoryUseCase.patch(4, ItemCategoryPatch(name = "Categoria Nova")).name shouldBe "Categoria Nova"
         itemCategoryUseCase.delete(4)
 

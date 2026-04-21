@@ -8,6 +8,7 @@ data class ItemCategoryRequest(
     val description: String? = null,
     val showOnSite: Boolean = true,
     val sortOrder: Int? = 0,
+    val isActive: Boolean = true,
     val availableTypes: Set<ItemType> = ItemType.entries.toSet()
 )
 

@@ -1,4 +1,11 @@
 {
+  "permissions": {
+    "allow": [
+      "Read",
+      "Write",
+      "Bash"
+    ]
+  },
   "hooks": {
     "PostToolUse": [
       {

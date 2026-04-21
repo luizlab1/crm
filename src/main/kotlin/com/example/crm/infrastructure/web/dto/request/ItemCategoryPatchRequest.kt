@@ -8,5 +8,6 @@ data class ItemCategoryPatchRequest(
     val description: String? = null,
     val showOnSite: Boolean? = null,
     val sortOrder: Int? = null,
+    val isActive: Boolean? = null,
     val availableTypes: Set<ItemType>? = null
 )

@@ -20,6 +20,7 @@ interface ItemRepository {
     fun findAll(pageable: Pageable): Page<Item>
     fun findByTenantId(tenantId: Long, pageable: Pageable): Page<Item>
     fun findById(id: Long): Item?
+    fun countByCategoryId(categoryId: Long): Long
     fun save(item: Item): Item
 }
 
