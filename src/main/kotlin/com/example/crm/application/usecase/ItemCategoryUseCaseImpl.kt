@@ -27,9 +27,9 @@ class ItemCategoryUseCaseImpl(
         name: String?,
         availableTypes: Set<ItemType>?,
         showOnSite: Boolean?,
-        isActive: Boolean?
+        active: Boolean?
     ): Page<ItemCategory> =
-        itemCategoryRepository.findByFilters(tenantId, name, availableTypes, showOnSite, isActive, pageable)
+        itemCategoryRepository.findByFilters(tenantId, name, availableTypes, showOnSite, active, pageable)
 
     @Transactional(readOnly = true)
     override fun getById(id: Long): ItemCategory =
@@ -50,9 +50,9 @@ class ItemCategoryUseCaseImpl(
             tenantId = patch.tenantId ?: existing.tenantId,
             name = patch.name ?: existing.name,
             description = patch.description ?: existing.description,
-            showOnSite = patch.showOnSite ?: existing.showOnSite,
+            showOnSite = if (patch.showOnSite != null) patch.showOnSite else existing.showOnSite,
             sortOrder = patch.sortOrder ?: existing.sortOrder,
-            isActive = patch.isActive ?: existing.isActive,
+            active = if (patch.active != null) patch.active else existing.active,
             availableTypes = patch.availableTypes ?: existing.availableTypes
         )
         return itemCategoryRepository.save(updated)

@@ -13,7 +13,7 @@ interface ItemCategoryRepository {
         name: String?,
         availableTypes: Set<ItemType>?,
         showOnSite: Boolean?,
-        isActive: Boolean?,
+        active: Boolean?,
         pageable: Pageable
     ): Page<ItemCategory>
     fun findById(id: Long): ItemCategory?

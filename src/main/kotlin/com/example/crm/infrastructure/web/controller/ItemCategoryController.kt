@@ -30,10 +30,10 @@ class ItemCategoryController(
         @RequestParam(required = false) name: String?,
         @RequestParam(required = false) availableTypes: Set<ItemType>?,
         @RequestParam(required = false) showOnSite: Boolean?,
-        @RequestParam(required = false) isActive: Boolean?
+        @RequestParam(required = false) active: Boolean?
     ): ResponseEntity<PageResponse<ItemCategoryListResponse>> {
         val pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "sortOrder"))
-        val result = useCase.list(pageable, tenantId, name, availableTypes, showOnSite, isActive)
+        val result = useCase.list(pageable, tenantId, name, availableTypes, showOnSite, active)
         return ResponseEntity.ok(PageResponse(
             content = result.content.map(mapper::toListResponse),
             page = result.number, size = result.size,

@@ -2,6 +2,8 @@
 
 Guia de build otimizado para agents (OpenCode, Anthropic SDK, etc).
 
+**Ambiente de testes:** `https://api-crm.luizlab.com/` · Credenciais: `admin@saas.com` / `123456`
+
 ## Build rápido (arquivos alterados)
 
 Ao fazer alterações de código, use **sempre** um desses comandos para validação rápida:

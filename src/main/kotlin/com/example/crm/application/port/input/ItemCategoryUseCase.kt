@@ -13,7 +13,7 @@ interface ItemCategoryUseCase {
         name: String? = null,
         availableTypes: Set<ItemType>? = null,
         showOnSite: Boolean? = null,
-        isActive: Boolean? = null
+        active: Boolean? = null
     ): Page<ItemCategory>
     fun getById(id: Long): ItemCategory
     fun create(itemCategory: ItemCategory): ItemCategory

@@ -69,17 +69,22 @@ Evite por padrão: `./gradlew clean build`.
 ## Segurança
 
 - JWT stateless. Auth obrigatório exceto `/api/v1/auth/**`, Swagger, actuator
-- Token: `POST /api/v1/auth/token` `{"email":"admin@saas.com","password":"string"}`
+- Token: `POST /api/v1/auth/token` `{"email":"admin@saas.com","password":"123456"}`
 - `AdminSeeder` cria admin no startup (tenant_id=1)
 - BCrypt: `$2b$` é normalizado para `$2a$`
 
-## URLs locais
+## URLs (ambiente de testes)
 
 | URL | Uso |
 |---|---|
-| `http://localhost:8080/swagger-ui/index.html` | Swagger |
-| `http://localhost:8080/v3/api-docs` | OpenAPI JSON |
-| `http://localhost:8080/health/live` | Health |
+| `https://api-crm.luizlab.com/swagger-ui/index.html` | Swagger |
+| `https://api-crm.luizlab.com/v3/api-docs` | OpenAPI JSON |
+| `https://api-crm.luizlab.com/health/live` | Health |
+
+**Local (desenvolvimento):**
+| URL | Uso |
+|---|---|
+| `http://localhost:8080/swagger-ui/index.html` | Swagger local |
 | `http://localhost:5050` | pgAdmin (`admin@crm.com`/`admin`) |
 | `localhost:5432` | Postgres (`crm`/`crm`/`crm`) |
 

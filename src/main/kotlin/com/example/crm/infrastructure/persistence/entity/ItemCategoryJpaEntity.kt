@@ -25,8 +25,8 @@ class ItemCategoryJpaEntity(
     @Column(name = "sort_order", nullable = false)
     var sortOrder: Int = 0,
 
-    @Column(name = "is_active", nullable = false)
-    var isActive: Boolean = true,
+    @Column(name = "active", nullable = false)
+    var active: Boolean = true,
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "item_category_available_types", joinColumns = [JoinColumn(name = "category_id")])

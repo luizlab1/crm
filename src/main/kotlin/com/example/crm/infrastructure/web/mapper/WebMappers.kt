@@ -518,7 +518,7 @@ class ItemCategoryWebMapper(
         description = request.description,
         showOnSite = request.showOnSite,
         sortOrder = request.sortOrder ?: 0,
-        isActive = request.isActive,
+        active = request.active,
         availableTypes = request.availableTypes
     )
     fun toPatchDomain(request: ItemCategoryPatchRequest) = ItemCategoryPatch(
@@ -527,7 +527,7 @@ class ItemCategoryWebMapper(
         description = request.description,
         showOnSite = request.showOnSite,
         sortOrder = request.sortOrder,
-        isActive = request.isActive,
+        active = request.active,
         availableTypes = request.availableTypes
     )
     fun toListResponse(d: ItemCategory) = ItemCategoryListResponse(
@@ -537,7 +537,7 @@ class ItemCategoryWebMapper(
         description = d.description,
         showOnSite = d.showOnSite,
         sortOrder = d.sortOrder,
-        isActive = d.isActive,
+        active = d.active,
         availableTypes = d.availableTypes,
         createdAt = d.createdAt,
         updatedAt = d.updatedAt,
@@ -550,7 +550,7 @@ class ItemCategoryWebMapper(
         description = d.description,
         showOnSite = d.showOnSite,
         sortOrder = d.sortOrder,
-        isActive = d.isActive,
+        active = d.active,
         availableTypes = d.availableTypes,
         createdAt = d.createdAt, updatedAt = d.updatedAt,
         photo = photoResolver.resolve(d.id, FileType.CATEGORY)

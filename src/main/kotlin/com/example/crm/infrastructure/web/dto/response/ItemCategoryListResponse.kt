@@ -10,7 +10,7 @@ data class ItemCategoryListResponse(
     val description: String?,
     val showOnSite: Boolean,
     val sortOrder: Int,
-    val isActive: Boolean,
+    val active: Boolean,
     val availableTypes: Set<ItemType>,
     val createdAt: OffsetDateTime,
     val updatedAt: OffsetDateTime,
