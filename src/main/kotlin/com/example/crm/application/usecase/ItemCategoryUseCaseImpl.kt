@@ -52,6 +52,7 @@ class ItemCategoryUseCaseImpl(
             description = patch.description ?: existing.description,
             showOnSite = patch.showOnSite ?: existing.showOnSite,
             sortOrder = patch.sortOrder ?: existing.sortOrder,
+            isActive = patch.isActive ?: existing.isActive,
             availableTypes = patch.availableTypes ?: existing.availableTypes
         )
         return itemCategoryRepository.save(updated)
