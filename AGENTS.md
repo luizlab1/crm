@@ -4,6 +4,15 @@ Guia de build otimizado para agents (OpenCode, Anthropic SDK, etc).
 
 **Ambiente de testes:** `https://api-crm.luizlab.com/` · Credenciais: `admin@saas.com` / `123456`
 
+## Specs obrigatórias
+
+Antes de implementar mudanças, considerar e seguir as specs em `docs/specs/README.md` e documentos referenciados.
+
+- Commits devem seguir `docs/specs/semantic-commits.md`
+- Convenções REST devem seguir `docs/specs/rest-standardization.md`
+- Fluxos de imagem/upload devem seguir `docs/specs/uploads.md`
+- Ao mencionar telas, consultar `../crm-front/specs/frontend/README.md`
+
 ## Build rápido (arquivos alterados)
 
 Ao fazer alterações de código, use **sempre** um desses comandos para validação rápida:

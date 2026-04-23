@@ -8,6 +8,15 @@ Serviço **CRM** (clientes, conversas, registros) de plataforma WhatsApp bot. In
 
 Stack: Kotlin 2.2.21 · Spring Boot 4.0.2 · PostgreSQL · JWT · JDK 21 (ignore README que cita Java 25).
 
+## Specs obrigatórias
+
+Antes de implementar mudanças, considerar e seguir as specs em `docs/specs/README.md` e documentos referenciados.
+
+- Commits devem seguir `docs/specs/semantic-commits.md`
+- Convenções REST devem seguir `docs/specs/rest-standardization.md`
+- Fluxos de imagem/upload devem seguir `docs/specs/uploads.md`
+- Ao mencionar telas, consultar `../crm-front/specs/frontend/README.md`
+
 ## Comandos
 
 ```bash
