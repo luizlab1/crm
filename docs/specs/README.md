@@ -12,7 +12,7 @@ This directory defines engineering conventions for this repository.
 ## Frontend screens reference
 
 When mentioning screens (UI pages/flows), always consult:
-`../crm-front/specs/frontend/README.md`
+`../crm-front/docs/specs/frontend/README.md`
 
 ## Test environment
 
@@ -39,3 +39,4 @@ When creating/updating test data and authentication is needed, use:
 - [Semantic Commits](./semantic-commits.md)
 - [REST API Standardization](./rest-standardization.md)
 - [Upload Support](./uploads.md)
+- [Endpoint Specs](./endpoints/settings-saas-plans-api-implementation.md)

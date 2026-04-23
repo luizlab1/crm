@@ -15,7 +15,7 @@ Antes de implementar mudanças, considerar e seguir as specs em `docs/specs/READ
 - Commits devem seguir `docs/specs/semantic-commits.md`
 - Convenções REST devem seguir `docs/specs/rest-standardization.md`
 - Fluxos de imagem/upload devem seguir `docs/specs/uploads.md`
-- Ao mencionar telas, consultar `../crm-front/specs/frontend/README.md`
+- Ao mencionar telas, consultar `../crm-front/docs/specs/frontend/README.md`
 
 ## Comandos
 
@@ -84,11 +84,11 @@ Evite por padrão: `./gradlew clean build`.
 
 ## URLs (ambiente de testes)
 
-| URL | Uso |
-|---|---|
-| `https://api-crm.luizlab.com/swagger-ui/index.html` | Swagger |
-| `https://api-crm.luizlab.com/v3/api-docs` | OpenAPI JSON |
-| `https://api-crm.luizlab.com/health/live` | Health |
+| URL                                                 | Uso          |
+| --------------------------------------------------- | ------------ |
+| `https://api-crm.luizlab.com/swagger-ui/index.html` | Swagger      |
+| `https://api-crm.luizlab.com/v3/api-docs`           | OpenAPI JSON |
+| `https://api-crm.luizlab.com/health/live`           | Health       |
 
 **Local (desenvolvimento):**
 | URL | Uso |
@@ -125,6 +125,7 @@ Evite por padrão: `./gradlew clean build`.
 ```
 
 **Dicas:**
+
 - Evitar `./gradlew clean build` (recompila tudo)
 - `--no-build-cache` força recompilação do Kotlin (útil se cache ficou inconsistente)
 - `-x detektMain` pula lint do main (usa `detektFast` em background)

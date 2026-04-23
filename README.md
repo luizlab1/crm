@@ -10,6 +10,15 @@
 - Twilio API
 - WhatsApp Business API
 
+## Specs
+
+- Base index: `docs/specs/README.md`
+- Semantic commits: `docs/specs/semantic-commits.md`
+- REST conventions: `docs/specs/rest-standardization.md`
+- Upload flows: `docs/specs/uploads.md`
+- Endpoint specs: `docs/specs/endpoints/settings-saas-plans-api-implementation.md`
+- Frontend screen specs reference: `../crm-front/docs/specs/frontend/README.md`
+
 ## Arquitetura
 
 O sistema segue **Arquitetura Hexagonal com DDD (Domain-Driven Design)**, com separação clara entre:
@@ -138,6 +147,7 @@ loop every X seconds
 end
 @enduml
 ```
+
 </details>
 
 ## Fluxo de Processamento do Bot
@@ -191,6 +201,7 @@ loop every X seconds
 end
 @enduml
 ```
+
 </details>
 
 ## Legenda
@@ -276,21 +287,22 @@ Esse comando executa `detekt` via Gradle (`gradlew`).
 
 Passos mínimos
 
-1) Subir o banco (no diretório `infra-crm`):
+1. Subir o banco (no diretório `infra-crm`):
 
 ```powershell
 cd infra-crm
 docker compose up -d
 ```
 
-2) Rodar a aplicação (na raiz do projeto):
+2. Rodar a aplicação (na raiz do projeto):
 
 ```powershell
 cd ..
 .\gradlew.bat bootRun
 ```
 
-3) Rodar todos os testes
+3. Rodar todos os testes
+
 ```powershell
 .\gradlew.bat test
 ```
@@ -298,6 +310,7 @@ cd ..
 Executa todos os testes JUnit.
 
 Rodar testes com relatório de cobertura (JaCoCo)
+
 ```powershell
 .\gradlew.bat test jacocoTestReport
 ```
@@ -306,6 +319,6 @@ Rodar testes com relatório de cobertura (JaCoCo)
 
 - Swagger UI: http://localhost:8080/swagger-ui/index.html
 - OpenAPI JSON: http://localhost:8080/v3/api-docs
-- Health: GET http://localhost:8080/health/live  → {"status":"UP"}
+- Health: GET http://localhost:8080/health/live → {"status":"UP"}
 
 Pronto — apenas isso é necessário para subir a aplicação e acessar a documentação.
