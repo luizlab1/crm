@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController
 import java.net.URI
 
 @RestController
-@RequestMapping(value = ["/api/v1/settings/saas/plans", "/settings/saas/plans"])
+@RequestMapping("/api/v1/settings/saas/plans")
 class SettingsSaasPlanController(
     private val useCase: SettingsSaasPlanUseCase,
     private val mapper: SettingsSaasPlanWebMapper
