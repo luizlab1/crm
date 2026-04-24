@@ -173,6 +173,41 @@ class WebMappersTest {
     }
 
     @Test
+    fun `it should map settings saas plan request and response`() {
+        val mapper = SettingsSaasPlanWebMapper()
+        val input = mapper.toUpsertInput(
+            SettingsSaasPlanRequest(
+                tenantId = 99,
+                name = "Essencial",
+                description = "Plano para autonomos",
+                category = PlanCategory.PROFESSIONAL_AUTONOMOUS,
+                benefits = listOf(
+                    SettingsSaasPlanBenefitRequest("Atendimento prioritario")
+                )
+            )
+        )
+
+        input.name shouldBe "Essencial"
+        input.benefits.first().description shouldBe "Atendimento prioritario"
+
+        val response = mapper.toResponse(
+            SettingsSaasPlan(
+                id = 1,
+                tenantId = 1,
+                name = "Essencial",
+                description = "Plano",
+                category = PlanCategory.PROFESSIONAL_AUTONOMOUS,
+                benefits = listOf(SettingsSaasPlanBenefit(id = 1, description = "Beneficio")),
+                createdAt = now,
+                updatedAt = now
+            )
+        )
+
+        response.tenantId shouldBe 1
+        response.benefits.first().description shouldBe "Beneficio"
+    }
+
+    @Test
     fun `it should keep null person details when not provided`() {
         val mapper = PersonWebMapper()
         val domain = mapper.toDomain(PersonRequest(tenantId = 7, physical = null, legal = null))

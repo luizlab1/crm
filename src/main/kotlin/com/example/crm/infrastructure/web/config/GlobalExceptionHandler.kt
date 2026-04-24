@@ -1,6 +1,8 @@
 package com.example.crm.infrastructure.web.config
 
 import com.example.crm.domain.exception.EntityHasDependenciesException
+import com.example.crm.domain.exception.EntityNotFoundException
+import com.example.crm.domain.exception.RequestValidationException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ExceptionHandler
@@ -9,7 +11,36 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 @RestControllerAdvice
 class GlobalExceptionHandler {
 
-    data class ErrorResponse(val status: Int, val error: String, val message: String?)
+    data class FieldErrorResponse(
+        val field: String,
+        val message: String,
+        val code: String
+    )
+
+    data class ErrorResponse(
+        val status: Int,
+        val error: String,
+        val message: String?,
+        val errors: List<FieldErrorResponse>? = null
+    )
+
+    @ExceptionHandler(RequestValidationException::class)
+    fun handleValidation(ex: RequestValidationException): ResponseEntity<ErrorResponse> =
+        ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body(
+                ErrorResponse(
+                    status = 400,
+                    error = "Bad Request",
+                    message = ex.message,
+                    errors = ex.errors.map {
+                        FieldErrorResponse(
+                            field = it.field,
+                            message = it.message,
+                            code = it.code
+                        )
+                    }
+                )
+            )
 
     @ExceptionHandler(EntityHasDependenciesException::class)
     fun handleEntityHasDependencies(ex: EntityHasDependenciesException): ResponseEntity<ErrorResponse> =
@@ -18,6 +49,11 @@ class GlobalExceptionHandler {
 
     @ExceptionHandler(NoSuchElementException::class)
     fun handleNotFound(ex: NoSuchElementException): ResponseEntity<ErrorResponse> =
+        ResponseEntity.status(HttpStatus.NOT_FOUND)
+            .body(ErrorResponse(404, "Not Found", ex.message))
+
+    @ExceptionHandler(EntityNotFoundException::class)
+    fun handleEntityNotFound(ex: EntityNotFoundException): ResponseEntity<ErrorResponse> =
         ResponseEntity.status(HttpStatus.NOT_FOUND)
             .body(ErrorResponse(404, "Not Found", ex.message))
 

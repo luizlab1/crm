@@ -88,6 +88,52 @@ class ItemCategoryPersistenceMapper {
 }
 
 @Component
+class SettingsSaasPlanPersistenceMapper {
+    fun toDomain(e: SettingsSaasPlanJpaEntity) = SettingsSaasPlan(
+        id = e.id,
+        tenantId = e.tenantId,
+        name = e.name,
+        description = e.description,
+        category = e.category,
+        benefits = e.benefits
+            .sortedBy { it.id }
+            .map {
+                SettingsSaasPlanBenefit(
+                    id = it.id,
+                    description = it.description,
+                    createdAt = it.createdAt,
+                    updatedAt = it.updatedAt
+                )
+            },
+        createdAt = e.createdAt,
+        updatedAt = e.updatedAt
+    )
+
+    fun toEntity(d: SettingsSaasPlan): SettingsSaasPlanJpaEntity {
+        val entity = SettingsSaasPlanJpaEntity(
+            id = d.id,
+            tenantId = d.tenantId,
+            name = d.name,
+            description = d.description,
+            category = d.category
+        )
+        entity.createdAt = d.createdAt
+        entity.updatedAt = d.updatedAt
+        entity.benefits = d.benefits.map {
+            SettingsSaasPlanBenefitJpaEntity(
+                id = it.id,
+                plan = entity,
+                description = it.description
+            ).apply {
+                createdAt = it.createdAt
+                updatedAt = it.updatedAt
+            }
+        }.toMutableList()
+        return entity
+    }
+}
+
+@Component
 class AddressPersistenceMapper {
     fun toDomain(e: AddressJpaEntity) = Address(
         id = e.id, street = e.street, number = e.number, complement = e.complement,

@@ -7,6 +7,8 @@ import com.example.crm.support.shouldBeNull
 import com.example.crm.support.shouldNotBeNull
 import com.example.crm.support.shouldThrow
 import com.example.crm.infrastructure.web.config.GlobalExceptionHandler
+import com.example.crm.domain.exception.RequestValidationException
+import com.example.crm.domain.exception.ValidationError
 import io.jsonwebtoken.Claims
 import io.mockk.every
 import io.mockk.mockk
@@ -100,5 +102,12 @@ class SecurityAndExceptionTest {
         notFound.body?.status shouldBe 404
         badRequest.body?.status shouldBe 400
         generic.body?.status shouldBe 500
+
+        val validation = handler.handleValidation(
+            RequestValidationException(
+                listOf(ValidationError(field = "name", message = "Nome e obrigatorio", code = "NotBlank"))
+            )
+        )
+        validation.body?.errors?.size shouldBe 1
     }
 }

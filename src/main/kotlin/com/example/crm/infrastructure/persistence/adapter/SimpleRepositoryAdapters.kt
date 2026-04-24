@@ -183,6 +183,30 @@ class ItemCategoryRepositoryAdapter(
 }
 
 @Component
+class SettingsSaasPlanRepositoryAdapter(
+    private val jpa: SettingsSaasPlanJpaRepository,
+    private val mapper: SettingsSaasPlanPersistenceMapper
+) : SettingsSaasPlanRepository {
+    override fun findByTenantIdAndFilters(
+        tenantId: Long,
+        name: String?,
+        category: PlanCategory?
+    ): List<SettingsSaasPlan> {
+        val namePattern = name?.takeIf { it.isNotBlank() }?.let { "%${it.lowercase()}%" }
+        return jpa.findByTenantIdAndFilters(tenantId, namePattern, category)
+            .map(mapper::toDomain)
+    }
+
+    override fun findByIdAndTenantId(id: Long, tenantId: Long): SettingsSaasPlan? =
+        jpa.findOneByIdAndTenantId(id, tenantId)?.let(mapper::toDomain)
+
+    override fun save(plan: SettingsSaasPlan): SettingsSaasPlan =
+        mapper.toDomain(jpa.save(mapper.toEntity(plan)))
+
+    override fun deleteById(id: Long) = jpa.deleteById(id)
+}
+
+@Component
 class AddressRepositoryAdapter(
     private val jpa: AddressJpaRepository, private val mapper: AddressPersistenceMapper
 ) : AddressRepository {

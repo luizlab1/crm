@@ -55,6 +55,16 @@ class ResponseDtosTest {
 
         RoleResponse(1, "ADMIN", null, true, now, now).name shouldBe "ADMIN"
         ScheduleResponse(1, uuid, 1, 2, 3, null, true, now, now).appointmentId shouldBe 3
+        SettingsSaasPlanResponse(
+            id = 1,
+            tenantId = 1,
+            name = "Essencial",
+            description = "Plano",
+            category = com.example.crm.domain.model.PlanCategory.PROFESSIONAL_AUTONOMOUS,
+            benefits = listOf(SettingsSaasPlanBenefitResponse(id = 1, description = "Atendimento prioritario")),
+            createdAt = now,
+            updatedAt = now
+        ).benefits.size shouldBe 1
         StateResponse(1, 1, "SP", "São Paulo", 35, now, now).acronym shouldBe "SP"
         TenantResponse(1, null, uuid, "Tenant", "BUSINESS", true, now, now).name shouldBe "Tenant"
         UnitOfMeasureResponse(1, "UN", "Unidade", "un", true, now, now).code shouldBe "UN"

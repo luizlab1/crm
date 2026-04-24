@@ -1,6 +1,8 @@
 package com.example.crm.infrastructure.web.mapper
 
 import com.example.crm.domain.model.*
+import com.example.crm.application.port.input.SettingsSaasPlanBenefitInput
+import com.example.crm.application.port.input.SettingsSaasPlanUpsertInput
 import com.example.crm.infrastructure.web.dto.request.*
 import com.example.crm.infrastructure.web.dto.response.*
 import org.springframework.stereotype.Component
@@ -554,6 +556,33 @@ class ItemCategoryWebMapper(
         availableTypes = d.availableTypes,
         createdAt = d.createdAt, updatedAt = d.updatedAt,
         photo = photoResolver.resolve(d.id, FileType.CATEGORY)
+    )
+}
+
+@Component
+class SettingsSaasPlanWebMapper {
+    fun toUpsertInput(request: SettingsSaasPlanRequest) = SettingsSaasPlanUpsertInput(
+        tenantId = request.tenantId,
+        name = request.name,
+        description = request.description,
+        category = request.category,
+        benefits = request.benefits.map { SettingsSaasPlanBenefitInput(description = it.description) }
+    )
+
+    fun toResponse(d: SettingsSaasPlan) = SettingsSaasPlanResponse(
+        id = d.id,
+        tenantId = d.tenantId,
+        name = d.name,
+        description = d.description,
+        category = d.category,
+        benefits = d.benefits.map {
+            SettingsSaasPlanBenefitResponse(
+                id = it.id,
+                description = it.description
+            )
+        },
+        createdAt = d.createdAt,
+        updatedAt = d.updatedAt
     )
 }
 
