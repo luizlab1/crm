@@ -18,6 +18,10 @@ class SettingsSaasPlanUseCaseImpl(
     private val repository: SettingsSaasPlanRepository
 ) : SettingsSaasPlanUseCase {
 
+    private companion object {
+        const val MAX_NAME_LENGTH = 255
+    }
+
     @Transactional(readOnly = true)
     override fun list(tenantId: Long, name: String?, category: PlanCategory?): List<SettingsSaasPlan> =
         repository.findByTenantIdAndFilters(tenantId, name?.trim(), category)
@@ -68,7 +72,7 @@ class SettingsSaasPlanUseCaseImpl(
         val normalizedName = input.name?.trim().orEmpty()
         if (normalizedName.isBlank()) {
             errors += ValidationError("name", "Nome e obrigatorio", "NotBlank")
-        } else if (normalizedName.length > 255) {
+        } else if (normalizedName.length > MAX_NAME_LENGTH) {
             errors += ValidationError("name", "Nome deve ter no maximo 255 caracteres", "Size")
         }
 
@@ -84,7 +88,11 @@ class SettingsSaasPlanUseCaseImpl(
         val normalizedBenefits = input.benefits.mapIndexed { index, benefit ->
             val normalizedDescription = benefit.description?.trim().orEmpty()
             if (normalizedDescription.isBlank()) {
-                errors += ValidationError("benefits[$index].description", "Descricao do beneficio e obrigatoria", "NotBlank")
+                errors += ValidationError(
+                    "benefits[$index].description",
+                    "Descricao do beneficio e obrigatoria",
+                    "NotBlank"
+                )
             }
             SanitizedBenefitInput(description = normalizedDescription)
         }
