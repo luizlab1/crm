@@ -15,7 +15,8 @@ data class SettingsSaasPlan(
 
 data class SettingsSaasPlanBenefit(
     val id: Long = 0,
-    val description: String,
+    val subtitle: String,
+    val value: String,
     val createdAt: OffsetDateTime = OffsetDateTime.now(),
     val updatedAt: OffsetDateTime = OffsetDateTime.now()
 )

@@ -38,8 +38,8 @@ class SettingsSaasPlanUseCaseTest {
                 description = " Plano para autonomos ",
                 category = PlanCategory.PROFESSIONAL_AUTONOMOUS,
                 benefits = listOf(
-                    SettingsSaasPlanBenefitInput(" Atendimento prioritario "),
-                    SettingsSaasPlanBenefitInput(" Relatorios mensais ")
+                    SettingsSaasPlanBenefitInput(" Atendimento ", " Prioritario "),
+                    SettingsSaasPlanBenefitInput(" Relatorios ", " Mensais ")
                 )
             )
         )
@@ -48,7 +48,8 @@ class SettingsSaasPlanUseCaseTest {
         created.tenantId shouldBe 1
         created.name shouldBe "Essencial"
         created.benefits.size shouldBe 2
-        created.benefits.first().description shouldBe "Atendimento prioritario"
+        created.benefits.first().subtitle shouldBe "Atendimento"
+        created.benefits.first().value shouldBe "Prioritario"
     }
 
     @Test
@@ -61,7 +62,7 @@ class SettingsSaasPlanUseCaseTest {
             name = "Essencial",
             category = PlanCategory.PROFESSIONAL_AUTONOMOUS,
             benefits = listOf(
-                SettingsSaasPlanBenefit(id = 1, description = "Beneficio antigo")
+                SettingsSaasPlanBenefit(id = 1, subtitle = "Beneficio", value = "antigo")
             )
         )
 
@@ -74,14 +75,15 @@ class SettingsSaasPlanUseCaseTest {
             input = SettingsSaasPlanUpsertInput(
                 name = "Essencial Plus",
                 category = PlanCategory.BUSINESS,
-                benefits = listOf(SettingsSaasPlanBenefitInput("Novo beneficio"))
+                benefits = listOf(SettingsSaasPlanBenefitInput("Novo", "beneficio"))
             )
         )
 
         updated.name shouldBe "Essencial Plus"
         updated.category shouldBe PlanCategory.BUSINESS
         updated.benefits.size shouldBe 1
-        updated.benefits.first().description shouldBe "Novo beneficio"
+        updated.benefits.first().subtitle shouldBe "Novo"
+        updated.benefits.first().value shouldBe "beneficio"
     }
 
     @Test
@@ -97,7 +99,7 @@ class SettingsSaasPlanUseCaseTest {
                 input = SettingsSaasPlanUpsertInput(
                     name = "Plano",
                     category = PlanCategory.BUSINESS,
-                    benefits = listOf(SettingsSaasPlanBenefitInput("Beneficio"))
+                    benefits = listOf(SettingsSaasPlanBenefitInput("Beneficio", "Ilimitado"))
                 )
             )
         }
@@ -129,11 +131,11 @@ class SettingsSaasPlanUseCaseTest {
                     tenantId = 99,
                     name = " ",
                     category = null,
-                    benefits = listOf(SettingsSaasPlanBenefitInput(" "))
+                    benefits = listOf(SettingsSaasPlanBenefitInput(" ", " "))
                 )
             )
         }
 
-        ex.errors.size shouldBe 4
+        ex.errors.size shouldBe 5
     }
 }

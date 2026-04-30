@@ -22,5 +22,8 @@ class SettingsSaasPlanBenefitJpaEntity(
     var plan: SettingsSaasPlanJpaEntity? = null,
 
     @Column(nullable = false, columnDefinition = "text")
-    var description: String = ""
+    var subtitle: String = "",
+
+    @Column(nullable = false, columnDefinition = "text")
+    var value: String = ""
 ) : BaseJpaEntity()

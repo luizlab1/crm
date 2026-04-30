@@ -13,5 +13,6 @@ data class SettingsSaasPlanRequest(
 )
 
 data class SettingsSaasPlanBenefitRequest(
-    val description: String? = null
+    val subtitle: String? = null,
+    val value: String? = null
 )

@@ -20,6 +20,7 @@ class SettingsSaasPlanUseCaseImpl(
 
     private companion object {
         const val MAX_NAME_LENGTH = 255
+        const val MAX_BENEFIT_FIELD_LENGTH = 255
     }
 
     @Transactional(readOnly = true)
@@ -38,7 +39,12 @@ class SettingsSaasPlanUseCaseImpl(
             name = sanitized.name,
             description = sanitized.description,
             category = sanitized.category,
-            benefits = sanitized.benefits.map { SettingsSaasPlanBenefit(description = it.description) }
+            benefits = sanitized.benefits.map {
+                SettingsSaasPlanBenefit(
+                    subtitle = it.subtitle,
+                    value = it.value
+                )
+            }
         )
         return repository.save(plan)
     }
@@ -51,7 +57,12 @@ class SettingsSaasPlanUseCaseImpl(
             name = sanitized.name,
             description = sanitized.description,
             category = sanitized.category,
-            benefits = sanitized.benefits.map { SettingsSaasPlanBenefit(description = it.description) }
+            benefits = sanitized.benefits.map {
+                SettingsSaasPlanBenefit(
+                    subtitle = it.subtitle,
+                    value = it.value
+                )
+            }
         )
         return repository.save(updated)
     }
@@ -85,17 +96,7 @@ class SettingsSaasPlanUseCaseImpl(
             errors += ValidationError("benefits", "Beneficios e obrigatorio e deve ter no minimo 1 item", "Size")
         }
 
-        val normalizedBenefits = input.benefits.mapIndexed { index, benefit ->
-            val normalizedDescription = benefit.description?.trim().orEmpty()
-            if (normalizedDescription.isBlank()) {
-                errors += ValidationError(
-                    "benefits[$index].description",
-                    "Descricao do beneficio e obrigatoria",
-                    "NotBlank"
-                )
-            }
-            SanitizedBenefitInput(description = normalizedDescription)
-        }
+        val normalizedBenefits = sanitizeBenefits(input.benefits, errors)
 
         if (errors.isNotEmpty()) {
             throw RequestValidationException(errors)
@@ -109,6 +110,44 @@ class SettingsSaasPlanUseCaseImpl(
         )
     }
 
+    private fun sanitizeBenefits(
+        benefits: List<SettingsSaasPlanBenefitInput>,
+        errors: MutableList<ValidationError>
+    ): List<SanitizedBenefitInput> =
+        benefits.mapIndexed { index, benefit ->
+            val normalizedSubtitle = validateBenefitField(
+                value = benefit.subtitle,
+                field = "benefits[$index].subtitle",
+                requiredMessage = "Subtitulo do beneficio e obrigatorio",
+                maxLengthMessage = "Subtitulo do beneficio deve ter no maximo 255 caracteres",
+                errors = errors
+            )
+            val normalizedValue = validateBenefitField(
+                value = benefit.value,
+                field = "benefits[$index].value",
+                requiredMessage = "Valor do beneficio e obrigatorio",
+                maxLengthMessage = "Valor do beneficio deve ter no maximo 255 caracteres",
+                errors = errors
+            )
+            SanitizedBenefitInput(subtitle = normalizedSubtitle, value = normalizedValue)
+        }
+
+    private fun validateBenefitField(
+        value: String?,
+        field: String,
+        requiredMessage: String,
+        maxLengthMessage: String,
+        errors: MutableList<ValidationError>
+    ): String {
+        val normalized = value?.trim().orEmpty()
+        if (normalized.isBlank()) {
+            errors += ValidationError(field, requiredMessage, "NotBlank")
+        } else if (normalized.length > MAX_BENEFIT_FIELD_LENGTH) {
+            errors += ValidationError(field, maxLengthMessage, "Size")
+        }
+        return normalized
+    }
+
     private data class SanitizedInput(
         val name: String,
         val description: String?,
@@ -117,6 +156,7 @@ class SettingsSaasPlanUseCaseImpl(
     )
 
     private data class SanitizedBenefitInput(
-        val description: String
+        val subtitle: String,
+        val value: String
     )
 }

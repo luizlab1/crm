@@ -20,5 +20,6 @@ data class SettingsSaasPlanResponse(
 
 data class SettingsSaasPlanBenefitResponse(
     val id: Long,
-    val description: String
+    val subtitle: String,
+    val value: String
 )

@@ -61,7 +61,7 @@ class ResponseDtosTest {
             name = "Essencial",
             description = "Plano",
             category = com.example.crm.domain.model.PlanCategory.PROFESSIONAL_AUTONOMOUS,
-            benefits = listOf(SettingsSaasPlanBenefitResponse(id = 1, description = "Atendimento prioritario")),
+            benefits = listOf(SettingsSaasPlanBenefitResponse(id = 1, subtitle = "Atendimento", value = "prioritario")),
             createdAt = now,
             updatedAt = now
         ).benefits.size shouldBe 1

@@ -4,7 +4,8 @@ import com.example.crm.domain.model.PlanCategory
 import com.example.crm.domain.model.SettingsSaasPlan
 
 data class SettingsSaasPlanBenefitInput(
-    val description: String?
+    val subtitle: String?,
+    val value: String?
 )
 
 data class SettingsSaasPlanUpsertInput(

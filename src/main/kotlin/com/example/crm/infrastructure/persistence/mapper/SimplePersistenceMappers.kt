@@ -100,7 +100,8 @@ class SettingsSaasPlanPersistenceMapper {
             .map {
                 SettingsSaasPlanBenefit(
                     id = it.id,
-                    description = it.description,
+                    subtitle = it.subtitle,
+                    value = it.value,
                     createdAt = it.createdAt,
                     updatedAt = it.updatedAt
                 )
@@ -123,7 +124,8 @@ class SettingsSaasPlanPersistenceMapper {
             SettingsSaasPlanBenefitJpaEntity(
                 id = it.id,
                 plan = entity,
-                description = it.description
+                subtitle = it.subtitle,
+                value = it.value
             ).apply {
                 createdAt = it.createdAt
                 updatedAt = it.updatedAt

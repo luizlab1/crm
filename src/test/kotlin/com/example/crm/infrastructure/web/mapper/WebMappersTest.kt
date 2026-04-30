@@ -182,13 +182,14 @@ class WebMappersTest {
                 description = "Plano para autonomos",
                 category = PlanCategory.PROFESSIONAL_AUTONOMOUS,
                 benefits = listOf(
-                    SettingsSaasPlanBenefitRequest("Atendimento prioritario")
+                    SettingsSaasPlanBenefitRequest("Atendimento", "Prioritario")
                 )
             )
         )
 
         input.name shouldBe "Essencial"
-        input.benefits.first().description shouldBe "Atendimento prioritario"
+        input.benefits.first().subtitle shouldBe "Atendimento"
+        input.benefits.first().value shouldBe "Prioritario"
 
         val response = mapper.toResponse(
             SettingsSaasPlan(
@@ -197,14 +198,15 @@ class WebMappersTest {
                 name = "Essencial",
                 description = "Plano",
                 category = PlanCategory.PROFESSIONAL_AUTONOMOUS,
-                benefits = listOf(SettingsSaasPlanBenefit(id = 1, description = "Beneficio")),
+                benefits = listOf(SettingsSaasPlanBenefit(id = 1, subtitle = "Beneficio", value = "Ilimitado")),
                 createdAt = now,
                 updatedAt = now
             )
         )
 
         response.tenantId shouldBe 1
-        response.benefits.first().description shouldBe "Beneficio"
+        response.benefits.first().subtitle shouldBe "Beneficio"
+        response.benefits.first().value shouldBe "Ilimitado"
     }
 
     @Test
