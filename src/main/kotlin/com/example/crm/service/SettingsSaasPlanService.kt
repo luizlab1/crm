@@ -1,18 +1,18 @@
 package com.example.crm.service
 
 import com.example.crm.entity.PlanCategory
-import com.example.crm.entity.SettingsSaasPlan
-import com.example.crm.entity.SettingsSaasPlanBenefit
+import com.example.crm.entity.SettingsSaasPlanEntity
+import com.example.crm.entity.SettingsSaasPlanBenefitEntity
 import com.example.crm.exception.RequestValidationException
 import com.example.crm.exception.ValidationError
-import com.example.crm.repository.SettingsSaasPlanJpaRepository
+import com.example.crm.repository.SettingsSaasPlanRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
 @Transactional
 class SettingsSaasPlanService(
-    private val repository: SettingsSaasPlanJpaRepository
+    private val repository: SettingsSaasPlanRepository
 ) {
 
     private companion object {
@@ -21,14 +21,14 @@ class SettingsSaasPlanService(
     }
 
     @Transactional(readOnly = true)
-    fun list(tenantId: Long, name: String?, category: PlanCategory?): List<SettingsSaasPlan> {
+    fun list(tenantId: Long, name: String?, category: PlanCategory?): List<SettingsSaasPlanEntity> {
         val namePattern = name?.trim()?.takeIf { it.isNotBlank() }?.lowercase()?.let { "%$it%" }
-        return repository.findByTenantIdAndFilters(tenantId, namePattern, category).map { it.toDomain() }
+        return repository.findByTenantIdAndFilters(tenantId, namePattern, category)
     }
 
     @Transactional(readOnly = true)
-    fun getById(id: Long, tenantId: Long): SettingsSaasPlan =
-        repository.findOneByIdAndTenantId(id, tenantId)?.toDomain()
+    fun getById(id: Long, tenantId: Long): SettingsSaasPlanEntity =
+        repository.findOneByIdAndTenantId(id, tenantId)
             ?: throw NoSuchElementException("SettingsSaasPlan not found: $id")
 
     fun create(
@@ -37,17 +37,17 @@ class SettingsSaasPlanService(
         description: String?,
         category: PlanCategory?,
         benefits: List<Pair<String?, String?>>
-    ): SettingsSaasPlan {
+    ): SettingsSaasPlanEntity {
         val sanitized = sanitize(name, description, category, benefits, tenantId = null)
         val saved = repository.save(
-            com.example.crm.entity.SettingsSaasPlanJpaEntity(
+            SettingsSaasPlanEntity(
                 tenantId = tenantId,
                 name = sanitized.name,
                 description = sanitized.description,
                 category = sanitized.category
             ).also { plan ->
                 plan.benefits = sanitized.benefits.map { benefit ->
-                    com.example.crm.entity.SettingsSaasPlanBenefitJpaEntity(
+                    SettingsSaasPlanBenefitEntity(
                         plan = plan,
                         subtitle = benefit.subtitle,
                         value = benefit.value
@@ -55,7 +55,7 @@ class SettingsSaasPlanService(
                 }.toMutableList()
             }
         )
-        return saved.toDomain()
+        return saved
     }
 
     fun update(
@@ -65,7 +65,7 @@ class SettingsSaasPlanService(
         description: String?,
         category: PlanCategory?,
         benefits: List<Pair<String?, String?>>
-    ): SettingsSaasPlan {
+    ): SettingsSaasPlanEntity {
         val existing = repository.findOneByIdAndTenantId(id, tenantId)
             ?: throw NoSuchElementException("SettingsSaasPlan not found: $id")
         val sanitized = sanitize(name, description, category, benefits, tenantId = null)
@@ -74,13 +74,13 @@ class SettingsSaasPlanService(
         existing.category = sanitized.category
         existing.benefits.clear()
         existing.benefits.addAll(sanitized.benefits.map { benefit ->
-            com.example.crm.entity.SettingsSaasPlanBenefitJpaEntity(
+            SettingsSaasPlanBenefitEntity(
                 plan = existing,
                 subtitle = benefit.subtitle,
                 value = benefit.value
             )
         })
-        return repository.save(existing).toDomain()
+        return repository.save(existing)
     }
 
     fun delete(id: Long, tenantId: Long) {
@@ -160,24 +160,7 @@ class SettingsSaasPlanService(
         return normalized
     }
 
-    private fun com.example.crm.entity.SettingsSaasPlanJpaEntity.toDomain() = SettingsSaasPlan(
-        id = id,
-        tenantId = tenantId,
-        name = name,
-        description = description,
-        category = category,
-        benefits = benefits.map {
-            SettingsSaasPlanBenefit(
-                id = it.id,
-                subtitle = it.subtitle,
-                value = it.value,
-                createdAt = it.createdAt,
-                updatedAt = it.updatedAt
-            )
-        },
-        createdAt = createdAt,
-        updatedAt = updatedAt
-    )
+    // removed domain conversion: service now works directly with JPA entities
 
     private data class SanitizedInput(
         val name: String,

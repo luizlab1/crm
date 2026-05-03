@@ -12,14 +12,14 @@ import jakarta.persistence.Table
 
 @Entity
 @Table(name = "settings_saas_plan_benefits")
-class SettingsSaasPlanBenefitJpaEntity(
+class SettingsSaasPlanBenefitEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "plan_id", nullable = false)
-    var plan: SettingsSaasPlanJpaEntity? = null,
+    var plan: SettingsSaasPlanEntity? = null,
 
     @Column(nullable = false, columnDefinition = "text")
     var subtitle: String = "",

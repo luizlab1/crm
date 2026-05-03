@@ -4,7 +4,7 @@ import com.example.crm.dto.request.SettingsSaasPlanRequest
 import com.example.crm.dto.response.SettingsSaasPlanBenefitResponse
 import com.example.crm.dto.response.SettingsSaasPlanResponse
 import com.example.crm.entity.PlanCategory
-import com.example.crm.entity.SettingsSaasPlan
+import com.example.crm.entity.SettingsSaasPlanEntity
 import com.example.crm.service.SettingsSaasPlanService
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
@@ -102,7 +102,7 @@ class SettingsSaasPlanController(
         }
     }
 
-    private fun SettingsSaasPlan.toResponse() = SettingsSaasPlanResponse(
+    private fun SettingsSaasPlanEntity.toResponse() = SettingsSaasPlanResponse(
         id = id,
         tenantId = tenantId,
         name = name,
