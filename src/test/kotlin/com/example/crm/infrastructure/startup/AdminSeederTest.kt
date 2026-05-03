@@ -22,7 +22,11 @@ class AdminSeederTest {
         AdminSeeder(repository).seed()
 
         verify(exactly = 1) {
-            repository.save(match { it.id == 1L && it.email == "admin@saas.com" && it.passwordHash.startsWith("\$2a\$") })
+            repository.save(match {
+                it.id == 1L &&
+                    it.email == "admin@saas.com" &&
+                    it.passwordHash.startsWith("\$2a\$")
+            })
         }
     }
 

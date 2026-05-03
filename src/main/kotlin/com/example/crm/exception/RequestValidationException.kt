@@ -1,4 +1,4 @@
-package com.example.crm.domain.exception
+package com.example.crm.exception
 
 data class ValidationError(
     val field: String,

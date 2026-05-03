@@ -1,6 +1,6 @@
-package com.example.crm.infrastructure.web.dto.request
+package com.example.crm.dto.request
 
-import com.example.crm.domain.model.PlanCategory
+import com.example.crm.entity.PlanCategory
 import com.fasterxml.jackson.annotation.JsonProperty
 
 data class SettingsSaasPlanRequest(

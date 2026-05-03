@@ -7,8 +7,8 @@ import com.example.crm.support.shouldBeNull
 import com.example.crm.support.shouldNotBeNull
 import com.example.crm.support.shouldThrow
 import com.example.crm.infrastructure.web.config.GlobalExceptionHandler
-import com.example.crm.domain.exception.RequestValidationException
-import com.example.crm.domain.exception.ValidationError
+import com.example.crm.exception.RequestValidationException
+import com.example.crm.exception.ValidationError
 import io.jsonwebtoken.Claims
 import io.mockk.every
 import io.mockk.mockk

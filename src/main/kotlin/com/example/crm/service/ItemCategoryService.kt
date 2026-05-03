@@ -1,6 +1,7 @@
 package com.example.crm.service
 
-import com.example.crm.entity.*
+import com.example.crm.entity.ItemCategoryEntity
+import com.example.crm.entity.ItemType
 import com.example.crm.exception.EntityHasDependenciesException
 import com.example.crm.exception.EntityNotFoundException
 import com.example.crm.repository.ItemCategoryRepository

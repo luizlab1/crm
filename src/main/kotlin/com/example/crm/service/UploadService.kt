@@ -76,7 +76,14 @@ class UploadService(
     fun getById(id: UUID): UploadEntity =
         uploadRepository.findById(id).orElseThrow { EntityNotFoundException("Upload", id) }
 
-    fun update(id: UUID, fileType: FileType, entityId: Long, sortOrder: Int, title: String?, subtitle: String?): UploadEntity {
+    fun update(
+        id: UUID,
+        fileType: FileType,
+        entityId: Long,
+        sortOrder: Int,
+        title: String?,
+        subtitle: String?
+    ): UploadEntity {
         require(sortOrder >= 0) { "sortOrder inválido (mínimo: 0)" }
         val current = getById(id)
         current.fileType = fileType

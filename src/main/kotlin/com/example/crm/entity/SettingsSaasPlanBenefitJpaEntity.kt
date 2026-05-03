@@ -1,4 +1,4 @@
-package com.example.crm.infrastructure.persistence.entity
+package com.example.crm.entity
 
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
@@ -26,4 +26,4 @@ class SettingsSaasPlanBenefitJpaEntity(
 
     @Column(nullable = false, columnDefinition = "text")
     var value: String = ""
-) : BaseJpaEntity()
+) : BaseEntity()

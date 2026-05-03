@@ -1,4 +1,4 @@
-package com.example.crm.domain.model
+package com.example.crm.entity
 
 enum class PlanCategory {
     PROFESSIONAL_AUTONOMOUS,

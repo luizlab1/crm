@@ -1,7 +1,7 @@
-package com.example.crm.infrastructure.persistence.repository
+package com.example.crm.repository
 
-import com.example.crm.domain.model.PlanCategory
-import com.example.crm.infrastructure.persistence.entity.SettingsSaasPlanJpaEntity
+import com.example.crm.entity.PlanCategory
+import com.example.crm.entity.SettingsSaasPlanJpaEntity
 import org.springframework.data.jpa.repository.EntityGraph
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query

@@ -1,8 +1,19 @@
 package com.example.crm.service
 
-import com.example.crm.entity.*
+import com.example.crm.entity.ItemAdditionalEntity
+import com.example.crm.entity.ItemEntity
+import com.example.crm.entity.ItemOptionEntity
+import com.example.crm.entity.ItemProductDatasheetEntity
+import com.example.crm.entity.ItemServiceDatasheetEntity
+import com.example.crm.entity.ItemTagEntity
+import com.example.crm.entity.ItemType
 import com.example.crm.exception.EntityNotFoundException
-import com.example.crm.repository.*
+import com.example.crm.repository.ItemAdditionalRepository
+import com.example.crm.repository.ItemOptionRepository
+import com.example.crm.repository.ItemProductDatasheetRepository
+import com.example.crm.repository.ItemRepository
+import com.example.crm.repository.ItemServiceDatasheetRepository
+import com.example.crm.repository.ItemTagRepository
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
@@ -33,7 +44,16 @@ class ItemService(
     ): Page<ItemEntity> {
         val namePattern = name?.let { "%${it.lowercase()}%" }
         val skuPattern = sku?.let { "%${it.lowercase()}%" }
-        return itemRepository.findByFilters(code, tenantId, categoryId, type, namePattern, skuPattern, isActive, pageable)
+        return itemRepository.findByFilters(
+            code,
+            tenantId,
+            categoryId,
+            type,
+            namePattern,
+            skuPattern,
+            isActive,
+            pageable
+        )
     }
 
     @Transactional(readOnly = true)

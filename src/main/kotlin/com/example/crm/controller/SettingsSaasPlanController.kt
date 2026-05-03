@@ -1,10 +1,11 @@
-package com.example.crm.infrastructure.web.controller
+package com.example.crm.controller
 
-import com.example.crm.application.port.input.SettingsSaasPlanUseCase
-import com.example.crm.domain.model.PlanCategory
-import com.example.crm.infrastructure.web.dto.request.SettingsSaasPlanRequest
-import com.example.crm.infrastructure.web.dto.response.SettingsSaasPlanResponse
-import com.example.crm.infrastructure.web.mapper.SettingsSaasPlanWebMapper
+import com.example.crm.dto.request.SettingsSaasPlanRequest
+import com.example.crm.dto.response.SettingsSaasPlanBenefitResponse
+import com.example.crm.dto.response.SettingsSaasPlanResponse
+import com.example.crm.entity.PlanCategory
+import com.example.crm.entity.SettingsSaasPlan
+import com.example.crm.service.SettingsSaasPlanService
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -21,8 +22,7 @@ import java.net.URI
 @RestController
 @RequestMapping("/api/v1/settings/saas/plans")
 class SettingsSaasPlanController(
-    private val useCase: SettingsSaasPlanUseCase,
-    private val mapper: SettingsSaasPlanWebMapper
+    private val service: SettingsSaasPlanService
 ) {
 
     @GetMapping
@@ -32,8 +32,8 @@ class SettingsSaasPlanController(
         authentication: Authentication
     ): ResponseEntity<List<SettingsSaasPlanResponse>> {
         val tenantId = resolveTenantId(authentication)
-        val plans = useCase.list(tenantId, name, category)
-        return ResponseEntity.ok(plans.map(mapper::toResponse))
+        val plans = service.list(tenantId, name, category)
+        return ResponseEntity.ok(plans.map { it.toResponse() })
     }
 
     @GetMapping("/{id}")
@@ -42,8 +42,8 @@ class SettingsSaasPlanController(
         authentication: Authentication
     ): ResponseEntity<SettingsSaasPlanResponse> {
         val tenantId = resolveTenantId(authentication)
-        val plan = useCase.getById(id, tenantId)
-        return ResponseEntity.ok(mapper.toResponse(plan))
+        val plan = service.getById(id, tenantId)
+        return ResponseEntity.ok(plan.toResponse())
     }
 
     @PostMapping
@@ -52,9 +52,15 @@ class SettingsSaasPlanController(
         authentication: Authentication
     ): ResponseEntity<SettingsSaasPlanResponse> {
         val tenantId = resolveTenantId(authentication)
-        val created = useCase.create(tenantId, mapper.toUpsertInput(request))
+        val created = service.create(
+            tenantId = tenantId,
+            name = request.name,
+            description = request.description,
+            category = request.category,
+            benefits = request.benefits.map { it.subtitle to it.value }
+        )
         return ResponseEntity.created(URI.create("/api/v1/settings/saas/plans/${created.id}"))
-            .body(mapper.toResponse(created))
+            .body(created.toResponse())
     }
 
     @PutMapping("/{id}")
@@ -64,8 +70,15 @@ class SettingsSaasPlanController(
         authentication: Authentication
     ): ResponseEntity<SettingsSaasPlanResponse> {
         val tenantId = resolveTenantId(authentication)
-        val updated = useCase.update(id, tenantId, mapper.toUpsertInput(request))
-        return ResponseEntity.ok(mapper.toResponse(updated))
+        val updated = service.update(
+            id = id,
+            tenantId = tenantId,
+            name = request.name,
+            description = request.description,
+            category = request.category,
+            benefits = request.benefits.map { it.subtitle to it.value }
+        )
+        return ResponseEntity.ok(updated.toResponse())
     }
 
     @DeleteMapping("/{id}")
@@ -74,7 +87,7 @@ class SettingsSaasPlanController(
         authentication: Authentication
     ): ResponseEntity<Void> {
         val tenantId = resolveTenantId(authentication)
-        useCase.delete(id, tenantId)
+        service.delete(id, tenantId)
         return ResponseEntity.noContent().build()
     }
 
@@ -88,4 +101,21 @@ class SettingsSaasPlanController(
             else -> error("Token invalido: tenantId ausente")
         }
     }
+
+    private fun SettingsSaasPlan.toResponse() = SettingsSaasPlanResponse(
+        id = id,
+        tenantId = tenantId,
+        name = name,
+        description = description,
+        category = category,
+        benefits = benefits.map { benefit ->
+            SettingsSaasPlanBenefitResponse(
+                id = benefit.id,
+                subtitle = benefit.subtitle,
+                value = benefit.value
+            )
+        },
+        createdAt = createdAt,
+        updatedAt = updatedAt
+    )
 }

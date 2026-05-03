@@ -1,8 +1,14 @@
 package com.example.crm.service
 
-import com.example.crm.entity.*
+import com.example.crm.entity.AddressEntity
+import com.example.crm.entity.ContactEntity
+import com.example.crm.entity.PersonAddressEntity
+import com.example.crm.entity.PersonEntity
 import com.example.crm.exception.EntityNotFoundException
-import com.example.crm.repository.*
+import com.example.crm.repository.AddressRepository
+import com.example.crm.repository.ContactRepository
+import com.example.crm.repository.PersonAddressRepository
+import com.example.crm.repository.PersonRepository
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service

@@ -1,6 +1,5 @@
-package com.example.crm.infrastructure.persistence.entity
+package com.example.crm.entity
 
-import com.example.crm.domain.model.PlanCategory
 import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
@@ -35,4 +34,4 @@ class SettingsSaasPlanJpaEntity(
 
     @OneToMany(mappedBy = "plan", cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.LAZY)
     var benefits: MutableList<SettingsSaasPlanBenefitJpaEntity> = mutableListOf()
-) : BaseJpaEntity()
+) : BaseEntity()

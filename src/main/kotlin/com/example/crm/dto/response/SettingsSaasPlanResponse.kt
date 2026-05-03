@@ -1,6 +1,6 @@
-package com.example.crm.infrastructure.web.dto.response
+package com.example.crm.dto.response
 
-import com.example.crm.domain.model.PlanCategory
+import com.example.crm.entity.PlanCategory
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.OffsetDateTime
 
