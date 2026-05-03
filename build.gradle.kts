@@ -55,6 +55,8 @@ dependencies {
 
     runtimeOnly("org.postgresql:postgresql")
 
+    implementation("io.mcarle:konvert-api:3.2.1")
+
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")

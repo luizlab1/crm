@@ -1,8 +1,8 @@
 package com.example.crm.infrastructure.web.config
 
-import com.example.crm.domain.exception.EntityHasDependenciesException
-import com.example.crm.domain.exception.EntityNotFoundException
-import com.example.crm.domain.exception.RequestValidationException
+import com.example.crm.exception.EntityHasDependenciesException
+import com.example.crm.exception.EntityNotFoundException
+import com.example.crm.exception.RequestValidationException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ExceptionHandler

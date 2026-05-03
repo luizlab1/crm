@@ -1,7 +1,7 @@
 package com.example.crm.infrastructure.startup
 
-import com.example.crm.domain.model.User
-import com.example.crm.domain.repository.UserRepository
+import com.example.crm.entity.UserEntity
+import com.example.crm.repository.UserRepository
 import com.example.crm.support.shouldBe
 import io.mockk.every
 import io.mockk.mockk
@@ -14,7 +14,7 @@ class AdminSeederTest {
     @Test
     fun `it should update existing admin password hash`() {
         val repository = mockk<UserRepository>()
-        val existing = User(id = 1, tenantId = 1, email = "admin@saas.com", passwordHash = "old")
+        val existing = UserEntity(id = 1, tenantId = 1, email = "admin@saas.com", passwordHash = "old")
 
         every { repository.findByEmail("admin@saas.com") } returns existing
         every { repository.save(any()) } answers { firstArg() }
@@ -22,14 +22,14 @@ class AdminSeederTest {
         AdminSeeder(repository).seed()
 
         verify(exactly = 1) {
-            repository.save(match { it.id == 1L && it.email == "admin@saas.com" && it.passwordHash.startsWith("$2a$") })
+            repository.save(match { it.id == 1L && it.email == "admin@saas.com" && it.passwordHash.startsWith("\$2a\$") })
         }
     }
 
     @Test
     fun `it should create admin user when it does not exist`() {
         val repository = mockk<UserRepository>()
-        val saved = slot<User>()
+        val saved = slot<UserEntity>()
 
         every { repository.findByEmail("admin@saas.com") } returns null
         every { repository.save(capture(saved)) } answers { firstArg() }

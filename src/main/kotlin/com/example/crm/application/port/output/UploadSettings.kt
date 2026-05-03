@@ -1,6 +1,6 @@
 package com.example.crm.application.port.output
 
-import com.example.crm.domain.model.FileType
+import com.example.crm.entity.FileType
 
 data class FileTypeRule(
     val allowedExtensions: Set<String>,

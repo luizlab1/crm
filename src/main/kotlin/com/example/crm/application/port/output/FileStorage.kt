@@ -1,6 +1,6 @@
 package com.example.crm.application.port.output
 
-import com.example.crm.domain.model.FileType
+import com.example.crm.entity.FileType
 
 interface FileStorage {
     fun store(command: StoreFileCommand): StoredFile

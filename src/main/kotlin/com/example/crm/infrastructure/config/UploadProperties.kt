@@ -1,6 +1,6 @@
 package com.example.crm.infrastructure.config
 
-import com.example.crm.domain.model.FileType
+import com.example.crm.entity.FileType
 import org.springframework.boot.context.properties.ConfigurationProperties
 
 @ConfigurationProperties(prefix = "app.upload")

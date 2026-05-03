@@ -1,7 +1,7 @@
 package com.example.crm.infrastructure.security
 
-import com.example.crm.domain.model.User
-import com.example.crm.domain.repository.UserRepository
+import com.example.crm.entity.UserEntity
+import com.example.crm.repository.UserRepository
 import com.example.crm.support.shouldBe
 import com.example.crm.support.shouldBeNull
 import com.example.crm.support.shouldNotBeNull
@@ -25,7 +25,6 @@ class SecurityAndExceptionTest {
     fun `it should generate and parse jwt subject`() {
         val service = JwtService(JwtConfig())
         val token = service.generateToken("user@crm.com", mapOf("tenant" to "1"))
-
         service.parseSubject(token) shouldBe "user@crm.com"
     }
 
@@ -38,9 +37,7 @@ class SecurityAndExceptionTest {
         every { claims["tenantId"] } returns 1L
         every { jwtService.parseClaims("valid-token") } returns claims
 
-        val request = MockHttpServletRequest().apply {
-            addHeader("Authorization", "Bearer valid-token")
-        }
+        val request = MockHttpServletRequest().apply { addHeader("Authorization", "Bearer valid-token") }
         val response = MockHttpServletResponse()
         val chain = MockFilterChain()
 
@@ -56,9 +53,7 @@ class SecurityAndExceptionTest {
         val jwtService = mockk<JwtService>()
         every { jwtService.parseClaims(any()) } throws IllegalArgumentException("invalid")
 
-        val request = MockHttpServletRequest().apply {
-            addHeader("Authorization", "Bearer invalid-token")
-        }
+        val request = MockHttpServletRequest().apply { addHeader("Authorization", "Bearer invalid-token") }
         val response = MockHttpServletResponse()
         val chain = MockFilterChain()
 
@@ -66,17 +61,16 @@ class SecurityAndExceptionTest {
             org.springframework.security.authentication.UsernamePasswordAuthenticationToken("old", null)
 
         JwtAuthenticationFilter(jwtService).doFilter(request, response, chain)
-
         SecurityContextHolder.getContext().authentication.shouldBeNull()
     }
 
     @Test
     fun `it should load user details when user exists`() {
         val repository = mockk<UserRepository>()
-        every { repository.findByEmail("user@crm.com") } returns User(tenantId = 1, email = "user@crm.com", passwordHash = "hash")
+        val user = UserEntity(id = 1, tenantId = 1, email = "user@crm.com", passwordHash = "hash")
+        every { repository.findByEmail("user@crm.com") } returns user
 
         val userDetails = UserDetailsServiceImpl(repository).loadUserByUsername("user@crm.com")
-
         userDetails.username shouldBe "user@crm.com"
         userDetails.password shouldBe "hash"
     }
@@ -94,7 +88,6 @@ class SecurityAndExceptionTest {
     @Test
     fun `it should map exception statuses correctly`() {
         val handler = GlobalExceptionHandler()
-
         val notFound = handler.handleNotFound(NoSuchElementException("nao achei"))
         val badRequest = handler.handleBadRequest(IllegalArgumentException("invalido"))
         val generic = handler.handleGeneric(RuntimeException("erro"))

@@ -2,7 +2,6 @@ package com.example.crm.architecture
 
 import com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes
 import com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses
-import com.tngtech.archunit.lang.ArchRule
 import org.junit.jupiter.api.Test
 
 class LayerRulesTest {
@@ -11,14 +10,17 @@ class LayerRulesTest {
 
     @Test
     fun controllers_should_only_depend_on_allowed_packages() {
-        val rule: ArchRule = classes().that().resideInAPackage("..infrastructure.web.controller..")
+        val rule = classes().that().resideInAPackage("..controller..")
             .should().onlyDependOnClassesThat().resideInAnyPackage(
-                "..infrastructure.web.controller..",
-                "..application..",
-                "..domain..",
-                "..infrastructure.web.dto..",
-                "..infrastructure.web.mapper..",
+                "..controller..",
+                "..service..",
+                "..entity..",
+                "..dto..",
+                "..exception..",
                 "..infrastructure.security..",
+                "..infrastructure.config..",
+                "..infrastructure.web.config..",
+                "..application.port.output..",
                 "java..",
                 "kotlin..",
                 "org.jetbrains.annotations..",
@@ -26,29 +28,34 @@ class LayerRulesTest {
                 "jakarta..",
                 "io.swagger.v3.oas.annotations.."
             )
-
         rule.check(importedClasses)
     }
 
     @Test
     fun services_should_not_depend_on_controllers() {
-        val rule = noClasses().that().resideInAPackage("..application..usecase..")
-            .should().dependOnClassesThat().resideInAPackage("..infrastructure.web.controller..")
+        val rule = noClasses().that().resideInAPackage("..service..")
+            .should().dependOnClassesThat().resideInAPackage("..controller..")
         rule.check(importedClasses)
     }
 
     @Test
     fun repositories_should_not_depend_on_controllers() {
-        val rule = noClasses().that().resideInAPackage("..infrastructure.persistence.repository..")
-            .should().dependOnClassesThat().resideInAPackage("..infrastructure.web.controller..")
+        val rule = noClasses().that().resideInAPackage("..repository..")
+            .should().dependOnClassesThat().resideInAPackage("..controller..")
         rule.check(importedClasses)
-
     }
 
     @Test
-    fun application_usecases_should_not_depend_on_infrastructure() {
-        val rule = noClasses().that().resideInAPackage("..application..usecase..")
+    fun services_should_not_depend_on_infrastructure_except_ports() {
+        val rule = noClasses().that().resideInAPackage("..service..")
             .should().dependOnClassesThat().resideInAPackage("..infrastructure..")
+        rule.check(importedClasses)
+    }
+
+    @Test
+    fun entities_should_not_depend_on_services_or_controllers() {
+        val rule = noClasses().that().resideInAPackage("..entity..")
+            .should().dependOnClassesThat().resideInAnyPackage("..service..", "..controller..")
         rule.check(importedClasses)
     }
 }

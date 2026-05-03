@@ -1,0 +1,32 @@
+package com.example.crm.entity
+
+import jakarta.persistence.*
+
+@Entity
+@Table(name = "item_service_datasheet")
+class ItemServiceDatasheetEntity(
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    val id: Long = 0,
+
+    @Column(name = "item_id", nullable = false)
+    var itemId: Long = 0,
+
+    @Column(length = 1000)
+    var description: String? = null,
+
+    @Column(name = "unit_price_cents", nullable = false)
+    var unitPriceCents: Long = 0,
+
+    @Column(name = "currency_code", nullable = false, length = 3)
+    var currencyCode: String = "BRL",
+
+    @Column(name = "duration_minutes")
+    var durationMinutes: Int? = null,
+
+    @Column(name = "requires_staff", nullable = false)
+    var requiresStaff: Boolean = false,
+
+    @Column(name = "buffer_minutes")
+    var bufferMinutes: Int? = null
+) : BaseEntity()

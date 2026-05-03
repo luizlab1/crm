@@ -1,7 +1,7 @@
 package com.example.crm.infrastructure.storage
 
 import com.example.crm.application.port.output.StoreFileCommand
-import com.example.crm.domain.model.FileType
+import com.example.crm.entity.FileType
 import com.example.crm.infrastructure.config.UploadProperties
 import com.example.crm.support.shouldBe
 import org.junit.jupiter.api.Test
