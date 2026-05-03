@@ -1,8 +1,8 @@
 package com.example.crm.service
 
 import com.example.crm.entity.PlanCategory
-import com.example.crm.entity.SettingsSaasPlanEntity
-import com.example.crm.entity.SettingsSaasPlanBenefitEntity
+import com.example.crm.entity.SettingsSaasPlanJpaEntity
+import com.example.crm.entity.SettingsSaasPlanBenefitJpaEntity
 import com.example.crm.exception.RequestValidationException
 import com.example.crm.exception.ValidationError
 import com.example.crm.repository.SettingsSaasPlanRepository
@@ -21,13 +21,13 @@ class SettingsSaasPlanService(
     }
 
     @Transactional(readOnly = true)
-    fun list(tenantId: Long, name: String?, category: PlanCategory?): List<SettingsSaasPlanEntity> {
+    fun list(tenantId: Long, name: String?, category: PlanCategory?): List<SettingsSaasPlanJpaEntity> {
         val namePattern = name?.trim()?.takeIf { it.isNotBlank() }?.lowercase()?.let { "%$it%" }
         return repository.findByTenantIdAndFilters(tenantId, namePattern, category)
     }
 
     @Transactional(readOnly = true)
-    fun getById(id: Long, tenantId: Long): SettingsSaasPlanEntity =
+    fun getById(id: Long, tenantId: Long): SettingsSaasPlanJpaEntity =
         repository.findOneByIdAndTenantId(id, tenantId)
             ?: throw NoSuchElementException("SettingsSaasPlan not found: $id")
 
@@ -37,17 +37,17 @@ class SettingsSaasPlanService(
         description: String?,
         category: PlanCategory?,
         benefits: List<Pair<String?, String?>>
-    ): SettingsSaasPlanEntity {
+    ): SettingsSaasPlanJpaEntity {
         val sanitized = sanitize(name, description, category, benefits, tenantId = null)
         val saved = repository.save(
-            SettingsSaasPlanEntity(
+            SettingsSaasPlanJpaEntity(
                 tenantId = tenantId,
                 name = sanitized.name,
                 description = sanitized.description,
                 category = sanitized.category
             ).also { plan ->
                 plan.benefits = sanitized.benefits.map { benefit ->
-                    SettingsSaasPlanBenefitEntity(
+                    SettingsSaasPlanBenefitJpaEntity(
                         plan = plan,
                         subtitle = benefit.subtitle,
                         value = benefit.value
@@ -65,7 +65,7 @@ class SettingsSaasPlanService(
         description: String?,
         category: PlanCategory?,
         benefits: List<Pair<String?, String?>>
-    ): SettingsSaasPlanEntity {
+    ): SettingsSaasPlanJpaEntity {
         val existing = repository.findOneByIdAndTenantId(id, tenantId)
             ?: throw NoSuchElementException("SettingsSaasPlan not found: $id")
         val sanitized = sanitize(name, description, category, benefits, tenantId = null)
@@ -74,7 +74,7 @@ class SettingsSaasPlanService(
         existing.category = sanitized.category
         existing.benefits.clear()
         existing.benefits.addAll(sanitized.benefits.map { benefit ->
-            SettingsSaasPlanBenefitEntity(
+            SettingsSaasPlanBenefitJpaEntity(
                 plan = existing,
                 subtitle = benefit.subtitle,
                 value = benefit.value

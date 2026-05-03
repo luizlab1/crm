@@ -1,17 +1,17 @@
 package com.example.crm.repository
 
 import com.example.crm.entity.PlanCategory
-import com.example.crm.entity.SettingsSaasPlanEntity
+import com.example.crm.entity.SettingsSaasPlanJpaEntity
 import org.springframework.data.jpa.repository.EntityGraph
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 
-interface SettingsSaasPlanRepository : JpaRepository<SettingsSaasPlanEntity, Long> {
+interface SettingsSaasPlanRepository : JpaRepository<SettingsSaasPlanJpaEntity, Long> {
 
     @Query(
         """
-        select distinct p from SettingsSaasPlanEntity p
+        select distinct p from SettingsSaasPlanJpaEntity p
         left join fetch p.benefits b
         where p.tenantId = :tenantId
           and (:name is null or lower(p.name) like :name)
@@ -23,8 +23,8 @@ interface SettingsSaasPlanRepository : JpaRepository<SettingsSaasPlanEntity, Lon
         @Param("tenantId") tenantId: Long,
         @Param("name") name: String?,
         @Param("category") category: PlanCategory?
-    ): List<SettingsSaasPlanEntity>
+    ): List<SettingsSaasPlanJpaEntity>
 
     @EntityGraph(attributePaths = ["benefits"])
-    fun findOneByIdAndTenantId(id: Long, tenantId: Long): SettingsSaasPlanEntity?
+    fun findOneByIdAndTenantId(id: Long, tenantId: Long): SettingsSaasPlanJpaEntity?
 }

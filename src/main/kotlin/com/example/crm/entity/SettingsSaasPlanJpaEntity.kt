@@ -14,7 +14,7 @@ import jakarta.persistence.Table
 
 @Entity
 @Table(name = "settings_saas_plan")
-class SettingsSaasPlanEntity(
+class SettingsSaasPlanJpaEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
@@ -33,5 +33,5 @@ class SettingsSaasPlanEntity(
     var category: PlanCategory = PlanCategory.BUSINESS,
 
     @OneToMany(mappedBy = "plan", cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.LAZY)
-    var benefits: MutableList<SettingsSaasPlanBenefitEntity> = mutableListOf()
+    var benefits: MutableList<SettingsSaasPlanBenefitJpaEntity> = mutableListOf()
 ) : BaseEntity()
