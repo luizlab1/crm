@@ -21,19 +21,35 @@ class StateController(
     ): ResponseEntity<PageResponse<StateResponse>> {
         val result = service.list(PageRequest.of(page, size, Sort.by("state")))
         return ResponseEntity.ok(PageResponse(
-            content = result.content.map { StateResponse(it.id, it.countryId, it.acronym, it.state, it.ibgeCode, it.createdAt, it.updatedAt) },
-            page = result.number, size = result.size,
-            totalElements = result.totalElements, totalPages = result.totalPages
+            content = result.content.map {
+                StateResponse(
+                    it.id, it.countryId, it.acronym, it.state, it.ibgeCode, it.createdAt, it.updatedAt
+                )
+            },
+            page = result.number,
+            size = result.size,
+            totalElements = result.totalElements,
+            totalPages = result.totalPages
         ))
     }
 
     @GetMapping("/{id}")
     fun findById(@PathVariable id: Long): ResponseEntity<StateResponse> {
         val it = service.getById(id)
-        return ResponseEntity.ok(StateResponse(it.id, it.countryId, it.acronym, it.state, it.ibgeCode, it.createdAt, it.updatedAt))
+        return ResponseEntity.ok(
+            StateResponse(
+                it.id, it.countryId, it.acronym, it.state, it.ibgeCode, it.createdAt, it.updatedAt
+            )
+        )
     }
 
     @GetMapping("/country/{countryId}")
     fun findByCountry(@PathVariable countryId: Long): ResponseEntity<List<StateResponse>> =
-        ResponseEntity.ok(service.findByCountryId(countryId).map { StateResponse(it.id, it.countryId, it.acronym, it.state, it.ibgeCode, it.createdAt, it.updatedAt) })
+        ResponseEntity.ok(
+            service.findByCountryId(countryId).map {
+                StateResponse(
+                    it.id, it.countryId, it.acronym, it.state, it.ibgeCode, it.createdAt, it.updatedAt
+                )
+            }
+        )
 }

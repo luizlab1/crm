@@ -21,15 +21,23 @@ class UnitOfMeasureController(
     ): ResponseEntity<PageResponse<UnitOfMeasureResponse>> {
         val result = service.list(PageRequest.of(page, size, Sort.by("name")))
         return ResponseEntity.ok(PageResponse(
-            content = result.content.map { UnitOfMeasureResponse(it.id, it.code, it.name, it.symbol, it.isActive, it.createdAt, it.updatedAt) },
-            page = result.number, size = result.size,
-            totalElements = result.totalElements, totalPages = result.totalPages
+            content = result.content.map {
+                UnitOfMeasureResponse(
+                    it.id, it.code, it.name, it.symbol, it.isActive, it.createdAt, it.updatedAt
+                )
+            },
+            page = result.number,
+            size = result.size,
+            totalElements = result.totalElements,
+            totalPages = result.totalPages
         ))
     }
 
     @GetMapping("/{id}")
     fun findById(@PathVariable id: Long): ResponseEntity<UnitOfMeasureResponse> {
         val it = service.getById(id)
-        return ResponseEntity.ok(UnitOfMeasureResponse(it.id, it.code, it.name, it.symbol, it.isActive, it.createdAt, it.updatedAt))
-    }
+        return ResponseEntity.ok(
+            UnitOfMeasureResponse(it.id, it.code, it.name, it.symbol, it.isActive, it.createdAt, it.updatedAt)
+        )
+}
 }

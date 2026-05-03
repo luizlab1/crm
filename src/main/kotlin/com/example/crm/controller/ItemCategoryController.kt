@@ -101,10 +101,13 @@ class ItemCategoryController(
         photo = resolvePhoto(id)
     )
 
-    private fun resolvePhoto(entityId: Long): String? = try {
+    private fun resolvePhoto(entityId: Long): String? = runCatching {
         uploadService.list(FileType.CATEGORY, entityId, 0, 1).firstOrNull()?.id?.let { uploadId ->
-            val base = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString().removeSuffix("/")
+            val base = ServletUriComponentsBuilder.fromCurrentContextPath()
+                .build()
+                .toUriString()
+                .removeSuffix("/")
             "$base/api/v1/uploads/$uploadId/view"
         }
-    } catch (e: Exception) { null }
+    }.getOrNull()
 }

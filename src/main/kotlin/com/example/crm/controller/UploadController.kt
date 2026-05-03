@@ -126,11 +126,24 @@ class UploadController(
     }
 
     private fun UploadEntity.toResponse() = UploadResponse(
-        id = id, fileType = fileType, entityId = entityId, tenantId = tenantId,
-        itemId = itemId, categoryId = categoryId, customerId = customerId, workerId = workerId,
-        fileName = fileName, filePath = filePath, contentType = contentType,
-        size = size, width = width, height = height, sortOrder = sortOrder,
-        title = title, subtitle = subtitle, createdAt = createdAt
+        id = id,
+        fileType = fileType,
+        entityId = entityId,
+        tenantId = tenantId,
+        itemId = itemId,
+        categoryId = categoryId,
+        customerId = customerId,
+        workerId = workerId,
+        fileName = fileName,
+        filePath = filePath,
+        contentType = contentType,
+        size = size,
+        width = width,
+        height = height,
+        sortOrder = sortOrder,
+        title = title,
+        subtitle = subtitle,
+        createdAt = createdAt
     )
 
     private fun withLinks(response: UploadResponse): UploadResponse {

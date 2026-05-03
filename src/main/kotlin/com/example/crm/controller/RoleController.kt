@@ -36,13 +36,20 @@ class RoleController(
 
     @PostMapping
     fun create(@RequestBody request: RoleRequest): ResponseEntity<RoleResponse> {
-        val created = service.create(RoleEntity(name = request.name, description = request.description, isActive = request.isActive))
+        val created = service.create(
+            RoleEntity(name = request.name, description = request.description, isActive = request.isActive)
+        )
         return ResponseEntity.created(URI.create("/api/v1/roles/${created.id}")).body(created.toResponse())
     }
 
     @PutMapping("/{id}")
     fun update(@PathVariable id: Long, @RequestBody request: RoleRequest): ResponseEntity<RoleResponse> =
-        ResponseEntity.ok(service.update(id, RoleEntity(name = request.name, description = request.description, isActive = request.isActive)).toResponse())
+        ResponseEntity.ok(
+            service.update(
+                id,
+                RoleEntity(name = request.name, description = request.description, isActive = request.isActive)
+            ).toResponse()
+        )
 
     @DeleteMapping("/{id}")
     fun delete(@PathVariable id: Long): ResponseEntity<Void> {

@@ -1,8 +1,13 @@
 package com.example.crm.controller
 
 import com.example.crm.dto.request.TenantRequest
-import com.example.crm.dto.response.*
-import com.example.crm.entity.*
+import com.example.crm.dto.response.PageResponse
+import com.example.crm.dto.response.TenantResponse
+import com.example.crm.dto.response.TenantSummaryResponse
+import com.example.crm.entity.ContactEntity
+import com.example.crm.entity.FileType
+import com.example.crm.entity.PersonEntity
+import com.example.crm.entity.TenantEntity
 import com.example.crm.service.PersonService
 import com.example.crm.service.TenantService
 import com.example.crm.service.UploadService
@@ -103,10 +108,13 @@ class TenantController(
         )
     }
 
-    private fun resolvePhoto(entityId: Long): String? = try {
+    private fun resolvePhoto(entityId: Long): String? = runCatching {
         uploadService.list(FileType.CATEGORY, entityId, 0, 1).firstOrNull()?.id?.let { uploadId ->
-            val base = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString().removeSuffix("/")
+            val base = ServletUriComponentsBuilder.fromCurrentContextPath()
+                .build()
+                .toUriString()
+                .removeSuffix("/")
             "$base/api/v1/uploads/$uploadId/view"
         }
-    } catch (e: Exception) { null }
+    }.getOrNull()
 }
