@@ -29,8 +29,10 @@ class LeadController(
         val result = service.list(PageRequest.of(page, size, Sort.by("id").descending()), tenantId)
         return ResponseEntity.ok(PageResponse(
             content = result.content.map { it.toResponse() },
-            page = result.number, size = result.size,
-            totalElements = result.totalElements, totalPages = result.totalPages
+            page = result.number,
+            size = result.size,
+            totalElements = result.totalElements,
+            totalPages = result.totalPages
         ))
     }
 
@@ -40,21 +42,35 @@ class LeadController(
 
     @PostMapping
     fun create(@RequestBody request: LeadRequest): ResponseEntity<LeadResponse> {
-        val created = service.create(LeadEntity(
-            tenantId = request.tenantId, flowId = request.flowId, customerId = request.customerId,
-            status = request.status, source = request.source,
-            estimatedValueCents = request.estimatedValueCents, notes = request.notes
-        ))
-        return ResponseEntity.created(URI.create("/api/v1/leads/${created.id}")).body(created.toResponse())
+        val created = service.create(
+            LeadEntity(
+                tenantId = request.tenantId,
+                flowId = request.flowId,
+                customerId = request.customerId,
+                status = request.status,
+                source = request.source,
+                estimatedValueCents = request.estimatedValueCents,
+                notes = request.notes
+            )
+        )
+        val uri = URI.create("/api/v1/leads/${created.id}")
+        return ResponseEntity.created(uri).body(created.toResponse())
     }
 
     @PutMapping("/{id}")
-    fun update(@PathVariable id: Long, @RequestBody request: LeadRequest): ResponseEntity<LeadResponse> =
-        ResponseEntity.ok(service.update(id, LeadEntity(
-            tenantId = request.tenantId, flowId = request.flowId, customerId = request.customerId,
-            status = request.status, source = request.source,
-            estimatedValueCents = request.estimatedValueCents, notes = request.notes
-        )).toResponse())
+    fun update(@PathVariable id: Long, @RequestBody request: LeadRequest): ResponseEntity<LeadResponse> {
+        val entity = LeadEntity(
+            tenantId = request.tenantId,
+            flowId = request.flowId,
+            customerId = request.customerId,
+            status = request.status,
+            source = request.source,
+            estimatedValueCents = request.estimatedValueCents,
+            notes = request.notes
+        )
+        val updated = service.update(id, entity)
+        return ResponseEntity.ok(updated.toResponse())
+    }
 
     @DeleteMapping("/{id}")
     fun delete(@PathVariable id: Long): ResponseEntity<Void> {
@@ -67,14 +83,44 @@ class LeadController(
         ResponseEntity.ok(service.getMessages(leadId).map { it.toMessageResponse() })
 
     @PostMapping("/{leadId}/messages")
-    fun createMessage(@PathVariable leadId: Long, @RequestBody request: LeadMessageRequest): ResponseEntity<LeadMessageResponse> {
-        val created = service.createMessage(leadId, LeadMessageEntity(
-            leadId = leadId, message = request.message, channel = request.channel,
-            createdByUserId = request.createdByUserId
-        ))
-        return ResponseEntity.created(URI.create("/api/v1/leads/$leadId/messages/${created.id}")).body(created.toMessageResponse())
+    fun createMessage(
+        @PathVariable leadId: Long,
+        @RequestBody request: LeadMessageRequest
+    ): ResponseEntity<LeadMessageResponse> {
+        val created = service.createMessage(
+            leadId,
+            LeadMessageEntity(
+                leadId = leadId,
+                message = request.message,
+                channel = request.channel,
+                createdByUserId = request.createdByUserId
+            )
+        )
+        val uri = URI.create("/api/v1/leads/$leadId/messages/${created.id}")
+        return ResponseEntity.created(uri)
+            .body(created.toMessageResponse())
     }
 
-    private fun LeadEntity.toResponse() = LeadResponse(id, code, tenantId, flowId, customerId, status, source, estimatedValueCents, notes, createdAt, updatedAt)
-    private fun LeadMessageEntity.toMessageResponse() = LeadMessageResponse(id, leadId, message, channel, createdByUserId, createdAt)
+    private fun LeadEntity.toResponse() = LeadResponse(
+        id,
+        code,
+        tenantId,
+        flowId,
+        customerId,
+        status,
+        source,
+        estimatedValueCents,
+        notes,
+        createdAt,
+        updatedAt
+    )
+
+    private fun LeadMessageEntity.toMessageResponse() = LeadMessageResponse(
+        id,
+        leadId,
+        message,
+        channel,
+        createdByUserId,
+        createdAt
+    )
 }

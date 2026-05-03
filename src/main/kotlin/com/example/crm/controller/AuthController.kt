@@ -34,13 +34,22 @@ class AuthController(
         )
     )
     fun token(@RequestBody req: AuthRequest): ResponseEntity<AuthResponse> {
-        val user = userService.getByEmail(req.email) ?: return ResponseEntity.status(401).build()
-        val stored = user.passwordHash.replaceFirst("^\\$2b\\$".toRegex(), "\$2a\$")
-        if (!BCryptPasswordEncoder().matches(req.password, stored)) return ResponseEntity.status(401).build()
-        val token = jwtService.generateToken(
-            user.email,
-            mapOf("email" to user.email, "userId" to user.id, "tenantId" to user.tenantId)
-        )
-        return ResponseEntity.ok(AuthResponse(token))
+        val user = userService.getByEmail(req.email)
+        val response = if (user != null) {
+            val stored = user.passwordHash.replaceFirst("^\\$2b\\$".toRegex(), "\$2a\$")
+            val matches = BCryptPasswordEncoder().matches(req.password, stored)
+            if (matches) {
+                val token = jwtService.generateToken(
+                    user.email,
+                    mapOf("email" to user.email, "userId" to user.id, "tenantId" to user.tenantId)
+                )
+                ResponseEntity.ok(AuthResponse(token))
+            } else {
+                ResponseEntity.status(401).build()
+            }
+        } else {
+            ResponseEntity.status(401).build()
+        }
+        return response
     }
 }

@@ -26,11 +26,15 @@ class PipelineFlowController(
         @RequestParam(required = false) tenantId: Long?
     ): ResponseEntity<PageResponse<PipelineFlowResponse>> {
         val result = service.list(PageRequest.of(page, size, Sort.by("name")), tenantId)
-        return ResponseEntity.ok(PageResponse(
-            content = result.content.map { it.toResponse() },
-            page = result.number, size = result.size,
-            totalElements = result.totalElements, totalPages = result.totalPages
-        ))
+        return ResponseEntity.ok(
+            PageResponse(
+                content = result.content.map { it.toResponse() },
+                page = result.number,
+                size = result.size,
+                totalElements = result.totalElements,
+                totalPages = result.totalPages
+            )
+        )
     }
 
     @GetMapping("/{id}")
@@ -41,7 +45,9 @@ class PipelineFlowController(
     fun create(@RequestBody request: PipelineFlowRequest): ResponseEntity<PipelineFlowResponse> {
         val entity = request.toEntity()
         val created = service.create(entity)
-        return ResponseEntity.created(URI.create("/api/v1/pipeline-flows/${created.id}")).body(created.toResponse())
+        val uri = URI.create("/api/v1/pipeline-flows/${created.id}")
+        return ResponseEntity.created(uri)
+            .body(created.toResponse())
     }
 
     @PutMapping("/{id}")
@@ -66,9 +72,26 @@ class PipelineFlowController(
     }
 
     private fun PipelineFlowEntity.toResponse() = PipelineFlowResponse(
-        id = id, tenantId = tenantId, code = code, name = name, description = description,
+        id = id,
+        tenantId = tenantId,
+        code = code,
+        name = name,
+        description = description,
         isActive = isActive,
-        steps = steps.map { PipelineFlowStepResponse(it.id, it.stepOrder, it.code, it.name, it.description, it.stepType, it.isTerminal, it.createdAt, it.updatedAt) },
-        createdAt = createdAt, updatedAt = updatedAt
+        steps = steps.map {
+            PipelineFlowStepResponse(
+                it.id,
+                it.stepOrder,
+                it.code,
+                it.name,
+                it.description,
+                it.stepType,
+                it.isTerminal,
+                it.createdAt,
+                it.updatedAt
+            )
+        },
+        createdAt = createdAt,
+        updatedAt = updatedAt
     )
 }

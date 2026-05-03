@@ -26,8 +26,10 @@ class ScheduleController(
         val result = service.list(PageRequest.of(page, size, Sort.by("id").descending()), tenantId)
         return ResponseEntity.ok(PageResponse(
             content = result.content.map { it.toResponse() },
-            page = result.number, size = result.size,
-            totalElements = result.totalElements, totalPages = result.totalPages
+            page = result.number,
+            size = result.size,
+            totalElements = result.totalElements,
+            totalPages = result.totalPages
         ))
     }
 
@@ -37,19 +39,33 @@ class ScheduleController(
 
     @PostMapping
     fun create(@RequestBody request: ScheduleRequest): ResponseEntity<ScheduleResponse> {
-        val created = service.create(ScheduleEntity(
-            tenantId = request.tenantId, customerId = request.customerId,
-            appointmentId = request.appointmentId, description = request.description, isActive = request.isActive
-        ))
-        return ResponseEntity.created(URI.create("/api/v1/schedules/${created.id}")).body(created.toResponse())
+        val created = service.create(
+            ScheduleEntity(
+                tenantId = request.tenantId,
+                customerId = request.customerId,
+                appointmentId = request.appointmentId,
+                description = request.description,
+                isActive = request.isActive
+            )
+        )
+        val uri = URI.create("/api/v1/schedules/${created.id}")
+        return ResponseEntity.created(uri).body(created.toResponse())
     }
 
     @PutMapping("/{id}")
     fun update(@PathVariable id: Long, @RequestBody request: ScheduleRequest): ResponseEntity<ScheduleResponse> =
-        ResponseEntity.ok(service.update(id, ScheduleEntity(
-            tenantId = request.tenantId, customerId = request.customerId,
-            appointmentId = request.appointmentId, description = request.description, isActive = request.isActive
-        )).toResponse())
+        ResponseEntity.ok(
+            service.update(
+                id,
+                ScheduleEntity(
+                    tenantId = request.tenantId,
+                    customerId = request.customerId,
+                    appointmentId = request.appointmentId,
+                    description = request.description,
+                    isActive = request.isActive
+                )
+            ).toResponse()
+        )
 
     @DeleteMapping("/{id}")
     fun delete(@PathVariable id: Long): ResponseEntity<Void> {
@@ -57,5 +73,15 @@ class ScheduleController(
         return ResponseEntity.noContent().build()
     }
 
-    private fun ScheduleEntity.toResponse() = ScheduleResponse(id, code, tenantId, customerId, appointmentId, description, isActive, createdAt, updatedAt)
+    private fun ScheduleEntity.toResponse() = ScheduleResponse(
+        id = id,
+        code = code,
+        tenantId = tenantId,
+        customerId = customerId,
+        appointmentId = appointmentId,
+        description = description,
+        isActive = isActive,
+        createdAt = createdAt,
+        updatedAt = updatedAt
+    )
 }

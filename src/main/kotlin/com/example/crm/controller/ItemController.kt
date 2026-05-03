@@ -1,8 +1,20 @@
 package com.example.crm.controller
 
 import com.example.crm.dto.request.ItemRequest
-import com.example.crm.dto.response.*
-import com.example.crm.entity.*
+import com.example.crm.dto.response.AdditionalResponse
+import com.example.crm.dto.response.ItemListResponse
+import com.example.crm.dto.response.ItemResponse
+import com.example.crm.dto.response.OptionResponse
+import com.example.crm.dto.response.ProductDatasheetResponse
+import com.example.crm.dto.response.ServiceDatasheetResponse
+import com.example.crm.entity.ItemEntity
+import com.example.crm.entity.ItemProductDatasheetEntity
+import com.example.crm.entity.ItemServiceDatasheetEntity
+import com.example.crm.entity.ItemOptionEntity
+import com.example.crm.entity.ItemAdditionalEntity
+import com.example.crm.entity.ItemType
+import com.example.crm.entity.FileType
+import com.example.crm.dto.response.PageResponse
 import com.example.crm.service.ItemService
 import com.example.crm.service.UploadService
 import org.springframework.data.domain.PageRequest
@@ -15,6 +27,7 @@ import java.util.UUID
 
 @RestController
 @RequestMapping("/api/v1/items")
+@Suppress("TooManyFunctions")
 class ItemController(
     private val service: ItemService,
     private val uploadService: UploadService
@@ -31,13 +44,24 @@ class ItemController(
         @RequestParam(required = false) sku: String?,
         @RequestParam(required = false) isActive: Boolean?
     ): ResponseEntity<PageResponse<ItemListResponse>> {
-        val result = service.list(PageRequest.of(page, size, Sort.by("name")), tenantId = tenantId,
-            categoryId = categoryId, type = type, name = name, sku = sku, isActive = isActive)
-        return ResponseEntity.ok(PageResponse(
-            content = result.content.map { it.toListResponse() },
-            page = result.number, size = result.size,
-            totalElements = result.totalElements, totalPages = result.totalPages
-        ))
+        val result = service.list(
+            PageRequest.of(page, size, Sort.by("name")),
+            tenantId = tenantId,
+            categoryId = categoryId,
+            type = type,
+            name = name,
+            sku = sku,
+            isActive = isActive
+        )
+        return ResponseEntity.ok(
+            PageResponse(
+                content = result.content.map { it.toListResponse() },
+                page = result.number,
+                size = result.size,
+                totalElements = result.totalElements,
+                totalPages = result.totalPages
+            )
+        )
     }
 
     @GetMapping("/{id}")
@@ -51,8 +75,20 @@ class ItemController(
             productDatasheet = request.productDatasheet?.toEntity(),
             serviceDatasheet = request.serviceDatasheet?.toEntity(),
             tags = request.tags,
-            options = request.options.map { ItemOptionEntity(name = it.name, priceDeltaCents = it.priceDeltaCents, isActive = it.isActive) },
-            additionals = request.additionals.map { ItemAdditionalEntity(name = it.name, priceCents = it.priceCents, isActive = it.isActive) }
+            options = request.options.map {
+                ItemOptionEntity(
+                    name = it.name,
+                    priceDeltaCents = it.priceDeltaCents,
+                    isActive = it.isActive
+                )
+            },
+            additionals = request.additionals.map {
+                ItemAdditionalEntity(
+                    name = it.name,
+                    priceCents = it.priceCents,
+                    isActive = it.isActive
+                )
+            }
         )
         return ResponseEntity.created(URI.create("/api/v1/items/${created.id}")).body(created.toResponse())
     }
@@ -65,8 +101,20 @@ class ItemController(
             productDatasheet = request.productDatasheet?.toEntity(),
             serviceDatasheet = request.serviceDatasheet?.toEntity(),
             tags = request.tags,
-            options = request.options.map { ItemOptionEntity(name = it.name, priceDeltaCents = it.priceDeltaCents, isActive = it.isActive) },
-            additionals = request.additionals.map { ItemAdditionalEntity(name = it.name, priceCents = it.priceCents, isActive = it.isActive) }
+            options = request.options.map {
+                ItemOptionEntity(
+                    name = it.name,
+                    priceDeltaCents = it.priceDeltaCents,
+                    isActive = it.isActive
+                )
+            },
+            additionals = request.additionals.map {
+                ItemAdditionalEntity(
+                    name = it.name,
+                    priceCents = it.priceCents,
+                    isActive = it.isActive
+                )
+            }
         )
         return ResponseEntity.ok(updated.toResponse())
     }
@@ -78,7 +126,12 @@ class ItemController(
     }
 
     private fun ItemRequest.toEntity() = ItemEntity(
-        tenantId = tenantId, categoryId = categoryId, type = type, name = name, sku = sku, isActive = isActive
+        tenantId = tenantId,
+        categoryId = categoryId,
+        type = type,
+        name = name,
+        sku = sku,
+        isActive = isActive
     )
 
     private fun com.example.crm.dto.request.ProductDatasheetRequest.toEntity() = ItemProductDatasheetEntity(
@@ -93,10 +146,17 @@ class ItemController(
     )
 
     private fun ItemEntity.toListResponse() = ItemListResponse(
-        id = id, code = code, tenantId = tenantId, categoryId = categoryId, type = type,
-        name = name, sku = sku, isActive = isActive,
+        id = id,
+        code = code,
+        tenantId = tenantId,
+        categoryId = categoryId,
+        type = type,
+        name = name,
+        sku = sku,
+        isActive = isActive,
         photos = resolvePhotos(id, type),
-        createdAt = createdAt, updatedAt = updatedAt
+        createdAt = createdAt,
+        updatedAt = updatedAt
     )
 
     private fun ItemEntity.toResponse(): ItemResponse {
@@ -106,13 +166,22 @@ class ItemController(
         val options = service.getOptions(id).map { it.toResponse() }
         val additionals = service.getAdditionals(id).map { it.toResponse() }
         return ItemResponse(
-            id = id, code = code, tenantId = tenantId, categoryId = categoryId, type = type,
-            name = name, sku = sku, isActive = isActive,
+            id = id,
+            code = code,
+            tenantId = tenantId,
+            categoryId = categoryId,
+            type = type,
+            name = name,
+            sku = sku,
+            isActive = isActive,
             photos = resolvePhotos(id, type),
             productDatasheet = productDs?.toResponse(),
             serviceDatasheet = serviceDs?.toResponse(),
-            tags = tags, options = options, additionals = additionals,
-            createdAt = createdAt, updatedAt = updatedAt
+            tags = tags,
+            options = options,
+            additionals = additionals,
+            createdAt = createdAt,
+            updatedAt = updatedAt
         )
     }
 
@@ -139,9 +208,14 @@ class ItemController(
         createdAt = createdAt, updatedAt = updatedAt
     )
 
-    private fun resolvePhotos(entityId: Long, type: ItemType): List<String> = try {
+    private fun resolvePhotos(entityId: Long, type: ItemType): List<String> = runCatching {
         val fileType = if (type == ItemType.SERVICE) FileType.SERVICE else FileType.PRODUCT
-        val base = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString().removeSuffix("/")
-        uploadService.list(fileType, entityId, 0, 20).map { "$base/api/v1/uploads/${it.id}/view" }
-    } catch (e: Exception) { emptyList() }
+        val base = ServletUriComponentsBuilder.fromCurrentContextPath()
+            .build()
+            .toUriString()
+            .removeSuffix("/")
+        uploadService.list(fileType, entityId, 0, UPLOADS_MAX).map { "$base/api/v1/uploads/${it.id}/view" }
+    }.getOrDefault(emptyList())
 }
+
+private const val UPLOADS_MAX = 20

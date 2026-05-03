@@ -21,19 +21,33 @@ class CityController(
     ): ResponseEntity<PageResponse<CityResponse>> {
         val result = service.list(PageRequest.of(page, size, Sort.by("city")))
         return ResponseEntity.ok(PageResponse(
-            content = result.content.map { CityResponse(it.id, it.stateId, it.city, it.ibgeCode, it.createdAt, it.updatedAt) },
-            page = result.number, size = result.size,
-            totalElements = result.totalElements, totalPages = result.totalPages
+            content = result.content.map {
+                CityResponse(
+                    it.id, it.stateId, it.city, it.ibgeCode, it.createdAt, it.updatedAt
+                )
+            },
+            page = result.number,
+            size = result.size,
+            totalElements = result.totalElements,
+            totalPages = result.totalPages
         ))
     }
 
     @GetMapping("/{id}")
     fun findById(@PathVariable id: Long): ResponseEntity<CityResponse> {
         val it = service.getById(id)
-        return ResponseEntity.ok(CityResponse(it.id, it.stateId, it.city, it.ibgeCode, it.createdAt, it.updatedAt))
+        return ResponseEntity.ok(
+            CityResponse(it.id, it.stateId, it.city, it.ibgeCode, it.createdAt, it.updatedAt)
+        )
     }
 
     @GetMapping("/state/{stateId}")
     fun findByState(@PathVariable stateId: Long): ResponseEntity<List<CityResponse>> =
-        ResponseEntity.ok(service.findByStateId(stateId).map { CityResponse(it.id, it.stateId, it.city, it.ibgeCode, it.createdAt, it.updatedAt) })
+        ResponseEntity.ok(
+            service.findByStateId(stateId).map {
+                CityResponse(
+                    it.id, it.stateId, it.city, it.ibgeCode, it.createdAt, it.updatedAt
+                )
+            }
+        )
 }

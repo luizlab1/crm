@@ -2,8 +2,20 @@ package com.example.crm.controller
 
 import com.example.crm.dto.request.CustomerRequest
 import com.example.crm.dto.request.PersonAddressRequest as WebPersonAddressRequest
-import com.example.crm.dto.response.*
-import com.example.crm.entity.*
+import com.example.crm.dto.response.CustomerResponse
+import com.example.crm.dto.response.CustomerSummaryResponse
+import com.example.crm.dto.response.PageResponse
+import com.example.crm.dto.response.PersonAddressResponse
+import com.example.crm.dto.response.PersonPhysicalResponse
+import com.example.crm.dto.response.PersonLegalResponse
+import com.example.crm.dto.response.ContactResponse
+import com.example.crm.entity.CustomerEntity
+import com.example.crm.entity.PersonEntity
+import com.example.crm.entity.ContactEntity
+import com.example.crm.entity.PersonPhysicalEntity
+import com.example.crm.entity.PersonLegalEntity
+import com.example.crm.entity.FileType
+import com.example.crm.service.PersonAddressWithAddress
 import com.example.crm.service.CustomerService
 import com.example.crm.service.PersonAddressRequest as SvcPersonAddressRequest
 import com.example.crm.service.PersonAddressType as SvcPersonAddressType
@@ -96,9 +108,17 @@ class CustomerController(
         val contacts = personId?.let { personService.getContacts(it) } ?: emptyList()
         val person = personId?.let { personService.getById(it) }
         return CustomerResponse(
-            id = id, code = code, tenantId = tenantId, personId = personId,
-            fullName = fullName, email = email, phone = phone, document = document,
-            isActive = isActive, createdAt = createdAt, updatedAt = updatedAt,
+            id = id,
+            code = code,
+            tenantId = tenantId,
+            personId = personId,
+            fullName = fullName,
+            email = email,
+            phone = phone,
+            document = document,
+            isActive = isActive,
+            createdAt = createdAt,
+            updatedAt = updatedAt,
             photo = resolvePhoto(id, FileType.CUSTOMER),
             physical = person?.physical?.toResponse(),
             legal = person?.legal?.toResponse(),
@@ -107,13 +127,16 @@ class CustomerController(
         )
     }
 
-    private fun resolvePhoto(entityId: Long, fileType: FileType): String? = try {
+    private fun resolvePhoto(entityId: Long, fileType: FileType): String? = runCatching {
         val uploads = uploadService.list(fileType, entityId, 0, 1)
         uploads.firstOrNull()?.id?.let { uploadId ->
-            val base = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString().removeSuffix("/")
+            val base = ServletUriComponentsBuilder.fromCurrentContextPath()
+                .build()
+                .toUriString()
+                .removeSuffix("/")
             "$base/api/v1/uploads/$uploadId/view"
         }
-    } catch (e: Exception) { null }
+    }.getOrNull()
 }
 
 // Shared extension helpers used across person-related controllers

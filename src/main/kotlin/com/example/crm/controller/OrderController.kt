@@ -26,11 +26,15 @@ class OrderController(
         @RequestParam(required = false) tenantId: Long?
     ): ResponseEntity<PageResponse<OrderResponse>> {
         val result = service.list(PageRequest.of(page, size, Sort.by("id").descending()), tenantId)
-        return ResponseEntity.ok(PageResponse(
-            content = result.content.map { it.toResponse() },
-            page = result.number, size = result.size,
-            totalElements = result.totalElements, totalPages = result.totalPages
-        ))
+        return ResponseEntity.ok(
+            PageResponse(
+                content = result.content.map { it.toResponse() },
+                page = result.number,
+                size = result.size,
+                totalElements = result.totalElements,
+                totalPages = result.totalPages
+            )
+        )
     }
 
     @GetMapping("/{id}")
@@ -41,7 +45,8 @@ class OrderController(
     fun create(@RequestBody request: OrderRequest): ResponseEntity<OrderResponse> {
         val entity = request.toEntity()
         val created = service.create(entity)
-        return ResponseEntity.created(URI.create("/api/v1/orders/${created.id}")).body(created.toResponse())
+        val uri = URI.create("/api/v1/orders/${created.id}")
+        return ResponseEntity.created(uri).body(created.toResponse())
     }
 
     @PutMapping("/{id}")
@@ -66,10 +71,28 @@ class OrderController(
     }
 
     private fun OrderEntity.toResponse() = OrderResponse(
-        id = id, code = code, tenantId = tenantId, customerId = customerId, userId = userId,
-        status = status, subtotalCents = subtotalCents, discountCents = discountCents,
-        totalCents = totalCents, currencyCode = currencyCode, notes = notes,
-        items = items.map { OrderItemResponse(it.id, it.itemId, it.quantity, it.unitPriceCents, it.totalPriceCents, it.createdAt) },
-        createdAt = createdAt, updatedAt = updatedAt
+        id = id,
+        code = code,
+        tenantId = tenantId,
+        customerId = customerId,
+        userId = userId,
+        status = status,
+        subtotalCents = subtotalCents,
+        discountCents = discountCents,
+        totalCents = totalCents,
+        currencyCode = currencyCode,
+        notes = notes,
+        items = items.map {
+            OrderItemResponse(
+                it.id,
+                it.itemId,
+                it.quantity,
+                it.unitPriceCents,
+                it.totalPriceCents,
+                it.createdAt
+            )
+        },
+        createdAt = createdAt,
+        updatedAt = updatedAt
     )
 }

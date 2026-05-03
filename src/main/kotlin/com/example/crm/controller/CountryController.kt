@@ -21,15 +21,23 @@ class CountryController(
     ): ResponseEntity<PageResponse<CountryResponse>> {
         val result = service.list(PageRequest.of(page, size, Sort.by("country")))
         return ResponseEntity.ok(PageResponse(
-            content = result.content.map { CountryResponse(it.id, it.iso2, it.iso3, it.country, it.createdAt, it.updatedAt) },
-            page = result.number, size = result.size,
-            totalElements = result.totalElements, totalPages = result.totalPages
+            content = result.content.map {
+                CountryResponse(
+                    it.id, it.iso2, it.iso3, it.country, it.createdAt, it.updatedAt
+                )
+            },
+            page = result.number,
+            size = result.size,
+            totalElements = result.totalElements,
+            totalPages = result.totalPages
         ))
     }
 
     @GetMapping("/{id}")
     fun findById(@PathVariable id: Long): ResponseEntity<CountryResponse> {
         val it = service.getById(id)
-        return ResponseEntity.ok(CountryResponse(it.id, it.iso2, it.iso3, it.country, it.createdAt, it.updatedAt))
+        return ResponseEntity.ok(
+            CountryResponse(it.id, it.iso2, it.iso3, it.country, it.createdAt, it.updatedAt)
+        )
     }
 }

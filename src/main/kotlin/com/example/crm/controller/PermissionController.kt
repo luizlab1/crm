@@ -25,8 +25,10 @@ class PermissionController(
         val result = service.list(PageRequest.of(page, size, Sort.by("code")))
         return ResponseEntity.ok(PageResponse(
             content = result.content.map { it.toResponse() },
-            page = result.number, size = result.size,
-            totalElements = result.totalElements, totalPages = result.totalPages
+            page = result.number,
+            size = result.size,
+            totalElements = result.totalElements,
+            totalPages = result.totalPages
         ))
     }
 
@@ -36,13 +38,31 @@ class PermissionController(
 
     @PostMapping
     fun create(@RequestBody request: PermissionRequest): ResponseEntity<PermissionResponse> {
-        val created = service.create(PermissionEntity(code = request.code, description = request.description, isActive = request.isActive))
-        return ResponseEntity.created(URI.create("/api/v1/permissions/${created.id}")).body(created.toResponse())
+        val created = service.create(
+            PermissionEntity(
+                code = request.code,
+                description = request.description,
+                isActive = request.isActive
+            )
+        )
+        val uri = URI.create("/api/v1/permissions/${created.id}")
+        return ResponseEntity.created(uri)
+            .body(created.toResponse())
     }
 
     @PutMapping("/{id}")
-    fun update(@PathVariable id: Long, @RequestBody request: PermissionRequest): ResponseEntity<PermissionResponse> =
-        ResponseEntity.ok(service.update(id, PermissionEntity(code = request.code, description = request.description, isActive = request.isActive)).toResponse())
+    fun update(
+        @PathVariable id: Long,
+        @RequestBody request: PermissionRequest
+    ): ResponseEntity<PermissionResponse> {
+        val entity = PermissionEntity(
+            code = request.code,
+            description = request.description,
+            isActive = request.isActive
+        )
+        val updated = service.update(id, entity)
+        return ResponseEntity.ok(updated.toResponse())
+    }
 
     @DeleteMapping("/{id}")
     fun delete(@PathVariable id: Long): ResponseEntity<Void> {
@@ -50,5 +70,12 @@ class PermissionController(
         return ResponseEntity.noContent().build()
     }
 
-    private fun PermissionEntity.toResponse() = PermissionResponse(id, code, description, isActive, createdAt, updatedAt)
+    private fun PermissionEntity.toResponse() = PermissionResponse(
+        id = id,
+        code = code,
+        description = description,
+        isActive = isActive,
+        createdAt = createdAt,
+        updatedAt = updatedAt
+    )
 }
