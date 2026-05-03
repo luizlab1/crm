@@ -23,13 +23,14 @@ class RoleService(
 
     fun create(entity: RoleEntity): RoleEntity = repository.save(entity)
 
-    fun update(id: Long, entity: RoleEntity): RoleEntity {
-        val existing = getById(id)
-        existing.name = entity.name
-        existing.description = entity.description
-        existing.isActive = entity.isActive
-        return repository.save(existing)
-    }
+    fun update(id: Long, entity: RoleEntity): RoleEntity =
+        repository.save(
+            getById(id).apply {
+                name = entity.name
+                description = entity.description
+                isActive = entity.isActive
+            }
+        )
 
     fun delete(id: Long) {
         val existing = getById(id)

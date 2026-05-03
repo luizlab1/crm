@@ -28,17 +28,18 @@ class LeadService(
 
     fun create(entity: LeadEntity): LeadEntity = leadRepository.save(entity)
 
-    fun update(id: Long, entity: LeadEntity): LeadEntity {
-        val existing = getById(id)
-        existing.tenantId = entity.tenantId
-        existing.flowId = entity.flowId
-        existing.customerId = entity.customerId
-        existing.status = entity.status
-        existing.source = entity.source
-        existing.estimatedValueCents = entity.estimatedValueCents
-        existing.notes = entity.notes
-        return leadRepository.save(existing)
-    }
+    fun update(id: Long, entity: LeadEntity): LeadEntity =
+        leadRepository.save(
+            getById(id).apply {
+                tenantId = entity.tenantId
+                flowId = entity.flowId
+                customerId = entity.customerId
+                status = entity.status
+                source = entity.source
+                estimatedValueCents = entity.estimatedValueCents
+                notes = entity.notes
+            }
+        )
 
     fun delete(id: Long) {
         getById(id)

@@ -23,16 +23,17 @@ class AppointmentService(
 
     fun create(entity: AppointmentEntity): AppointmentEntity = repository.save(entity)
 
-    fun update(id: Long, entity: AppointmentEntity): AppointmentEntity {
-        val existing = getById(id)
-        existing.status = entity.status
-        existing.scheduledAt = entity.scheduledAt
-        existing.startedAt = entity.startedAt
-        existing.finishedAt = entity.finishedAt
-        existing.totalCents = entity.totalCents
-        existing.notes = entity.notes
-        return repository.save(existing)
-    }
+    fun update(id: Long, entity: AppointmentEntity): AppointmentEntity =
+        repository.save(
+            getById(id).apply {
+                status = entity.status
+                scheduledAt = entity.scheduledAt
+                startedAt = entity.startedAt
+                finishedAt = entity.finishedAt
+                totalCents = entity.totalCents
+                notes = entity.notes
+            }
+        )
 
     fun delete(id: Long) {
         getById(id)

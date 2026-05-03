@@ -125,38 +125,46 @@ class ItemService(
         options: List<ItemOptionEntity>,
         additionals: List<ItemAdditionalEntity>
     ) {
-        productDatasheet?.let {
+        fun upsertProductDatasheet(incoming: ItemProductDatasheetEntity) {
             val existing = productDatasheetRepository.findByItemId(itemId).orElse(null)
-            if (existing != null) {
-                existing.description = it.description
-                existing.unitPriceCents = it.unitPriceCents
-                existing.currencyCode = it.currencyCode
-                existing.unitOfMeasureId = it.unitOfMeasureId
-                existing.weightKg = it.weightKg
-                existing.volumeM3 = it.volumeM3
-                existing.densityKgM3 = it.densityKgM3
-                existing.heightCm = it.heightCm
-                existing.widthCm = it.widthCm
-                existing.lengthCm = it.lengthCm
-                productDatasheetRepository.save(existing)
-            } else {
-                productDatasheetRepository.save(it.also { ds -> ds.itemId = itemId })
+            if (existing == null) {
+                productDatasheetRepository.save(incoming.also { it.itemId = itemId })
+                return
             }
+
+            productDatasheetRepository.save(existing.apply {
+                description = incoming.description
+                unitPriceCents = incoming.unitPriceCents
+                currencyCode = incoming.currencyCode
+                unitOfMeasureId = incoming.unitOfMeasureId
+                weightKg = incoming.weightKg
+                volumeM3 = incoming.volumeM3
+                densityKgM3 = incoming.densityKgM3
+                heightCm = incoming.heightCm
+                widthCm = incoming.widthCm
+                lengthCm = incoming.lengthCm
+            })
         }
-        serviceDatasheet?.let {
+
+        fun upsertServiceDatasheet(incoming: ItemServiceDatasheetEntity) {
             val existing = serviceDatasheetRepository.findByItemId(itemId).orElse(null)
-            if (existing != null) {
-                existing.description = it.description
-                existing.unitPriceCents = it.unitPriceCents
-                existing.currencyCode = it.currencyCode
-                existing.durationMinutes = it.durationMinutes
-                existing.requiresStaff = it.requiresStaff
-                existing.bufferMinutes = it.bufferMinutes
-                serviceDatasheetRepository.save(existing)
-            } else {
-                serviceDatasheetRepository.save(it.also { ds -> ds.itemId = itemId })
+            if (existing == null) {
+                serviceDatasheetRepository.save(incoming.also { it.itemId = itemId })
+                return
             }
+
+            serviceDatasheetRepository.save(existing.apply {
+                description = incoming.description
+                unitPriceCents = incoming.unitPriceCents
+                currencyCode = incoming.currencyCode
+                durationMinutes = incoming.durationMinutes
+                requiresStaff = incoming.requiresStaff
+                bufferMinutes = incoming.bufferMinutes
+            })
         }
+
+        productDatasheet?.let { upsertProductDatasheet(it) }
+        serviceDatasheet?.let { upsertServiceDatasheet(it) }
         tagRepository.deleteByItemId(itemId)
         tags.forEach { tag -> tagRepository.save(ItemTagEntity(itemId = itemId, tag = tag)) }
         optionRepository.deleteByItemId(itemId)

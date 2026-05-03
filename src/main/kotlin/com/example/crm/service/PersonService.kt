@@ -65,28 +65,7 @@ class PersonService(
         contacts: List<ContactEntity>,
         addressRequests: List<PersonAddressRequest>
     ): PersonEntity {
-        val existing = getById(id)
-        person.physical?.let { ph ->
-            if (existing.physical == null) {
-                existing.physical = ph.also { it.person = existing }
-            } else {
-                existing.physical!!.fullName = ph.fullName
-                existing.physical!!.cpf = ph.cpf
-                existing.physical!!.birthDate = ph.birthDate
-            }
-        }
-        person.legal?.let { lg ->
-            if (existing.legal == null) {
-                existing.legal = lg.also { it.person = existing }
-            } else {
-                existing.legal!!.corporateName = lg.corporateName
-                existing.legal!!.tradeName = lg.tradeName
-                existing.legal!!.cnpj = lg.cnpj
-            }
-        }
-        existing.isActive = person.isActive
-
-        val saved = personRepository.save(existing)
+        val saved = personRepository.save(getById(id).applyPersonData(person))
 
         val existingContacts = contactRepository.findByPersonId(saved.id)
         contactRepository.deleteAll(existingContacts)
@@ -117,23 +96,7 @@ class PersonService(
     ): Long {
         val personToSave: PersonEntity = if (existingPersonId != null && existingPersonId != 0L) {
             personRepository.findById(existingPersonId).orElse(null)?.also { existing ->
-                personData.physical?.let { ph ->
-                    if (existing.physical == null) existing.physical = ph.also { it.person = existing }
-                    else {
-                        existing.physical!!.fullName = ph.fullName
-                        existing.physical!!.cpf = ph.cpf
-                        existing.physical!!.birthDate = ph.birthDate
-                    }
-                }
-                personData.legal?.let { lg ->
-                    if (existing.legal == null) existing.legal = lg.also { it.person = existing }
-                    else {
-                        existing.legal!!.corporateName = lg.corporateName
-                        existing.legal!!.tradeName = lg.tradeName
-                        existing.legal!!.cnpj = lg.cnpj
-                    }
-                }
-                existing.isActive = personData.isActive
+                existing.applyPersonData(personData)
             } ?: personData.also { it.tenantId = tenantId }
         } else {
             personData.also { it.tenantId = tenantId }
@@ -152,6 +115,30 @@ class PersonService(
             ))
         }
         return saved.id
+    }
+
+    private fun PersonEntity.applyPersonData(source: PersonEntity): PersonEntity = apply {
+        source.physical?.let { ph ->
+            if (physical == null) {
+                physical = ph.also { it.person = this }
+            } else {
+                physical!!.fullName = ph.fullName
+                physical!!.cpf = ph.cpf
+                physical!!.birthDate = ph.birthDate
+            }
+        }
+
+        source.legal?.let { lg ->
+            if (legal == null) {
+                legal = lg.also { it.person = this }
+            } else {
+                legal!!.corporateName = lg.corporateName
+                legal!!.tradeName = lg.tradeName
+                legal!!.cnpj = lg.cnpj
+            }
+        }
+
+        isActive = source.isActive
     }
 
     fun replaceAddresses(personId: Long, addressRequests: List<PersonAddressRequest>) {

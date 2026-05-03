@@ -23,19 +23,20 @@ class AddressService(
 
     fun create(entity: AddressEntity): AddressEntity = repository.save(entity)
 
-    fun update(id: Long, entity: AddressEntity): AddressEntity {
-        val existing = getById(id)
-        existing.street = entity.street
-        existing.number = entity.number
-        existing.complement = entity.complement
-        existing.neighborhood = entity.neighborhood
-        existing.cityId = entity.cityId
-        existing.postalCode = entity.postalCode
-        existing.latitude = entity.latitude
-        existing.longitude = entity.longitude
-        existing.isActive = entity.isActive
-        return repository.save(existing)
-    }
+    fun update(id: Long, entity: AddressEntity): AddressEntity =
+        repository.save(
+            getById(id).apply {
+                street = entity.street
+                number = entity.number
+                complement = entity.complement
+                neighborhood = entity.neighborhood
+                cityId = entity.cityId
+                postalCode = entity.postalCode
+                latitude = entity.latitude
+                longitude = entity.longitude
+                isActive = entity.isActive
+            }
+        )
 
     fun delete(id: Long) {
         val existing = getById(id)
