@@ -29,6 +29,12 @@ class SettingsSaasPlanJpaEntity(
     @Column(columnDefinition = "text")
     var description: String? = null,
 
+    @Column(nullable = false, columnDefinition = "text")
+    var subtitle: String = "",
+
+    @Column(nullable = false, columnDefinition = "text")
+    var value: String = "",
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 64)
     var category: PlanCategory = PlanCategory.BUSINESS,

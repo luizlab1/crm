@@ -8,11 +8,12 @@ data class SettingsSaasPlanRequest(
     val tenantId: Long? = null,
     val name: String? = null,
     val description: String? = null,
+    val subtitle: String? = null,
+    val value: String? = null,
     val category: PlanCategory? = null,
     val benefits: List<SettingsSaasPlanBenefitRequest> = emptyList()
 )
 
 data class SettingsSaasPlanBenefitRequest(
-    val subtitle: String? = null,
-    val value: String? = null
+    val description: String? = null
 )

@@ -36,10 +36,12 @@ class SettingsSaasPlanUseCaseTest {
             input = SettingsSaasPlanUpsertInput(
                 name = " Essencial ",
                 description = " Plano para autonomos ",
+                subtitle = " Destaque ",
+                value = " R$ 99,90 ",
                 category = PlanCategory.PROFESSIONAL_AUTONOMOUS,
                 benefits = listOf(
-                    SettingsSaasPlanBenefitInput(" Atendimento ", " Prioritario "),
-                    SettingsSaasPlanBenefitInput(" Relatorios ", " Mensais ")
+                    SettingsSaasPlanBenefitInput(" Atendimento prioritario "),
+                    SettingsSaasPlanBenefitInput(" Relatorios mensais ")
                 )
             )
         )
@@ -47,9 +49,10 @@ class SettingsSaasPlanUseCaseTest {
         created.id shouldBe 10
         created.tenantId shouldBe 1
         created.name shouldBe "Essencial"
+        created.subtitle shouldBe "Destaque"
+        created.value shouldBe "R$ 99,90"
         created.benefits.size shouldBe 2
-        created.benefits.first().subtitle shouldBe "Atendimento"
-        created.benefits.first().value shouldBe "Prioritario"
+        created.benefits.first().description shouldBe "Atendimento prioritario"
     }
 
     @Test
@@ -60,9 +63,11 @@ class SettingsSaasPlanUseCaseTest {
             id = 10,
             tenantId = 1,
             name = "Essencial",
+            subtitle = "Destaque",
+            value = "R$ 79,90",
             category = PlanCategory.PROFESSIONAL_AUTONOMOUS,
             benefits = listOf(
-                SettingsSaasPlanBenefit(id = 1, subtitle = "Beneficio", value = "antigo")
+                SettingsSaasPlanBenefit(id = 1, description = "Beneficio antigo")
             )
         )
 
@@ -74,16 +79,19 @@ class SettingsSaasPlanUseCaseTest {
             tenantId = 1,
             input = SettingsSaasPlanUpsertInput(
                 name = "Essencial Plus",
+                subtitle = "Novo subtitulo",
+                value = "R$ 129,90",
                 category = PlanCategory.BUSINESS,
-                benefits = listOf(SettingsSaasPlanBenefitInput("Novo", "beneficio"))
+                benefits = listOf(SettingsSaasPlanBenefitInput("Novo beneficio"))
             )
         )
 
         updated.name shouldBe "Essencial Plus"
         updated.category shouldBe PlanCategory.BUSINESS
+        updated.subtitle shouldBe "Novo subtitulo"
+        updated.value shouldBe "R$ 129,90"
         updated.benefits.size shouldBe 1
-        updated.benefits.first().subtitle shouldBe "Novo"
-        updated.benefits.first().value shouldBe "beneficio"
+        updated.benefits.first().description shouldBe "Novo beneficio"
     }
 
     @Test
@@ -98,8 +106,10 @@ class SettingsSaasPlanUseCaseTest {
                 tenantId = 1,
                 input = SettingsSaasPlanUpsertInput(
                     name = "Plano",
+                    subtitle = "Sub",
+                    value = "R$ 10",
                     category = PlanCategory.BUSINESS,
-                    benefits = listOf(SettingsSaasPlanBenefitInput("Beneficio", "Ilimitado"))
+                    benefits = listOf(SettingsSaasPlanBenefitInput("Beneficio"))
                 )
             )
         }
@@ -130,12 +140,14 @@ class SettingsSaasPlanUseCaseTest {
                 input = SettingsSaasPlanUpsertInput(
                     tenantId = 99,
                     name = " ",
+                    subtitle = " ",
+                    value = " ",
                     category = null,
-                    benefits = listOf(SettingsSaasPlanBenefitInput(" ", " "))
+                    benefits = listOf(SettingsSaasPlanBenefitInput(" "))
                 )
             )
         }
 
-        ex.errors.size shouldBe 5
+        ex.errors.size shouldBe 6
     }
 }

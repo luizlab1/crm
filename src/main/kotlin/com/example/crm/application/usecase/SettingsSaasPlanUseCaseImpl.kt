@@ -38,13 +38,10 @@ class SettingsSaasPlanUseCaseImpl(
             tenantId = tenantId,
             name = sanitized.name,
             description = sanitized.description,
+            subtitle = sanitized.subtitle,
+            value = sanitized.value,
             category = sanitized.category,
-            benefits = sanitized.benefits.map {
-                SettingsSaasPlanBenefit(
-                    subtitle = it.subtitle,
-                    value = it.value
-                )
-            }
+            benefits = sanitized.benefits.map { SettingsSaasPlanBenefit(description = it.description) }
         )
         return repository.save(plan)
     }
@@ -56,13 +53,10 @@ class SettingsSaasPlanUseCaseImpl(
         val updated = existing.copy(
             name = sanitized.name,
             description = sanitized.description,
+            subtitle = sanitized.subtitle,
+            value = sanitized.value,
             category = sanitized.category,
-            benefits = sanitized.benefits.map {
-                SettingsSaasPlanBenefit(
-                    subtitle = it.subtitle,
-                    value = it.value
-                )
-            }
+            benefits = sanitized.benefits.map { SettingsSaasPlanBenefit(description = it.description) }
         )
         return repository.save(updated)
     }
@@ -92,6 +86,21 @@ class SettingsSaasPlanUseCaseImpl(
             errors += ValidationError("category", "Categoria e obrigatoria", "NotNull")
         }
 
+        val normalizedSubtitle = validateBenefitField(
+            value = input.subtitle,
+            field = "subtitle",
+            requiredMessage = "Subtitulo e obrigatorio",
+            maxLengthMessage = "Subtitulo deve ter no maximo 255 caracteres",
+            errors = errors
+        )
+        val normalizedValue = validateBenefitField(
+            value = input.value,
+            field = "value",
+            requiredMessage = "Valor e obrigatorio",
+            maxLengthMessage = "Valor deve ter no maximo 255 caracteres",
+            errors = errors
+        )
+
         if (input.benefits.isEmpty()) {
             errors += ValidationError("benefits", "Beneficios e obrigatorio e deve ter no minimo 1 item", "Size")
         }
@@ -105,6 +114,8 @@ class SettingsSaasPlanUseCaseImpl(
         return SanitizedInput(
             name = normalizedName,
             description = input.description?.trim()?.takeIf { it.isNotEmpty() },
+            subtitle = normalizedSubtitle,
+            value = normalizedValue,
             category = category!!,
             benefits = normalizedBenefits
         )
@@ -115,21 +126,14 @@ class SettingsSaasPlanUseCaseImpl(
         errors: MutableList<ValidationError>
     ): List<SanitizedBenefitInput> =
         benefits.mapIndexed { index, benefit ->
-            val normalizedSubtitle = validateBenefitField(
-                value = benefit.subtitle,
-                field = "benefits[$index].subtitle",
-                requiredMessage = "Subtitulo do beneficio e obrigatorio",
-                maxLengthMessage = "Subtitulo do beneficio deve ter no maximo 255 caracteres",
+            val normalizedDescription = validateBenefitField(
+                value = benefit.description,
+                field = "benefits[$index].description",
+                requiredMessage = "Descricao do beneficio e obrigatoria",
+                maxLengthMessage = "Descricao do beneficio deve ter no maximo 255 caracteres",
                 errors = errors
             )
-            val normalizedValue = validateBenefitField(
-                value = benefit.value,
-                field = "benefits[$index].value",
-                requiredMessage = "Valor do beneficio e obrigatorio",
-                maxLengthMessage = "Valor do beneficio deve ter no maximo 255 caracteres",
-                errors = errors
-            )
-            SanitizedBenefitInput(subtitle = normalizedSubtitle, value = normalizedValue)
+            SanitizedBenefitInput(description = normalizedDescription)
         }
 
     private fun validateBenefitField(
@@ -151,12 +155,13 @@ class SettingsSaasPlanUseCaseImpl(
     private data class SanitizedInput(
         val name: String,
         val description: String?,
+        val subtitle: String,
+        val value: String,
         val category: PlanCategory,
         val benefits: List<SanitizedBenefitInput>
     )
 
     private data class SanitizedBenefitInput(
-        val subtitle: String,
-        val value: String
+        val description: String
     )
 }

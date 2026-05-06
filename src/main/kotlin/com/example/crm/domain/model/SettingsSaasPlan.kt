@@ -7,6 +7,8 @@ data class SettingsSaasPlan(
     val tenantId: Long,
     val name: String,
     val description: String? = null,
+    val subtitle: String,
+    val value: String,
     val category: PlanCategory,
     val benefits: List<SettingsSaasPlanBenefit> = emptyList(),
     val createdAt: OffsetDateTime = OffsetDateTime.now(),
@@ -15,8 +17,7 @@ data class SettingsSaasPlan(
 
 data class SettingsSaasPlanBenefit(
     val id: Long = 0,
-    val subtitle: String,
-    val value: String,
+    val description: String,
     val createdAt: OffsetDateTime = OffsetDateTime.now(),
     val updatedAt: OffsetDateTime = OffsetDateTime.now()
 )

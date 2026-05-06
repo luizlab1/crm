@@ -4,14 +4,15 @@ import com.example.crm.domain.model.PlanCategory
 import com.example.crm.domain.model.SettingsSaasPlan
 
 data class SettingsSaasPlanBenefitInput(
-    val subtitle: String?,
-    val value: String?
+    val description: String?
 )
 
 data class SettingsSaasPlanUpsertInput(
     val tenantId: Long? = null,
     val name: String?,
     val description: String? = null,
+    val subtitle: String?,
+    val value: String?,
     val category: PlanCategory?,
     val benefits: List<SettingsSaasPlanBenefitInput> = emptyList()
 )

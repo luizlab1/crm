@@ -94,14 +94,15 @@ class SettingsSaasPlanPersistenceMapper {
         tenantId = e.tenantId,
         name = e.name,
         description = e.description,
+        subtitle = e.subtitle,
+        value = e.value,
         category = e.category,
         benefits = e.benefits
             .sortedBy { it.id }
             .map {
                 SettingsSaasPlanBenefit(
                     id = it.id,
-                    subtitle = it.subtitle,
-                    value = it.value,
+                    description = it.description,
                     createdAt = it.createdAt,
                     updatedAt = it.updatedAt
                 )
@@ -116,6 +117,8 @@ class SettingsSaasPlanPersistenceMapper {
             tenantId = d.tenantId,
             name = d.name,
             description = d.description,
+            subtitle = d.subtitle,
+            value = d.value,
             category = d.category
         )
         entity.createdAt = d.createdAt
@@ -124,8 +127,7 @@ class SettingsSaasPlanPersistenceMapper {
             SettingsSaasPlanBenefitJpaEntity(
                 id = it.id,
                 plan = entity,
-                subtitle = it.subtitle,
-                value = it.value
+                description = it.description
             ).apply {
                 createdAt = it.createdAt
                 updatedAt = it.updatedAt

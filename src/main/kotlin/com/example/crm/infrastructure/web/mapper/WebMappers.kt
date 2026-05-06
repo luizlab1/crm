@@ -565,13 +565,10 @@ class SettingsSaasPlanWebMapper {
         tenantId = request.tenantId,
         name = request.name,
         description = request.description,
+        subtitle = request.subtitle,
+        value = request.value,
         category = request.category,
-        benefits = request.benefits.map {
-            SettingsSaasPlanBenefitInput(
-                subtitle = it.subtitle,
-                value = it.value
-            )
-        }
+        benefits = request.benefits.map { SettingsSaasPlanBenefitInput(description = it.description) }
     )
 
     fun toResponse(d: SettingsSaasPlan) = SettingsSaasPlanResponse(
@@ -579,12 +576,13 @@ class SettingsSaasPlanWebMapper {
         tenantId = d.tenantId,
         name = d.name,
         description = d.description,
+        subtitle = d.subtitle,
+        value = d.value,
         category = d.category,
         benefits = d.benefits.map {
             SettingsSaasPlanBenefitResponse(
                 id = it.id,
-                subtitle = it.subtitle,
-                value = it.value
+                description = it.description
             )
         },
         createdAt = d.createdAt,
