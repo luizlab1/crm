@@ -131,4 +131,4 @@ app:
 security:
   google:
     # OAuth2 Web Client ID (env: GOOGLE_CLIENT_ID)
-    client-id: ${GOOGLE_CLIENT_ID:}
+    client-id: ${GOOGLE_CLIENT_ID:218252797944-i2fqj50fhjpdagcfroauekvrobt79u1k.apps.googleusercontent.com}
