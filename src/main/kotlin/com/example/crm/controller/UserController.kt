@@ -2,6 +2,7 @@ package com.example.crm.controller
 
 import com.example.crm.dto.request.UserRequest
 import com.example.crm.dto.response.PageResponse
+import com.example.crm.dto.response.RoleResponse
 import com.example.crm.dto.response.UserResponse
 import com.example.crm.dto.response.UserSummaryResponse
 import com.example.crm.entity.FileType
@@ -47,14 +48,14 @@ class UserController(
     @PostMapping
     fun create(@RequestBody request: UserRequest): ResponseEntity<UserResponse> {
         val (personEntity, contacts, addresses) = request.toPersonData()
-        val created = service.create(request.toEntity(), personEntity, contacts, addresses)
+        val created = service.create(request.toEntity(), personEntity, contacts, addresses, request.roles)
         return ResponseEntity.created(URI.create("/api/v1/users/${created.id}")).body(created.toResponse())
     }
 
     @PutMapping("/{id}")
     fun update(@PathVariable id: Long, @RequestBody request: UserRequest): ResponseEntity<UserResponse> {
         val (personEntity, contacts, addresses) = request.toPersonData()
-        val updated = service.update(id, request.toEntity(), personEntity, contacts, addresses)
+        val updated = service.update(id, request.toEntity(), personEntity, contacts, addresses, request.roles)
         return ResponseEntity.ok(updated.toResponse())
     }
 
@@ -90,7 +91,8 @@ class UserController(
             id = id, tenantId = tenantId, email = email,
             name = person?.physical?.fullName ?: person?.legal?.corporateName,
             isActive = isActive, createdAt = createdAt,
-            photo = resolvePhoto(id, FileType.WORKER)
+            photo = resolvePhoto(id, FileType.WORKER),
+            roles = roles.map { it.toResponse() }
         )
     }
 
@@ -102,12 +104,16 @@ class UserController(
             id = id, code = code, tenantId = tenantId, personId = personId,
             email = email, isActive = isActive, createdAt = createdAt, updatedAt = updatedAt,
             photo = resolvePhoto(id, FileType.WORKER),
+            roles = roles.map { it.toResponse() },
             physical = person?.physical?.toResponse(),
             legal = person?.legal?.toResponse(),
             contacts = contacts.map { it.toResponse() },
             addresses = addresses.map { it.toResponse() }
         )
     }
+
+    private fun com.example.crm.entity.RoleEntity.toResponse() =
+        RoleResponse(id, name, description, isActive, createdAt, updatedAt)
 
     private fun resolvePhoto(entityId: Long, fileType: FileType): String? = runCatching {
         uploadService.list(fileType, entityId, 0, 1).firstOrNull()?.id?.let { uploadId ->

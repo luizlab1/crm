@@ -42,7 +42,8 @@ class AuthService(
             ),
             personData = null,
             contacts = emptyList(),
-            addressRequests = emptyList()
+            addressRequests = emptyList(),
+            roleIds = null
         )
     }
 
