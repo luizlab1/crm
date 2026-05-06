@@ -37,21 +37,17 @@ class GoogleTokenValidator(
 ) {
 
     fun validate(credential: String): GoogleTokenPayload {
-        if (config.clientId.isBlank()) {
-            throw IllegalStateException("Google client id is not configured")
-        }
-        if (credential.isBlank()) {
-            throw GoogleAuthenticationException("Google credential is required")
-        }
+        check(config.clientId.isNotBlank()) { "Google client id is not configured" }
+        credential.takeIf { it.isNotBlank() } ?: unauthorized("Google credential is required")
 
         val token = verifierClient.verify(credential)
-            ?: throw GoogleAuthenticationException("Invalid Google ID token")
+            ?: unauthorized("Invalid Google ID token")
 
         val payload = token.payload
         validatePayload(payload)
 
-        val email = payload.email ?: throw GoogleAuthenticationException("Google token email is missing")
-        val sub = payload.subject ?: throw GoogleAuthenticationException("Google token subject is missing")
+        val email = payload.email ?: unauthorized("Google token email is missing")
+        val sub = payload.subject ?: unauthorized("Google token subject is missing")
         return GoogleTokenPayload(
             sub = sub,
             email = email,
@@ -63,18 +59,20 @@ class GoogleTokenValidator(
     private fun validatePayload(payload: GoogleIdToken.Payload) {
         val issuer = payload.issuer
         if (issuer != "accounts.google.com" && issuer != "https://accounts.google.com") {
-            throw GoogleAuthenticationException("Invalid Google token issuer")
+            unauthorized("Invalid Google token issuer")
         }
 
         val audience = payload.audience
         if (audience != config.clientId) {
-            throw GoogleAuthenticationException("Invalid Google token audience")
+            unauthorized("Invalid Google token audience")
         }
 
         val expirationTimeSeconds = payload.expirationTimeSeconds
-            ?: throw GoogleAuthenticationException("Invalid Google token expiration")
+            ?: unauthorized("Invalid Google token expiration")
         if (Instant.ofEpochSecond(expirationTimeSeconds).isBefore(Instant.now())) {
-            throw GoogleAuthenticationException("Google token expired")
+            unauthorized("Google token expired")
         }
     }
+
+    private fun unauthorized(message: String): Nothing = throw GoogleAuthenticationException(message)
 }

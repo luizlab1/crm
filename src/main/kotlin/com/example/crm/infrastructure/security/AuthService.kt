@@ -15,15 +15,13 @@ class AuthService(
 ) {
     private val passwordEncoder = BCryptPasswordEncoder()
 
-    fun authenticateWithEmailPassword(email: String, password: String): String? {
-        val user = userService.getByEmail(email) ?: return null
-        val stored = user.passwordHash.replaceFirst("^\\$2b\\$".toRegex(), "\$2a\$")
-        val matches = passwordEncoder.matches(password, stored)
-        if (!matches) {
-            return null
-        }
-        return generateInternalToken(user)
-    }
+    fun authenticateWithEmailPassword(email: String, password: String): String? =
+        userService.getByEmail(email)
+            ?.takeIf { user ->
+                val stored = user.passwordHash.replaceFirst("^\\$2b\\$".toRegex(), "\$2a\$")
+                passwordEncoder.matches(password, stored)
+            }
+            ?.let { user -> generateInternalToken(user) }
 
     @Transactional
     fun authenticateWithGoogle(credential: String): String {
