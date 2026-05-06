@@ -57,7 +57,9 @@ class SettingsSaasPlanController(
             name = request.name,
             description = request.description,
             category = request.category,
-            benefits = request.benefits.map { it.subtitle to it.value }
+            subtitle = request.subtitle,
+            value = request.value,
+            benefits = request.benefits.map { it.description }
         )
         return ResponseEntity.created(URI.create("/api/v1/settings/saas/plans/${created.id}"))
             .body(created.toResponse())
@@ -76,7 +78,9 @@ class SettingsSaasPlanController(
             name = request.name,
             description = request.description,
             category = request.category,
-            benefits = request.benefits.map { it.subtitle to it.value }
+            subtitle = request.subtitle,
+            value = request.value,
+            benefits = request.benefits.map { it.description }
         )
         return ResponseEntity.ok(updated.toResponse())
     }
@@ -108,11 +112,12 @@ class SettingsSaasPlanController(
         name = name,
         description = description,
         category = category,
+        subtitle = subtitle,
+        value = value,
         benefits = benefits.map { benefit ->
             SettingsSaasPlanBenefitResponse(
                 id = benefit.id,
-                subtitle = benefit.subtitle,
-                value = benefit.value
+                description = benefit.description
             )
         },
         createdAt = createdAt,

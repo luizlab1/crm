@@ -9,10 +9,11 @@ data class SettingsSaasPlanRequest(
     val name: String? = null,
     val description: String? = null,
     val category: PlanCategory? = null,
+    val subtitle: String? = null,
+    val value: String? = null,
     val benefits: List<SettingsSaasPlanBenefitRequest> = emptyList()
 )
 
 data class SettingsSaasPlanBenefitRequest(
-    val subtitle: String? = null,
-    val value: String? = null
+    val description: String? = null
 )

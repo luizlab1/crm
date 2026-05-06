@@ -32,6 +32,12 @@ class SettingsSaasPlanJpaEntity(
     @Column(nullable = false, length = 64)
     var category: PlanCategory = PlanCategory.BUSINESS,
 
+    @Column(nullable = false, columnDefinition = "text")
+    var subtitle: String = "",
+
+    @Column(nullable = false, columnDefinition = "text")
+    var value: String = "",
+
     @OneToMany(mappedBy = "plan", cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.LAZY)
     var benefits: MutableList<SettingsSaasPlanBenefitJpaEntity> = mutableListOf()
 ) : BaseEntity()

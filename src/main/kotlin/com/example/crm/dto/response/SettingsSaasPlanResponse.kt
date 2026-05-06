@@ -11,6 +11,8 @@ data class SettingsSaasPlanResponse(
     val name: String,
     val description: String?,
     val category: PlanCategory,
+    val subtitle: String,
+    val value: String,
     val benefits: List<SettingsSaasPlanBenefitResponse>,
     @JsonProperty("created_at")
     val createdAt: OffsetDateTime,
@@ -20,6 +22,5 @@ data class SettingsSaasPlanResponse(
 
 data class SettingsSaasPlanBenefitResponse(
     val id: Long,
-    val subtitle: String,
-    val value: String
+    val description: String
 )
