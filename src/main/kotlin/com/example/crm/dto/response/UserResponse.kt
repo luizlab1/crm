@@ -13,6 +13,7 @@ data class UserResponse(
     val createdAt: OffsetDateTime,
     val updatedAt: OffsetDateTime,
     val photo: String? = null,
+    val roles: List<RoleResponse> = emptyList(),
     val physical: PersonPhysicalResponse? = null,
     val legal: PersonLegalResponse? = null,
     val contacts: List<ContactResponse> = emptyList(),
@@ -26,5 +27,6 @@ data class UserSummaryResponse(
     val name: String?,
     val isActive: Boolean,
     val createdAt: OffsetDateTime,
-    val photo: String? = null
+    val photo: String? = null,
+    val roles: List<RoleResponse> = emptyList()
 )
