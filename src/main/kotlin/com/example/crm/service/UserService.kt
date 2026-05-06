@@ -60,7 +60,9 @@ class UserService(
             if (addressRequests.isNotEmpty()) personService.replaceAddresses(pid, addressRequests)
         }
         existing.email = user.email
-        existing.passwordHash = user.passwordHash
+        if (!user.passwordHash.isNullOrBlank()) {
+            existing.passwordHash = user.passwordHash
+        }
         existing.isActive = user.isActive
         existing.personId = personId
         return userRepository.save(existing)

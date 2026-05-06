@@ -65,7 +65,7 @@ class UserController(
     }
 
     private fun UserRequest.toEntity() = UserEntity(
-        tenantId = tenantId, email = email, passwordHash = passwordHash, isActive = isActive
+        tenantId = tenantId, email = email, passwordHash = passwordHash.orEmpty(), isActive = isActive
     )
 
     private data class PersonData(
