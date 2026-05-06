@@ -36,21 +36,24 @@ class SettingsSaasPlanService(
         name: String?,
         description: String?,
         category: PlanCategory?,
-        benefits: List<Pair<String?, String?>>
+        subtitle: String?,
+        value: String?,
+        benefits: List<String?>
     ): SettingsSaasPlanJpaEntity {
-        val sanitized = sanitize(name, description, category, benefits, tenantId = null)
+        val sanitized = sanitize(name, description, category, subtitle, value, benefits, tenantId = null)
         val saved = repository.save(
             SettingsSaasPlanJpaEntity(
                 tenantId = tenantId,
                 name = sanitized.name,
                 description = sanitized.description,
-                category = sanitized.category
+                category = sanitized.category,
+                subtitle = sanitized.subtitle,
+                value = sanitized.value
             ).also { plan ->
                 plan.benefits = sanitized.benefits.map { benefit ->
                     SettingsSaasPlanBenefitJpaEntity(
                         plan = plan,
-                        subtitle = benefit.subtitle,
-                        value = benefit.value
+                        description = benefit
                     )
                 }.toMutableList()
             }
@@ -64,20 +67,23 @@ class SettingsSaasPlanService(
         name: String?,
         description: String?,
         category: PlanCategory?,
-        benefits: List<Pair<String?, String?>>
+        subtitle: String?,
+        value: String?,
+        benefits: List<String?>
     ): SettingsSaasPlanJpaEntity {
         val existing = repository.findOneByIdAndTenantId(id, tenantId)
             ?: throw NoSuchElementException("SettingsSaasPlan not found: $id")
-        val sanitized = sanitize(name, description, category, benefits, tenantId = null)
+        val sanitized = sanitize(name, description, category, subtitle, value, benefits, tenantId = null)
         existing.name = sanitized.name
         existing.description = sanitized.description
         existing.category = sanitized.category
+        existing.subtitle = sanitized.subtitle
+        existing.value = sanitized.value
         existing.benefits.clear()
         existing.benefits.addAll(sanitized.benefits.map { benefit ->
             SettingsSaasPlanBenefitJpaEntity(
                 plan = existing,
-                subtitle = benefit.subtitle,
-                value = benefit.value
+                description = benefit
             )
         })
         return repository.save(existing)
@@ -93,7 +99,9 @@ class SettingsSaasPlanService(
         name: String?,
         description: String?,
         category: PlanCategory?,
-        benefits: List<Pair<String?, String?>>,
+        subtitle: String?,
+        value: String?,
+        benefits: List<String?>,
         tenantId: Long?
     ): SanitizedInput {
         val errors = mutableListOf<ValidationError>()
@@ -112,26 +120,34 @@ class SettingsSaasPlanService(
             errors += ValidationError("category", "Categoria e obrigatoria", "NotNull")
         }
 
+        val normalizedSubtitle = validateBenefitField(
+            value = subtitle,
+            field = "subtitle",
+            requiredMessage = "Subtitulo e obrigatorio",
+            maxLengthMessage = "Subtitulo deve ter no maximo 255 caracteres",
+            errors = errors
+        )
+
+        val normalizedValue = validateBenefitField(
+            value = value,
+            field = "value",
+            requiredMessage = "Valor e obrigatorio",
+            maxLengthMessage = "Valor deve ter no maximo 255 caracteres",
+            errors = errors
+        )
+
         if (benefits.isEmpty()) {
             errors += ValidationError("benefits", "Beneficios e obrigatorio e deve ter no minimo 1 item", "Size")
         }
 
         val normalizedBenefits = benefits.mapIndexed { index, benefit ->
-            val subtitle = validateBenefitField(
-                value = benefit.first,
-                field = "benefits[$index].subtitle",
-                requiredMessage = "Subtitulo do beneficio e obrigatorio",
-                maxLengthMessage = "Subtitulo do beneficio deve ter no maximo 255 caracteres",
+            validateBenefitField(
+                value = benefit,
+                field = "benefits[$index].description",
+                requiredMessage = "Descricao do beneficio e obrigatoria",
+                maxLengthMessage = "Descricao do beneficio deve ter no maximo 255 caracteres",
                 errors = errors
             )
-            val value = validateBenefitField(
-                value = benefit.second,
-                field = "benefits[$index].value",
-                requiredMessage = "Valor do beneficio e obrigatorio",
-                maxLengthMessage = "Valor do beneficio deve ter no maximo 255 caracteres",
-                errors = errors
-            )
-            SanitizedBenefitInput(subtitle = subtitle, value = value)
         }
 
         if (errors.isNotEmpty()) throw RequestValidationException(errors)
@@ -140,6 +156,8 @@ class SettingsSaasPlanService(
             name = normalizedName,
             description = description?.trim()?.takeIf { it.isNotEmpty() },
             category = category!!,
+            subtitle = normalizedSubtitle,
+            value = normalizedValue,
             benefits = normalizedBenefits
         )
     }
@@ -166,11 +184,8 @@ class SettingsSaasPlanService(
         val name: String,
         val description: String?,
         val category: PlanCategory,
-        val benefits: List<SanitizedBenefitInput>
-    )
-
-    private data class SanitizedBenefitInput(
         val subtitle: String,
-        val value: String
+        val value: String,
+        val benefits: List<String>
     )
 }
