@@ -127,3 +127,8 @@ app:
         max-size-bytes: 10485760
         max-width: 4000
         max-height: 4000
+
+security:
+  google:
+    # OAuth2 Web Client ID (env: GOOGLE_CLIENT_ID)
+    client-id: ${GOOGLE_CLIENT_ID:}

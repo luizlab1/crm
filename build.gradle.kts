@@ -50,6 +50,7 @@ dependencies {
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.6")
     implementation("io.swagger.core.v3:swagger-models:2.2.17")
     implementation("io.jsonwebtoken:jjwt-api:0.11.5")
+    implementation("com.google.api-client:google-api-client:2.8.1")
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.5")
     runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.5")
 

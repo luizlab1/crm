@@ -1,14 +1,13 @@
 package com.example.crm.controller
 
-import com.example.crm.infrastructure.security.JwtService
-import com.example.crm.service.UserService
+import com.example.crm.exception.GoogleAuthenticationException
+import com.example.crm.infrastructure.security.AuthService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.ExampleObject
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.parameters.RequestBody as OasRequestBody
 import org.springframework.http.ResponseEntity
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.web.bind.annotation.*
 
 data class AuthRequest(
@@ -16,13 +15,10 @@ data class AuthRequest(
     @field:Schema(example = "string") val password: String
 )
 
-data class AuthResponse(val token: String)
-
 @RestController
 @RequestMapping("/api/v1/auth")
 class AuthController(
-    private val jwtService: JwtService,
-    private val userService: UserService
+    private val authService: AuthService
 ) {
 
     @PostMapping("/token")
@@ -34,22 +30,25 @@ class AuthController(
         )
     )
     fun token(@RequestBody req: AuthRequest): ResponseEntity<AuthResponse> {
-        val user = userService.getByEmail(req.email)
-        val response = if (user != null) {
-            val stored = user.passwordHash.replaceFirst("^\\$2b\\$".toRegex(), "\$2a\$")
-            val matches = BCryptPasswordEncoder().matches(req.password, stored)
-            if (matches) {
-                val token = jwtService.generateToken(
-                    user.email,
-                    mapOf("email" to user.email, "userId" to user.id, "tenantId" to user.tenantId)
-                )
-                ResponseEntity.ok(AuthResponse(token))
-            } else {
-                ResponseEntity.status(401).build()
-            }
-        } else {
+        val token = authService.authenticateWithEmailPassword(req.email, req.password)
+            ?: return ResponseEntity.status(401).build()
+        return ResponseEntity.ok(AuthResponse(token))
+    }
+
+    @PostMapping("/google")
+    @Operation(
+        summary = "Authenticate with Google ID token and return JWT token",
+        requestBody = OasRequestBody(
+            content = [Content(mediaType = "application/json",
+                examples = [ExampleObject(value = "{\"credential\": \"google_id_token\"}")])]
+        )
+    )
+    fun google(@RequestBody req: GoogleAuthRequest): ResponseEntity<AuthResponse> {
+        return try {
+            val token = authService.authenticateWithGoogle(req.credential)
+            ResponseEntity.ok(AuthResponse(token))
+        } catch (_: GoogleAuthenticationException) {
             ResponseEntity.status(401).build()
         }
-        return response
     }
 }
